@@ -1,6 +1,6 @@
 <?php
 
-namespace GiftCards\Product;
+namespace Bgcw\Product;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -47,7 +47,7 @@ class WC_Product_Gift_Card extends \WC_Product {
 	 * @return string
 	 */
 	public function get_price( $context = 'view' ) {
-		$amounts_str = get_post_meta( $this->get_id(), '_wcgc_amounts', true );
+		$amounts_str = get_post_meta( $this->get_id(), '_bgcw_amounts', true );
 		$amounts     = array_filter( array_map( 'floatval', explode( ',', (string) $amounts_str ) ) );
 		if ( ! empty( $amounts ) ) {
 			return (string) min( $amounts );
@@ -64,7 +64,7 @@ class WC_Product_Gift_Card extends \WC_Product {
 	 * @return string
 	 */
 	public function get_price_html( $price = '' ) {
-		$amounts_str = get_post_meta( $this->get_id(), '_wcgc_amounts', true );
+		$amounts_str = get_post_meta( $this->get_id(), '_bgcw_amounts', true );
 		$amounts     = array_filter( array_map( 'floatval', explode( ',', (string) $amounts_str ) ) );
 
 		if ( empty( $amounts ) ) {

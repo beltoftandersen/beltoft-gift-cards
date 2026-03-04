@@ -1,9 +1,9 @@
 <?php
 
-namespace GiftCards\Admin;
+namespace Bgcw\Admin;
 
-use GiftCards\GiftCard\Repository;
-use GiftCards\Cart\CartHandler;
+use Bgcw\GiftCard\Repository;
+use Bgcw\Cart\CartHandler;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,30 +26,30 @@ class OrderMetaBox {
 		$created_cards = Repository::get_by_order( $order->get_id() );
 
 		// Gift cards used on this order.
-		$deductions = $order->get_meta( '_wcgc_pending_deductions' );
+		$deductions = $order->get_meta( '_bgcw_pending_deductions' );
 		$status_labels = [
-			'active'   => __( 'Active', 'smart-gift-cards-for-woocommerce' ),
-			'disabled' => __( 'Disabled', 'smart-gift-cards-for-woocommerce' ),
-			'expired'  => __( 'Expired', 'smart-gift-cards-for-woocommerce' ),
-			'redeemed' => __( 'Redeemed', 'smart-gift-cards-for-woocommerce' ),
+			'active'   => __( 'Active', 'beltoft-gift-cards-for-woocommerce' ),
+			'disabled' => __( 'Disabled', 'beltoft-gift-cards-for-woocommerce' ),
+			'expired'  => __( 'Expired', 'beltoft-gift-cards-for-woocommerce' ),
+			'redeemed' => __( 'Redeemed', 'beltoft-gift-cards-for-woocommerce' ),
 		];
 
 		if ( empty( $created_cards ) && empty( $deductions ) ) {
 			return;
 		}
 
-		echo '<div class="wcgc-order-meta" style="margin-top: 16px; padding: 12px; background: #f9f9f9; border: 1px solid #ddd;">';
-		echo '<h3 style="margin-top: 0;">' . esc_html__( 'Gift Cards', 'smart-gift-cards-for-woocommerce' ) . '</h3>';
+		echo '<div class="bgcw-order-meta" style="margin-top: 16px; padding: 12px; background: #f9f9f9; border: 1px solid #ddd;">';
+		echo '<h3 style="margin-top: 0;">' . esc_html__( 'Gift Cards', 'beltoft-gift-cards-for-woocommerce' ) . '</h3>';
 
 		if ( ! empty( $created_cards ) ) {
-			echo '<h4>' . esc_html__( 'Created by this order:', 'smart-gift-cards-for-woocommerce' ) . '</h4>';
+			echo '<h4>' . esc_html__( 'Created by this order:', 'beltoft-gift-cards-for-woocommerce' ) . '</h4>';
 			echo '<table class="widefat striped" style="margin-bottom: 12px;">';
 			echo '<thead><tr>';
-			echo '<th>' . esc_html__( 'Code', 'smart-gift-cards-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Amount', 'smart-gift-cards-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Balance', 'smart-gift-cards-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Recipient', 'smart-gift-cards-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Status', 'smart-gift-cards-for-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Code', 'beltoft-gift-cards-for-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Amount', 'beltoft-gift-cards-for-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Balance', 'beltoft-gift-cards-for-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Recipient', 'beltoft-gift-cards-for-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Status', 'beltoft-gift-cards-for-woocommerce' ) . '</th>';
 			echo '</tr></thead><tbody>';
 			foreach ( $created_cards as $gc ) {
 				echo '<tr>';
@@ -58,18 +58,18 @@ class OrderMetaBox {
 				echo '<td>' . wp_kses_post( wc_price( $gc->balance ) ) . '</td>';
 				echo '<td>' . esc_html( $gc->recipient_email ) . '</td>';
 				$status = $status_labels[ $gc->status ] ?? $gc->status;
-				echo '<td><span class="wcgc-status wcgc-status--' . esc_attr( $gc->status ) . '">' . esc_html( $status ) . '</span></td>';
+				echo '<td><span class="bgcw-status bgcw-status--' . esc_attr( $gc->status ) . '">' . esc_html( $status ) . '</span></td>';
 				echo '</tr>';
 			}
 			echo '</tbody></table>';
 		}
 
 		if ( ! empty( $deductions ) && is_array( $deductions ) ) {
-			echo '<h4>' . esc_html__( 'Used on this order:', 'smart-gift-cards-for-woocommerce' ) . '</h4>';
+			echo '<h4>' . esc_html__( 'Used on this order:', 'beltoft-gift-cards-for-woocommerce' ) . '</h4>';
 			echo '<table class="widefat striped">';
 			echo '<thead><tr>';
-			echo '<th>' . esc_html__( 'Code', 'smart-gift-cards-for-woocommerce' ) . '</th>';
-			echo '<th>' . esc_html__( 'Amount Used', 'smart-gift-cards-for-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Code', 'beltoft-gift-cards-for-woocommerce' ) . '</th>';
+			echo '<th>' . esc_html__( 'Amount Used', 'beltoft-gift-cards-for-woocommerce' ) . '</th>';
 			echo '</tr></thead><tbody>';
 			foreach ( $deductions as $code => $amount ) {
 				echo '<tr>';

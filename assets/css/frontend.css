@@ -1,53 +1,53 @@
 /**
- * Smart Gift Cards for WooCommerce - Frontend Styles
+ * Beltoft Gift Cards for WooCommerce - Frontend Styles
  */
 
 /* Normalize all form fields inside gift card product form */
-.wcgc-product-fields input[type="text"],
-.wcgc-product-fields input[type="email"],
-.wcgc-product-fields input[type="number"],
-.wcgc-product-fields input[type="date"],
-.wcgc-product-fields select,
-.wcgc-product-fields textarea {
+.bgcw-product-fields input[type="text"],
+.bgcw-product-fields input[type="email"],
+.bgcw-product-fields input[type="number"],
+.bgcw-product-fields input[type="date"],
+.bgcw-product-fields select,
+.bgcw-product-fields textarea {
 	border: 1px solid #ddd;
 	border-radius: 4px;
 	font-size: 14px;
 	box-sizing: border-box;
 }
 
-.wcgc-product-fields input[type="text"],
-.wcgc-product-fields input[type="email"],
-.wcgc-product-fields input[type="number"],
-.wcgc-product-fields input[type="date"],
-.wcgc-product-fields select {
+.bgcw-product-fields input[type="text"],
+.bgcw-product-fields input[type="email"],
+.bgcw-product-fields input[type="number"],
+.bgcw-product-fields input[type="date"],
+.bgcw-product-fields select {
 	height: 40px;
 	padding: 0 10px;
 	line-height: 40px;
 }
 
-.wcgc-product-fields textarea {
+.bgcw-product-fields textarea {
 	padding: 8px 10px;
 }
 
 /* Amount selector */
-.wcgc-product-fields {
+.bgcw-product-fields {
 	margin: 20px 0;
 }
 
-.wcgc-amount-selector label {
+.bgcw-amount-selector label {
 	display: block;
 	font-weight: 600;
 	margin-bottom: 8px;
 }
 
-.wcgc-amounts {
+.bgcw-amounts {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 8px;
 	margin-bottom: 12px;
 }
 
-.wcgc-amount-btn {
+.bgcw-amount-btn {
 	padding: 8px 16px;
 	border: 2px solid #ddd;
 	background: #fff;
@@ -59,13 +59,13 @@
 	transition: border-color 0.2s, background-color 0.2s;
 }
 
-.wcgc-amount-btn:hover {
+.bgcw-amount-btn:hover {
 	border-color: #999;
 }
 
-.wcgc-amount-btn:focus,
-.wcgc-amount-btn:focus-visible,
-.wcgc-amount-btn:active {
+.bgcw-amount-btn:focus,
+.bgcw-amount-btn:focus-visible,
+.bgcw-amount-btn:active {
 	border-style: solid;
 	border-width: 2px;
 	padding: 8px 16px;
@@ -73,20 +73,20 @@
 	transform: none;
 }
 
-.wcgc-amount-btn:focus,
-.wcgc-amount-btn:focus-visible {
+.bgcw-amount-btn:focus,
+.bgcw-amount-btn:focus-visible {
 	outline: none;
 	box-shadow: none;
 }
 
-.wcgc-amount-btn.active {
-	border-color: var(--wcgc-amount-focus-color, #7f54b3);
-	background: var(--wcgc-amount-active-bg, #f7f0ff);
-	color: var(--wcgc-amount-focus-color, #7f54b3);
+.bgcw-amount-btn.active {
+	border-color: var(--bgcw-amount-focus-color, #7f54b3);
+	background: var(--bgcw-amount-active-bg, #f7f0ff);
+	color: var(--bgcw-amount-focus-color, #7f54b3);
 }
 
 /* Amount dropdown */
-.wcgc-amount-dropdown {
+.bgcw-amount-dropdown {
 	width: 100%;
 	max-width: 280px;
 	font-weight: 600;
@@ -100,52 +100,52 @@
 	appearance: none;
 }
 
-.wcgc-amount-dropdown:focus {
-	border-color: var(--wcgc-amount-focus-color, #7f54b3);
+.bgcw-amount-dropdown:focus {
+	border-color: var(--bgcw-amount-focus-color, #7f54b3);
 	outline: none;
 	box-shadow: none;
 }
 
-.wcgc-custom-amount {
+.bgcw-custom-amount {
 	margin-top: 8px;
 }
 
-.wcgc-custom-amount input {
+.bgcw-custom-amount input {
 	width: 96px;
 }
 
 /* Recipient fields */
-.wcgc-recipient-fields {
+.bgcw-recipient-fields {
 	margin-top: 20px;
 	padding-top: 16px;
 	border-top: 1px solid #eee;
 }
 
-.wcgc-recipient-fields h4 {
+.bgcw-recipient-fields h4 {
 	margin-bottom: 12px;
 }
 
-.wcgc-recipient-fields textarea {
+.bgcw-recipient-fields textarea {
 	width: 100%;
 }
 
 /* Applied gift cards in cart totals */
-.wcgc-applied-card th {
+.bgcw-applied-card th {
 	font-weight: normal;
 }
 
-.wcgc-remove-card {
+.bgcw-remove-card {
 	color: #d63638;
 	text-decoration: none;
 	margin-left: 4px;
 }
 
-.wcgc-remove-card:hover {
+.bgcw-remove-card:hover {
 	color: #a00;
 }
 
 /* Dedicated apply field */
-.wcgc-apply-field {
+.bgcw-apply-field {
 	margin: 16px 0;
 	padding: 16px;
 	background: #f9f9f9;
@@ -153,59 +153,59 @@
 	border-radius: 4px;
 }
 
-.wcgc-apply-field h3 {
+.bgcw-apply-field h3 {
 	margin: 0 0 12px;
 	font-size: 16px;
 }
 
-.wcgc-apply-form {
+.bgcw-apply-form {
 	display: flex;
 	gap: 8px;
 }
 
-.wcgc-code-input {
+.bgcw-code-input {
 	flex: 1;
 	padding: 6px 10px;
 }
 
-.wcgc-apply-btn {
+.bgcw-apply-btn {
 	white-space: nowrap;
 }
 
-.wcgc-field-notice {
+.bgcw-field-notice {
 	margin-top: 8px;
 	padding: 6px 10px;
 	border-radius: 3px;
 	font-size: 13px;
 }
 
-.wcgc-field-notice.success {
+.bgcw-field-notice.success {
 	background: #d4edda;
 	color: #155724;
 }
 
-.wcgc-field-notice.error {
+.bgcw-field-notice.error {
 	background: #f8d7da;
 	color: #721c24;
 }
 
-.wcgc-applied-list {
+.bgcw-applied-list {
 	margin-bottom: 12px;
 }
 
-.wcgc-applied-item {
+.bgcw-applied-item {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 	padding: 4px 0;
 }
 
-.wcgc-applied-code {
+.bgcw-applied-code {
 	font-family: monospace;
 	font-size: 13px;
 }
 
-.wcgc-applied-item .wcgc-ajax-remove {
+.bgcw-applied-item .bgcw-ajax-remove {
 	background: none;
 	border: none;
 	color: #d63638;
@@ -215,11 +215,11 @@
 }
 
 /* My Account */
-.wcgc-myaccount .wcgc-cards-table {
+.bgcw-myaccount .bgcw-cards-table {
 	width: 100%;
 }
 
-.wcgc-toggle-transactions {
+.bgcw-toggle-transactions {
 	background: none;
 	border: none;
 	cursor: pointer;
@@ -229,50 +229,50 @@
 	vertical-align: middle;
 }
 
-.wcgc-transactions-table {
+.bgcw-transactions-table {
 	width: 100%;
 	margin: 8px 0;
 	font-size: 13px;
 	border-collapse: collapse;
 }
 
-.wcgc-transactions-table th,
-.wcgc-transactions-table td {
+.bgcw-transactions-table th,
+.bgcw-transactions-table td {
 	padding: 6px 8px;
 	border-bottom: 1px solid #eee;
 	text-align: left;
 }
 
-.wcgc-transactions-table th {
+.bgcw-transactions-table th {
 	font-weight: 600;
 	font-size: 12px;
 }
 
 /* Transaction type badges */
-.wcgc-tx-type {
+.bgcw-tx-type {
 	display: inline-block;
 	padding: 1px 6px;
 	border-radius: 3px;
 	font-size: 11px;
 }
 
-.wcgc-tx-type--credit {
+.bgcw-tx-type--credit {
 	background: #d4edda;
 	color: #155724;
 }
 
-.wcgc-tx-type--debit {
+.bgcw-tx-type--debit {
 	background: #fff3cd;
 	color: #856404;
 }
 
-.wcgc-tx-type--refund {
+.bgcw-tx-type--refund {
 	background: #cce5ff;
 	color: #004085;
 }
 
 /* Status badges (shared) */
-.wcgc-status {
+.bgcw-status {
 	display: inline-block;
 	padding: 2px 8px;
 	border-radius: 3px;
@@ -280,22 +280,22 @@
 	font-weight: 500;
 }
 
-.wcgc-status--active {
+.bgcw-status--active {
 	background: #d4edda;
 	color: #155724;
 }
 
-.wcgc-status--disabled {
+.bgcw-status--disabled {
 	background: #e2e3e5;
 	color: #383d41;
 }
 
-.wcgc-status--expired {
+.bgcw-status--expired {
 	background: #f8d7da;
 	color: #721c24;
 }
 
-.wcgc-status--redeemed {
+.bgcw-status--redeemed {
 	background: #cce5ff;
 	color: #004085;
 }

@@ -1,23 +1,23 @@
 <?php
 
-namespace GiftCards;
+namespace Bgcw;
 
-use GiftCards\Support\Installer;
-use GiftCards\Support\Options;
-use GiftCards\Admin\SettingsPage;
-use GiftCards\Admin\OrderMetaBox;
-use GiftCards\Product\GiftCardProductType;
-use GiftCards\Frontend\ProductPage;
-use GiftCards\Frontend\MyAccount;
-use GiftCards\GiftCard\GiftCardCreator;
-use GiftCards\Cart\CartHandler;
-use GiftCards\Cart\GiftCardField;
-use GiftCards\Cart\AjaxHandler;
-use GiftCards\Checkout\OrderProcessor;
-use GiftCards\Email\GiftCardDeliveryEmail;
-use GiftCards\Blocks\StoreApiExtension;
-use GiftCards\Blocks\BlockIntegration;
-use GiftCards\GiftCard\Repository as GiftCardRepository;
+use Bgcw\Support\Installer;
+use Bgcw\Support\Options;
+use Bgcw\Admin\SettingsPage;
+use Bgcw\Admin\OrderMetaBox;
+use Bgcw\Product\GiftCardProductType;
+use Bgcw\Frontend\ProductPage;
+use Bgcw\Frontend\MyAccount;
+use Bgcw\GiftCard\GiftCardCreator;
+use Bgcw\Cart\CartHandler;
+use Bgcw\Cart\GiftCardField;
+use Bgcw\Cart\AjaxHandler;
+use Bgcw\Checkout\OrderProcessor;
+use Bgcw\Email\GiftCardDeliveryEmail;
+use Bgcw\Blocks\StoreApiExtension;
+use Bgcw\Blocks\BlockIntegration;
+use Bgcw\GiftCard\Repository as GiftCardRepository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -27,9 +27,9 @@ class Plugin {
 		Installer::maybe_upgrade();
 
 		// Throttle expiry sync to once per hour.
-		if ( false === get_transient( 'wcgc_expiry_sync' ) ) {
+		if ( false === get_transient( 'bgcw_expiry_sync' ) ) {
 			GiftCardRepository::sync_expired_statuses();
-			set_transient( 'wcgc_expiry_sync', 1, HOUR_IN_SECONDS );
+			set_transient( 'bgcw_expiry_sync', 1, HOUR_IN_SECONDS );
 		}
 
 		// Invalidate Options cache when changed externally (e.g., via wp option update).
@@ -81,7 +81,7 @@ class Plugin {
 	 * @return array
 	 */
 	public static function register_email_class( $email_classes ) {
-		$email_classes['WCGC_Gift_Card_Delivery'] = new GiftCardDeliveryEmail();
+		$email_classes['BGCW_Gift_Card_Delivery'] = new GiftCardDeliveryEmail();
 		return $email_classes;
 	}
 
@@ -137,7 +137,7 @@ class Plugin {
 			$product = $item['data'] ?? null;
 			if ( $product && $product->get_type() === 'gift-card' ) {
 				echo '<div class="wclr-redeem-notice" style="padding:12px 16px;margin:8px 0 12px;border:1px solid #e0e0e0;border-radius:4px;color:#666;font-size:0.875em;background-color:#fafafa;">'
-					. esc_html__( 'Loyalty points cannot be used to purchase gift cards.', 'smart-gift-cards-for-woocommerce' )
+					. esc_html__( 'Loyalty points cannot be used to purchase gift cards.', 'beltoft-gift-cards-for-woocommerce' )
 					. '</div>';
 				return;
 			}
@@ -151,12 +151,12 @@ class Plugin {
 	 * @return string
 	 */
 	private static function asset_version( $relative_path ) {
-		$file = WCGC_PATH . ltrim( $relative_path, '/' );
+		$file = BGCW_PATH . ltrim( $relative_path, '/' );
 		if ( file_exists( $file ) ) {
 			return (string) filemtime( $file );
 		}
 
-		return WCGC_VERSION;
+		return BGCW_VERSION;
 	}
 
 	/**
@@ -165,11 +165,11 @@ class Plugin {
 	 * @param string $hook Current admin page.
 	 */
 	public static function enqueue_admin_assets( $hook ) {
-		$our_pages = [ 'woocommerce_page_wcgc-gift-cards' ];
+		$our_pages = [ 'woocommerce_page_bgcw-gift-cards' ];
 
 		if ( in_array( $hook, $our_pages, true ) || ( $hook === 'post.php' && get_post_type() === 'product' ) ) {
-			wp_enqueue_style( 'wcgc-admin', WCGC_URL . 'assets/css/admin.css', [], self::asset_version( 'assets/css/admin.css' ) );
-			wp_enqueue_script( 'wcgc-admin', WCGC_URL . 'assets/js/admin.js', [ 'jquery' ], self::asset_version( 'assets/js/admin.js' ), true );
+			wp_enqueue_style( 'bgcw-admin', BGCW_URL . 'assets/css/admin.css', [], self::asset_version( 'assets/css/admin.css' ) );
+			wp_enqueue_script( 'bgcw-admin', BGCW_URL . 'assets/js/admin.js', [ 'jquery' ], self::asset_version( 'assets/js/admin.js' ), true );
 		}
 	}
 
@@ -183,7 +183,7 @@ class Plugin {
 			$post = get_post();
 			if ( $post ) {
 				$content = $post->post_content;
-				if ( has_shortcode( $content, 'wcgc_apply_field' ) || has_shortcode( $content, 'wcgc_product_form' ) ) {
+				if ( has_shortcode( $content, 'bgcw_apply_field' ) || has_shortcode( $content, 'bgcw_product_form' ) ) {
 					$should_enqueue = true;
 				}
 			}
@@ -193,18 +193,18 @@ class Plugin {
 			return;
 		}
 
-		wp_enqueue_style( 'wcgc-frontend', WCGC_URL . 'assets/css/frontend.css', [], self::asset_version( 'assets/css/frontend.css' ) );
+		wp_enqueue_style( 'bgcw-frontend', BGCW_URL . 'assets/css/frontend.css', [], self::asset_version( 'assets/css/frontend.css' ) );
 
-		wp_enqueue_script( 'wcgc-frontend', WCGC_URL . 'assets/js/frontend.js', [ 'jquery' ], self::asset_version( 'assets/js/frontend.js' ), true );
-		wp_localize_script( 'wcgc-frontend', 'wcgc_params', [
+		wp_enqueue_script( 'bgcw-frontend', BGCW_URL . 'assets/js/frontend.js', [ 'jquery' ], self::asset_version( 'assets/js/frontend.js' ), true );
+		wp_localize_script( 'bgcw-frontend', 'bgcw_params', [
 			'ajax_url' => \WC_AJAX::get_endpoint( '%%endpoint%%' ),
-			'nonce'    => wp_create_nonce( 'wcgc-ajax' ),
+			'nonce'    => wp_create_nonce( 'bgcw-ajax' ),
 			'i18n'     => [
-				'enter_code'    => __( 'Please enter a gift card code.', 'smart-gift-cards-for-woocommerce' ),
-				'apply'         => __( 'Apply', 'smart-gift-cards-for-woocommerce' ),
-				'applying'      => __( 'Applying...', 'smart-gift-cards-for-woocommerce' ),
-				'removing'      => __( 'Removing...', 'smart-gift-cards-for-woocommerce' ),
-				'request_error' => __( 'Request failed. Please try again.', 'smart-gift-cards-for-woocommerce' ),
+				'enter_code'    => __( 'Please enter a gift card code.', 'beltoft-gift-cards-for-woocommerce' ),
+				'apply'         => __( 'Apply', 'beltoft-gift-cards-for-woocommerce' ),
+				'applying'      => __( 'Applying...', 'beltoft-gift-cards-for-woocommerce' ),
+				'removing'      => __( 'Removing...', 'beltoft-gift-cards-for-woocommerce' ),
+				'request_error' => __( 'Request failed. Please try again.', 'beltoft-gift-cards-for-woocommerce' ),
 			],
 		] );
 	}

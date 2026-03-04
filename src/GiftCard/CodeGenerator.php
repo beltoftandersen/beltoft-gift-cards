@@ -1,8 +1,8 @@
 <?php
 
-namespace GiftCards\GiftCard;
+namespace Bgcw\GiftCard;
 
-use GiftCards\Support\Options;
+use Bgcw\Support\Options;
 
 defined( 'ABSPATH' ) || exit;
 

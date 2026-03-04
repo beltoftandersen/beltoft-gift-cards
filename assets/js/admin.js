@@ -1,17 +1,17 @@
 /**
- * Smart Gift Cards for WooCommerce - Admin JS
+ * Beltoft Gift Cards for WooCommerce - Admin JS
  */
 (function($) {
 	'use strict';
 
 	$(function() {
 		// Toggle add gift card form.
-		$('.wcgc-toggle-add-form').on('click', function() {
-			$('.wcgc-add-form').slideToggle(200);
+		$('.bgcw-toggle-add-form').on('click', function() {
+			$('.bgcw-add-form').slideToggle(200);
 		});
 
 		// Keep color picker + hex text input in sync.
-		$('.wcgc-color-picker').each(function() {
+		$('.bgcw-color-picker').each(function() {
 			var $picker   = $(this);
 			var targetId  = $picker.data('target');
 			var $hexInput = $('#' + targetId);

@@ -1,6 +1,6 @@
 <?php
 
-namespace GiftCards\GiftCard;
+namespace Bgcw\GiftCard;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -14,7 +14,7 @@ class Repository {
 	 */
 	public static function table() {
 		global $wpdb;
-		return $wpdb->prefix . 'wcgc_gift_cards';
+		return $wpdb->prefix . 'bgcw_gift_cards';
 	}
 
 	/**
@@ -91,7 +91,7 @@ class Repository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 		$result = $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_gift_cards WHERE code = %s",
+				"SELECT * FROM {$wpdb->prefix}bgcw_gift_cards WHERE code = %s",
 				$key
 			)
 		);
@@ -126,7 +126,7 @@ class Repository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 		return $wpdb->get_row(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_gift_cards WHERE id = %d",
+				"SELECT * FROM {$wpdb->prefix}bgcw_gift_cards WHERE id = %d",
 				$id
 			)
 		);
@@ -144,7 +144,7 @@ class Repository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_gift_cards WHERE order_id = %d ORDER BY id ASC",
+				"SELECT * FROM {$wpdb->prefix}bgcw_gift_cards WHERE order_id = %d ORDER BY id ASC",
 				$order_id
 			)
 		);
@@ -162,7 +162,7 @@ class Repository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_gift_cards WHERE customer_id = %d ORDER BY created_at DESC",
+				"SELECT * FROM {$wpdb->prefix}bgcw_gift_cards WHERE customer_id = %d ORDER BY created_at DESC",
 				$customer_id
 			)
 		);
@@ -180,7 +180,7 @@ class Repository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_gift_cards WHERE recipient_email = %s ORDER BY created_at DESC",
+				"SELECT * FROM {$wpdb->prefix}bgcw_gift_cards WHERE recipient_email = %s ORDER BY created_at DESC",
 				$email
 			)
 		);
@@ -233,7 +233,7 @@ class Repository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Atomic balance deduction on custom table.
 		$rows = $wpdb->query(
 				$wpdb->prepare(
-					"UPDATE {$wpdb->prefix}wcgc_gift_cards SET balance = balance - %f WHERE id = %d AND balance >= %f",
+					"UPDATE {$wpdb->prefix}bgcw_gift_cards SET balance = balance - %f WHERE id = %d AND balance >= %f",
 					$amount,
 					$id,
 					$amount
@@ -264,7 +264,7 @@ class Repository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table status sync.
 		$wpdb->query(
 			$wpdb->prepare(
-				"UPDATE {$wpdb->prefix}wcgc_gift_cards
+				"UPDATE {$wpdb->prefix}bgcw_gift_cards
 				SET status = 'expired'
 				WHERE status = 'active'
 				AND expires_at IS NOT NULL
@@ -368,7 +368,7 @@ class Repository {
 		// phpcs:disable PluginCheck.Security.DirectDB.UnescapedDBParameter
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_gift_cards {$where_sql} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d",
+				"SELECT * FROM {$wpdb->prefix}bgcw_gift_cards {$where_sql} ORDER BY {$orderby} {$order} LIMIT %d OFFSET %d",
 				...$values
 			)
 		);
@@ -391,7 +391,7 @@ class Repository {
 			// phpcs:disable PluginCheck.Security.DirectDB.UnescapedDBParameter
 			return (int) $wpdb->get_var(
 				$wpdb->prepare(
-					"SELECT COUNT(*) FROM {$wpdb->prefix}wcgc_gift_cards {$where_sql}",
+					"SELECT COUNT(*) FROM {$wpdb->prefix}bgcw_gift_cards {$where_sql}",
 					...$values
 				)
 			);
@@ -399,7 +399,7 @@ class Repository {
 		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table, no user input.
-		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}wcgc_gift_cards" );
+		return (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}bgcw_gift_cards" );
 	}
 
 	/**
@@ -417,7 +417,7 @@ class Repository {
 				COALESCE(SUM(CASE WHEN status = 'active' THEN balance ELSE 0 END), 0) as outstanding_balance,
 				COALESCE(SUM(CASE WHEN status = 'redeemed' THEN 1 ELSE 0 END), 0) as total_redeemed,
 				COALESCE(SUM(CASE WHEN status = 'expired' THEN 1 ELSE 0 END), 0) as total_expired
-			FROM {$wpdb->prefix}wcgc_gift_cards"
+			FROM {$wpdb->prefix}bgcw_gift_cards"
 		);
 
 		$stats = [
@@ -432,7 +432,7 @@ class Repository {
 		 *
 		 * @param array $stats Summary statistics.
 		 */
-		return apply_filters( 'wcgc_summary_stats', $stats );
+		return apply_filters( 'bgcw_summary_stats', $stats );
 	}
 
 	/**
@@ -445,7 +445,7 @@ class Repository {
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Custom table, no user input.
 		$rows = $wpdb->get_results(
-			"SELECT status, COUNT(*) as cnt FROM {$wpdb->prefix}wcgc_gift_cards GROUP BY status"
+			"SELECT status, COUNT(*) as cnt FROM {$wpdb->prefix}bgcw_gift_cards GROUP BY status"
 		);
 
 		$counts = [ '' => 0 ];

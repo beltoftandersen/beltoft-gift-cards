@@ -1,6 +1,6 @@
 <?php
 
-namespace GiftCards\Blocks;
+namespace Bgcw\Blocks;
 
 use Automattic\WooCommerce\Blocks\Integrations\IntegrationInterface;
 
@@ -21,19 +21,19 @@ class BlockIntegration implements IntegrationInterface {
 	 * @return string
 	 */
 	public function get_name() {
-		return 'smart-gift-cards-for-woocommerce';
+		return 'beltoft-gift-cards-for-woocommerce';
 	}
 
 	/**
 	 * Bootstrap the integration.
 	 */
 	public function initialize() {
-		$script_url  = WCGC_URL . 'assets/js/blocks/gift-card-blocks.js';
-		$script_path = WCGC_PATH . 'assets/js/blocks/gift-card-blocks.js';
-		$version     = file_exists( $script_path ) ? (string) filemtime( $script_path ) : WCGC_VERSION;
+		$script_url  = BGCW_URL . 'assets/js/blocks/gift-card-blocks.js';
+		$script_path = BGCW_PATH . 'assets/js/blocks/gift-card-blocks.js';
+		$version     = file_exists( $script_path ) ? (string) filemtime( $script_path ) : BGCW_VERSION;
 
 		wp_register_script(
-			'wcgc-blocks',
+			'bgcw-blocks',
 			$script_url,
 			[ 'wp-element', 'wp-plugins', 'wp-data', 'wc-blocks-checkout' ],
 			$version,
@@ -47,7 +47,7 @@ class BlockIntegration implements IntegrationInterface {
 	 * @return string[]
 	 */
 	public function get_script_handles() {
-		return [ 'wcgc-blocks' ];
+		return [ 'bgcw-blocks' ];
 	}
 
 	/**

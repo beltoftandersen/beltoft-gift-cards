@@ -1,9 +1,9 @@
 <?php
 
-namespace GiftCards\Cart;
+namespace Bgcw\Cart;
 
-use GiftCards\Support\Options;
-use GiftCards\GiftCard\Repository;
+use Bgcw\Support\Options;
+use Bgcw\GiftCard\Repository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -25,7 +25,7 @@ class GiftCardField {
 
 		// Mutually exclusive: automatic OR shortcode, not both.
 		if ( $placement === 'shortcode' ) {
-			add_shortcode( 'wcgc_apply_field', [ __CLASS__, 'shortcode_output' ] );
+			add_shortcode( 'bgcw_apply_field', [ __CLASS__, 'shortcode_output' ] );
 		} else {
 			// Multiple hooks for compatibility with page builders (Bricks, Elementor, etc.)
 			// that replace WooCommerce templates. The $rendered guard prevents duplicates.
@@ -68,29 +68,29 @@ class GiftCardField {
 			}
 		}
 		?>
-		<div class="wcgc-apply-field">
-			<h3><?php esc_html_e( 'Have a gift card?', 'smart-gift-cards-for-woocommerce' ); ?></h3>
+		<div class="bgcw-apply-field">
+			<h3><?php esc_html_e( 'Have a gift card?', 'beltoft-gift-cards-for-woocommerce' ); ?></h3>
 
 			<?php if ( ! empty( $applied ) ) : ?>
-				<div class="wcgc-applied-list">
+				<div class="bgcw-applied-list">
 					<?php foreach ( $applied as $index => $code ) : ?>
 						<?php $gc = Repository::find_by_code( $code ); ?>
 						<?php if ( $gc ) : ?>
-							<div class="wcgc-applied-item">
-								<span class="wcgc-applied-code"><?php echo esc_html( CartHandler::mask_code( $code ) ); ?></span>
-								<span class="wcgc-applied-balance"><?php echo wp_kses_post( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) ); ?></span>
-								<button type="button" class="wcgc-ajax-remove" data-index="<?php echo esc_attr( $index ); ?>">&times;</button>
+							<div class="bgcw-applied-item">
+								<span class="bgcw-applied-code"><?php echo esc_html( CartHandler::mask_code( $code ) ); ?></span>
+								<span class="bgcw-applied-balance"><?php echo wp_kses_post( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) ); ?></span>
+								<button type="button" class="bgcw-ajax-remove" data-index="<?php echo esc_attr( $index ); ?>">&times;</button>
 							</div>
 						<?php endif; ?>
 					<?php endforeach; ?>
 				</div>
 			<?php endif; ?>
 
-			<div class="wcgc-apply-form">
-				<input type="text" class="wcgc-code-input" placeholder="<?php esc_attr_e( 'Gift card code', 'smart-gift-cards-for-woocommerce' ); ?>" />
-				<button type="button" class="button wcgc-apply-btn"><?php esc_html_e( 'Apply', 'smart-gift-cards-for-woocommerce' ); ?></button>
+			<div class="bgcw-apply-form">
+				<input type="text" class="bgcw-code-input" placeholder="<?php esc_attr_e( 'Gift card code', 'beltoft-gift-cards-for-woocommerce' ); ?>" />
+				<button type="button" class="button bgcw-apply-btn"><?php esc_html_e( 'Apply', 'beltoft-gift-cards-for-woocommerce' ); ?></button>
 			</div>
-			<div class="wcgc-field-notice" style="display:none;"></div>
+			<div class="bgcw-field-notice" style="display:none;"></div>
 		</div>
 		<?php
 	}

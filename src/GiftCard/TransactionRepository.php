@@ -1,6 +1,6 @@
 <?php
 
-namespace GiftCards\GiftCard;
+namespace Bgcw\GiftCard;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -11,7 +11,7 @@ class TransactionRepository {
 	 */
 	public static function table() {
 		global $wpdb;
-		return $wpdb->prefix . 'wcgc_transactions';
+		return $wpdb->prefix . 'bgcw_transactions';
 	}
 
 	/**
@@ -63,7 +63,7 @@ class TransactionRepository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_transactions WHERE gift_card_id = %d ORDER BY created_at DESC",
+				"SELECT * FROM {$wpdb->prefix}bgcw_transactions WHERE gift_card_id = %d ORDER BY created_at DESC",
 				$gift_card_id
 			)
 		);
@@ -81,7 +81,7 @@ class TransactionRepository {
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
 		return $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_transactions WHERE order_id = %d ORDER BY created_at DESC",
+				"SELECT * FROM {$wpdb->prefix}bgcw_transactions WHERE order_id = %d ORDER BY created_at DESC",
 				$order_id
 			)
 		);
@@ -107,7 +107,7 @@ class TransactionRepository {
 		// phpcs:disable PluginCheck.Security.DirectDB.UnescapedDBParameter
 		$rows = $wpdb->get_results(
 			$wpdb->prepare(
-				"SELECT * FROM {$wpdb->prefix}wcgc_transactions WHERE gift_card_id IN ({$placeholders}) ORDER BY created_at DESC",
+				"SELECT * FROM {$wpdb->prefix}bgcw_transactions WHERE gift_card_id IN ({$placeholders}) ORDER BY created_at DESC",
 				...$gift_card_ids
 			)
 		);

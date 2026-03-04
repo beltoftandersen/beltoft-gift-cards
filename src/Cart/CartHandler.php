@@ -1,8 +1,8 @@
 <?php
 
-namespace GiftCards\Cart;
+namespace Bgcw\Cart;
 
-use GiftCards\GiftCard\Repository;
+use Bgcw\GiftCard\Repository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -91,7 +91,7 @@ class CartHandler {
 		if ( self::is_gift_card_coupon( $coupon->get_code() ) ) {
 			return sprintf(
 				/* translators: %s: masked gift card code */
-				__( 'Gift Card (%s)', 'smart-gift-cards-for-woocommerce' ),
+				__( 'Gift Card (%s)', 'beltoft-gift-cards-for-woocommerce' ),
 				self::mask_code( $coupon->get_code() )
 			);
 		}
@@ -137,7 +137,7 @@ class CartHandler {
 	 */
 	public static function coupon_message( $msg, $msg_code, $coupon ) {
 		if ( \WC_Coupon::WC_COUPON_SUCCESS === $msg_code && self::is_gift_card_coupon( $coupon->get_code() ) ) {
-			return __( 'Gift card applied successfully!', 'smart-gift-cards-for-woocommerce' );
+			return __( 'Gift card applied successfully!', 'beltoft-gift-cards-for-woocommerce' );
 		}
 		return $msg;
 	}
@@ -181,7 +181,7 @@ class CartHandler {
 	 * @return string
 	 */
 	private static function invalid_code_message() {
-		return __( 'This gift card code is invalid or cannot be applied.', 'smart-gift-cards-for-woocommerce' );
+		return __( 'This gift card code is invalid or cannot be applied.', 'beltoft-gift-cards-for-woocommerce' );
 	}
 
 	/**
@@ -214,7 +214,7 @@ class CartHandler {
 
 		// Check if already applied in WC cart.
 		if ( WC()->cart && WC()->cart->has_discount( $gc->code ) ) {
-			return new \WP_Error( 'already_applied', __( 'This gift card is already applied.', 'smart-gift-cards-for-woocommerce' ) );
+			return new \WP_Error( 'already_applied', __( 'This gift card is already applied.', 'beltoft-gift-cards-for-woocommerce' ) );
 		}
 
 		return true;
@@ -254,7 +254,7 @@ class CartHandler {
 		if ( ! WC()->session ) {
 			return [];
 		}
-		return WC()->session->get( 'wcgc_applied_codes', [] );
+		return WC()->session->get( 'bgcw_applied_codes', [] );
 	}
 
 	/**
@@ -289,15 +289,15 @@ class CartHandler {
 		}
 
 		$code  = sanitize_text_field( wp_unslash( $_GET['remove_gift_card'] ) );
-		$nonce = isset( $_GET['wcgc_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['wcgc_nonce'] ) ) : '';
+		$nonce = isset( $_GET['bgcw_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['bgcw_nonce'] ) ) : '';
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
-		if ( ! wp_verify_nonce( $nonce, 'wcgc_remove_' . $code ) ) {
+		if ( ! wp_verify_nonce( $nonce, 'bgcw_remove_' . $code ) ) {
 			return;
 		}
 
 		self::remove_gift_card_from_session( $code );
-		wc_add_notice( __( 'Gift card removed.', 'smart-gift-cards-for-woocommerce' ) );
+		wc_add_notice( __( 'Gift card removed.', 'beltoft-gift-cards-for-woocommerce' ) );
 
 		wp_safe_redirect( wc_get_cart_url() );
 		exit;
@@ -306,17 +306,17 @@ class CartHandler {
 	/**
 	 * Handle auto-apply via URL parameter (e.g., from email "Shop Now" link).
 	 *
-	 * Detects ?wcgc_apply=CODE, validates, adds to cart as coupon, and redirects to
+	 * Detects ?bgcw_apply=CODE, validates, adds to cart as coupon, and redirects to
 	 * the shop page with the code stripped from the URL.
 	 */
 	public static function handle_auto_apply() {
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Public link from email; code is validated against DB.
-		if ( ! isset( $_GET['wcgc_apply'] ) ) {
+		if ( ! isset( $_GET['bgcw_apply'] ) ) {
 			return;
 		}
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		$code = sanitize_text_field( wp_unslash( $_GET['wcgc_apply'] ) );
+		$code = sanitize_text_field( wp_unslash( $_GET['bgcw_apply'] ) );
 		if ( empty( $code ) ) {
 			return;
 		}
@@ -331,16 +331,16 @@ class CartHandler {
 		$validation = self::validate_gift_card( $gc );
 		if ( is_wp_error( $validation ) ) {
 			if ( $validation->get_error_code() === 'already_applied' ) {
-				wc_add_notice( __( 'This gift card is already applied to your cart.', 'smart-gift-cards-for-woocommerce' ), 'notice' );
+				wc_add_notice( __( 'This gift card is already applied to your cart.', 'beltoft-gift-cards-for-woocommerce' ), 'notice' );
 			} else {
-				wc_add_notice( __( 'This gift card code is invalid or cannot be applied.', 'smart-gift-cards-for-woocommerce' ), 'error' );
+				wc_add_notice( __( 'This gift card code is invalid or cannot be applied.', 'beltoft-gift-cards-for-woocommerce' ), 'error' );
 			}
 		} else {
 			self::add_gift_card_to_session( $code );
 			wc_add_notice(
 				sprintf(
 					/* translators: %s: formatted gift card balance */
-					__( 'Gift card applied! Balance: %s', 'smart-gift-cards-for-woocommerce' ),
+					__( 'Gift card applied! Balance: %s', 'beltoft-gift-cards-for-woocommerce' ),
 					wp_strip_all_tags( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) )
 				),
 				'success'
@@ -375,7 +375,7 @@ class CartHandler {
 		if ( ! WC()->session ) {
 			return;
 		}
-		WC()->session->set( 'wcgc_applied_codes', [] );
+		WC()->session->set( 'bgcw_applied_codes', [] );
 	}
 
 	/**
@@ -387,9 +387,9 @@ class CartHandler {
 		if ( ! WC()->session ) {
 			return;
 		}
-		$applied   = WC()->session->get( 'wcgc_applied_codes', [] );
+		$applied   = WC()->session->get( 'bgcw_applied_codes', [] );
 		$applied[] = strtoupper( trim( $code ) );
-		WC()->session->set( 'wcgc_applied_codes', array_values( array_unique( $applied ) ) );
+		WC()->session->set( 'bgcw_applied_codes', array_values( array_unique( $applied ) ) );
 	}
 
 	/**
@@ -401,10 +401,10 @@ class CartHandler {
 		if ( ! WC()->session ) {
 			return;
 		}
-		$applied = WC()->session->get( 'wcgc_applied_codes', [] );
+		$applied = WC()->session->get( 'bgcw_applied_codes', [] );
 		$applied = array_filter( $applied, function ( $c ) use ( $code ) {
 			return strtoupper( $c ) !== strtoupper( $code );
 		} );
-		WC()->session->set( 'wcgc_applied_codes', array_values( $applied ) );
+		WC()->session->set( 'bgcw_applied_codes', array_values( $applied ) );
 	}
 }

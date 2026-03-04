@@ -1,8 +1,8 @@
 <?php
 
-namespace GiftCards\Blocks;
+namespace Bgcw\Blocks;
 
-use GiftCards\Support\Options;
+use Bgcw\Support\Options;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -24,7 +24,7 @@ class StoreApiExtension {
 
 		woocommerce_store_api_register_endpoint_data( [
 			'endpoint'        => \Automattic\WooCommerce\StoreApi\Schemas\V1\CartSchema::IDENTIFIER,
-			'namespace'       => 'smart-gift-cards-for-woocommerce',
+			'namespace'       => 'beltoft-gift-cards-for-woocommerce',
 			'data_callback'   => [ __CLASS__, 'extend_cart_data' ],
 			'schema_callback' => [ __CLASS__, 'extend_cart_schema' ],
 			'schema_type'     => ARRAY_A,
@@ -48,7 +48,7 @@ class StoreApiExtension {
 				$product = $item['data'] ?? null;
 				if ( $product && $product->get_type() === 'gift-card' ) {
 					$blocked = true;
-					$message = __( 'Loyalty points cannot be used to purchase gift cards.', 'smart-gift-cards-for-woocommerce' );
+					$message = __( 'Loyalty points cannot be used to purchase gift cards.', 'beltoft-gift-cards-for-woocommerce' );
 					break;
 				}
 			}

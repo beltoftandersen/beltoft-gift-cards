@@ -1,11 +1,11 @@
-# Smart Gift Cards for WooCommerce
+# Beltoft Gift Cards for WooCommerce
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
 - Stable version: 1.2.0
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+
 - Author: Chimkins IT
-- Text domain: smart-gift-cards-for-woocommerce
+- Text domain: beltoft-gift-cards-for-woocommerce
 
 ## Overview
 
@@ -29,7 +29,7 @@ This plugin adds a gift card product type to your WooCommerce store. Customers p
 - Order meta box showing gift cards created by and used on each order
 - Automatic balance restore on cancel/refund, including proportional partial refunds
 - Loyalty Rewards integration — optionally block or allow customers from using loyalty points to purchase gift cards
-- Shortcode `[wcgc_product_form]` for page builders (Bricks, Elementor, etc.)
+- Shortcode `[bgcw_product_form]` for page builders (Bricks, Elementor, etc.)
 - Email settings (subject, heading, on/off) under WooCommerce > Settings > Emails
 - Atomic balance deduction to prevent race conditions on concurrent redemptions
 - Rate limiting on gift card code lookups
@@ -65,7 +65,7 @@ Create a product, select "Gift card" as the product type. Set predefined amounts
 Gift card codes always work in the standard WooCommerce coupon field — this is automatic. To also show a dedicated "Apply Gift Card" field, enable it in settings. You can choose automatic placement or shortcode-only:
 
 ```
-[wcgc_apply_field]
+[bgcw_apply_field]
 ```
 
 ### Email Template
@@ -79,19 +79,19 @@ Override the template by copying `templates/emails/gift-card-delivery.php` to yo
 For Bricks, Elementor, or other page builders that replace WooCommerce templates, use the WooCommerce Add to Cart element or the shortcode:
 
 ```
-[wcgc_product_form]
+[bgcw_product_form]
 ```
 
 ## Hooks & Filters
 
 Developers can extend the plugin:
 
-- `wcgc_gift_card_created` — fires after a gift card is created (used by the email system)
+- `bgcw_gift_card_created` — fires after a gift card is created (used by the email system)
 
 ## Translations
 
-- Text domain: `smart-gift-cards-for-woocommerce`
-- Translation template: `languages/smart-gift-cards-for-woocommerce.pot`
+- Text domain: `beltoft-gift-cards-for-woocommerce`
+- Translation template: `languages/beltoft-gift-cards-for-woocommerce.pot`
 
 ## Changelog
 
@@ -119,7 +119,7 @@ Developers can extend the plugin:
 
 ## About the Author
 
-Smart Gift Cards for WooCommerce is built and maintained by [Chimkins IT](https://chimkins.com), a team specializing in WooCommerce and Odoo ERP integrations. Check out our [Odoo WooCommerce Connector](https://chimkins.com) for real-time sync between your WooCommerce store and Odoo.
+Beltoft Gift Cards for WooCommerce is built and maintained by [Chimkins IT](https://chimkins.com), a team specializing in WooCommerce and Odoo ERP integrations. Check out our [Odoo WooCommerce Connector](https://chimkins.com) for real-time sync between your WooCommerce store and Odoo.
 
 ## License
 

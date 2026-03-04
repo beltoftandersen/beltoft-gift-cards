@@ -1,8 +1,8 @@
 <?php
 
-namespace GiftCards\Admin;
+namespace Bgcw\Admin;
 
-use GiftCards\GiftCard\Repository;
+use Bgcw\GiftCard\Repository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -26,14 +26,14 @@ class GiftCardListTable extends \WP_List_Table {
 	public function get_columns() {
 		return [
 			'cb'         => '<input type="checkbox" />',
-			'code'       => __( 'Code', 'smart-gift-cards-for-woocommerce' ),
-			'amount'     => __( 'Amount', 'smart-gift-cards-for-woocommerce' ),
-			'balance'    => __( 'Balance', 'smart-gift-cards-for-woocommerce' ),
-			'status'     => __( 'Status', 'smart-gift-cards-for-woocommerce' ),
-			'recipient'  => __( 'Recipient', 'smart-gift-cards-for-woocommerce' ),
-			'order'      => __( 'Order', 'smart-gift-cards-for-woocommerce' ),
-			'created_at' => __( 'Created', 'smart-gift-cards-for-woocommerce' ),
-			'expires_at' => __( 'Expires', 'smart-gift-cards-for-woocommerce' ),
+			'code'       => __( 'Code', 'beltoft-gift-cards-for-woocommerce' ),
+			'amount'     => __( 'Amount', 'beltoft-gift-cards-for-woocommerce' ),
+			'balance'    => __( 'Balance', 'beltoft-gift-cards-for-woocommerce' ),
+			'status'     => __( 'Status', 'beltoft-gift-cards-for-woocommerce' ),
+			'recipient'  => __( 'Recipient', 'beltoft-gift-cards-for-woocommerce' ),
+			'order'      => __( 'Order', 'beltoft-gift-cards-for-woocommerce' ),
+			'created_at' => __( 'Created', 'beltoft-gift-cards-for-woocommerce' ),
+			'expires_at' => __( 'Expires', 'beltoft-gift-cards-for-woocommerce' ),
 		];
 	}
 
@@ -98,13 +98,13 @@ class GiftCardListTable extends \WP_List_Table {
 	 */
 	public function column_status( $item ) {
 		$labels = [
-			'active'   => __( 'Active', 'smart-gift-cards-for-woocommerce' ),
-			'disabled' => __( 'Disabled', 'smart-gift-cards-for-woocommerce' ),
-			'expired'  => __( 'Expired', 'smart-gift-cards-for-woocommerce' ),
-			'redeemed' => __( 'Redeemed', 'smart-gift-cards-for-woocommerce' ),
+			'active'   => __( 'Active', 'beltoft-gift-cards-for-woocommerce' ),
+			'disabled' => __( 'Disabled', 'beltoft-gift-cards-for-woocommerce' ),
+			'expired'  => __( 'Expired', 'beltoft-gift-cards-for-woocommerce' ),
+			'redeemed' => __( 'Redeemed', 'beltoft-gift-cards-for-woocommerce' ),
 		];
 		$label = $labels[ $item->status ] ?? $item->status;
-		return '<span class="wcgc-status wcgc-status--' . esc_attr( $item->status ) . '">' . esc_html( $label ) . '</span>';
+		return '<span class="bgcw-status bgcw-status--' . esc_attr( $item->status ) . '">' . esc_html( $label ) . '</span>';
 	}
 
 	/**
@@ -132,7 +132,7 @@ class GiftCardListTable extends \WP_List_Table {
 	 */
 	public function column_order( $item ) {
 		if ( empty( $item->order_id ) ) {
-			return __( 'Manual', 'smart-gift-cards-for-woocommerce' );
+			return __( 'Manual', 'beltoft-gift-cards-for-woocommerce' );
 		}
 		$order = wc_get_order( $item->order_id );
 		if ( ! $order ) {
@@ -159,7 +159,7 @@ class GiftCardListTable extends \WP_List_Table {
 	 */
 	public function column_expires_at( $item ) {
 		if ( empty( $item->expires_at ) ) {
-			return __( 'Never', 'smart-gift-cards-for-woocommerce' );
+			return __( 'Never', 'beltoft-gift-cards-for-woocommerce' );
 		}
 		$expired = strtotime( $item->expires_at ) < time();
 		$date    = wp_date( get_option( 'date_format' ), strtotime( $item->expires_at ) );
@@ -171,8 +171,8 @@ class GiftCardListTable extends \WP_List_Table {
 	 */
 	public function get_bulk_actions() {
 		return [
-			'disable' => __( 'Disable', 'smart-gift-cards-for-woocommerce' ),
-			'delete'  => __( 'Delete', 'smart-gift-cards-for-woocommerce' ),
+			'disable' => __( 'Disable', 'beltoft-gift-cards-for-woocommerce' ),
+			'delete'  => __( 'Delete', 'beltoft-gift-cards-for-woocommerce' ),
 		];
 	}
 
@@ -207,7 +207,7 @@ class GiftCardListTable extends \WP_List_Table {
 					$count++;
 				}
 			} elseif ( 'delete' === $action ) {
-				\GiftCards\GiftCard\TransactionRepository::delete_by_gift_card( $id );
+				\Bgcw\GiftCard\TransactionRepository::delete_by_gift_card( $id );
 				if ( Repository::delete( $id ) ) {
 					$count++;
 				}
@@ -218,15 +218,15 @@ class GiftCardListTable extends \WP_List_Table {
 			$message = 'disable' === $action
 				? sprintf(
 					/* translators: %d: number of gift cards disabled */
-					_n( '%d gift card disabled.', '%d gift cards disabled.', $count, 'smart-gift-cards-for-woocommerce' ),
+					_n( '%d gift card disabled.', '%d gift cards disabled.', $count, 'beltoft-gift-cards-for-woocommerce' ),
 					$count
 				)
 				: sprintf(
 					/* translators: %d: number of gift cards deleted */
-					_n( '%d gift card deleted.', '%d gift cards deleted.', $count, 'smart-gift-cards-for-woocommerce' ),
+					_n( '%d gift card deleted.', '%d gift cards deleted.', $count, 'beltoft-gift-cards-for-woocommerce' ),
 					$count
 				);
-			add_settings_error( 'wcgc_messages', 'wcgc_bulk', $message, 'success' );
+			add_settings_error( 'bgcw_messages', 'bgcw_bulk', $message, 'success' );
 		}
 	}
 
@@ -239,11 +239,11 @@ class GiftCardListTable extends \WP_List_Table {
 
 		$base_url = admin_url( 'admin.php?page=' . SettingsPage::SLUG . '&tab=gift-cards' );
 		$statuses = [
-			''         => __( 'All', 'smart-gift-cards-for-woocommerce' ),
-			'active'   => __( 'Active', 'smart-gift-cards-for-woocommerce' ),
-			'redeemed' => __( 'Redeemed', 'smart-gift-cards-for-woocommerce' ),
-			'disabled' => __( 'Disabled', 'smart-gift-cards-for-woocommerce' ),
-			'expired'  => __( 'Expired', 'smart-gift-cards-for-woocommerce' ),
+			''         => __( 'All', 'beltoft-gift-cards-for-woocommerce' ),
+			'active'   => __( 'Active', 'beltoft-gift-cards-for-woocommerce' ),
+			'redeemed' => __( 'Redeemed', 'beltoft-gift-cards-for-woocommerce' ),
+			'disabled' => __( 'Disabled', 'beltoft-gift-cards-for-woocommerce' ),
+			'expired'  => __( 'Expired', 'beltoft-gift-cards-for-woocommerce' ),
 		];
 
 		// Single GROUP BY query instead of 5 separate COUNT queries.
@@ -314,6 +314,6 @@ class GiftCardListTable extends \WP_List_Table {
 	 * No items message.
 	 */
 	public function no_items() {
-		esc_html_e( 'No gift cards found.', 'smart-gift-cards-for-woocommerce' );
+		esc_html_e( 'No gift cards found.', 'beltoft-gift-cards-for-woocommerce' );
 	}
 }

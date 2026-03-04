@@ -2,8 +2,8 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Smart Gift Cards for WooCommerce 1.2.0\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/smart-gift-cards-for-woocommerce\n"
+"Project-Id-Version: Beltoft Gift Cards for WooCommerce 1.2.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/beltoft-gift-cards-for-woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -12,39 +12,39 @@ msgstr ""
 "POT-Creation-Date: 2026-02-20T17:24:01+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
-"X-Domain: smart-gift-cards-for-woocommerce\n"
+"X-Domain: beltoft-gift-cards-for-woocommerce\n"
 
 #. Plugin Name of the plugin
-#: smart-gift-cards-for-woocommerce.php
-msgid "Smart Gift Cards for WooCommerce"
+#: beltoft-gift-cards-for-woocommerce.php
+msgid "Beltoft Gift Cards for WooCommerce"
 msgstr ""
 
 #. Plugin URI of the plugin
-#: smart-gift-cards-for-woocommerce.php
-msgid "https://developer.wordpress.org/plugins/smart-gift-cards-for-woocommerce/"
+#: beltoft-gift-cards-for-woocommerce.php
+msgid "https://developer.wordpress.org/plugins/beltoft-gift-cards-for-woocommerce/"
 msgstr ""
 
 #. Description of the plugin
-#: smart-gift-cards-for-woocommerce.php
+#: beltoft-gift-cards-for-woocommerce.php
 msgid "Sell digital gift cards, deliver them by email, and let customers redeem them at checkout."
 msgstr ""
 
 #. Author of the plugin
-#: smart-gift-cards-for-woocommerce.php
+#: beltoft-gift-cards-for-woocommerce.php
 msgid "Chimkins IT"
 msgstr ""
 
 #. Author URI of the plugin
-#: smart-gift-cards-for-woocommerce.php
+#: beltoft-gift-cards-for-woocommerce.php
 msgid "https://chimkins.com/"
 msgstr ""
 
 #. translators: %s: WooCommerce plugin name
-#: smart-gift-cards-for-woocommerce.php:55
-msgid "Smart Gift Cards for WooCommerce requires WooCommerce to be installed and active."
+#: beltoft-gift-cards-for-woocommerce.php:55
+msgid "Beltoft Gift Cards for WooCommerce requires WooCommerce to be installed and active."
 msgstr ""
 
-#: smart-gift-cards-for-woocommerce.php:85
+#: beltoft-gift-cards-for-woocommerce.php:85
 #: src/Admin/SettingsPage.php:143
 msgid "Settings"
 msgstr ""
@@ -274,7 +274,7 @@ msgid "Automatic (WooCommerce hook)"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:86
-msgid "Shortcode only — [wcgc_product_form]"
+msgid "Shortcode only — [bgcw_product_form]"
 msgstr ""
 
 #: src/Admin/SettingsPage.php:88

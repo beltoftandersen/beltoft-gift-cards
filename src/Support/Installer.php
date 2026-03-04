@@ -1,12 +1,12 @@
 <?php
 
-namespace GiftCards\Support;
+namespace Bgcw\Support;
 
 defined( 'ABSPATH' ) || exit;
 
 class Installer {
 
-	const DB_VERSION_KEY = 'wcgc_db_version';
+	const DB_VERSION_KEY = 'bgcw_db_version';
 
 	/**
 	 * Activation hook.
@@ -18,7 +18,7 @@ class Installer {
 			add_option( Options::OPTION, Options::defaults(), '', false );
 		}
 
-		update_option( self::DB_VERSION_KEY, WCGC_DB_VERSION );
+		update_option( self::DB_VERSION_KEY, BGCW_DB_VERSION );
 
 		// Flush rewrite rules for My Account endpoint.
 		add_rewrite_endpoint( 'gift-cards', EP_ROOT | EP_PAGES );
@@ -33,8 +33,8 @@ class Installer {
 
 		$charset = $wpdb->get_charset_collate();
 
-		$gift_cards_table   = $wpdb->prefix . 'wcgc_gift_cards';
-		$transactions_table = $wpdb->prefix . 'wcgc_transactions';
+		$gift_cards_table   = $wpdb->prefix . 'bgcw_gift_cards';
+		$transactions_table = $wpdb->prefix . 'bgcw_transactions';
 
 		$sql = "CREATE TABLE {$gift_cards_table} (
 			id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -84,9 +84,9 @@ class Installer {
 	public static function maybe_upgrade() {
 		$installed = get_option( self::DB_VERSION_KEY, '0' );
 
-		if ( version_compare( $installed, WCGC_DB_VERSION, '<' ) ) {
+		if ( version_compare( $installed, BGCW_DB_VERSION, '<' ) ) {
 			self::create_tables();
-			update_option( self::DB_VERSION_KEY, WCGC_DB_VERSION );
+			update_option( self::DB_VERSION_KEY, BGCW_DB_VERSION );
 		}
 	}
 }

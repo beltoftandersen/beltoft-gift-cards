@@ -4,7 +4,7 @@
  *
  * This template can be overridden by copying it to yourtheme/woocommerce/emails/gift-card-delivery.php
  *
- * @package GiftCards
+ * @package Bgcw
  * @var object   $gift_card     Gift card data.
  * @var WC_Order $order         Order object (may be null).
  * @var string   $email_heading Email heading.
@@ -23,7 +23,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
 	<?php
 	printf(
 		/* translators: %s: sender name */
-		esc_html__( 'From: %s', 'smart-gift-cards-for-woocommerce' ),
+		esc_html__( 'From: %s', 'beltoft-gift-cards-for-woocommerce' ),
 		esc_html( $gift_card->sender_name )
 	);
 	?>
@@ -42,7 +42,7 @@ do_action( 'woocommerce_email_header', $email_heading, $email );
  * @param object         $gift_card Gift card data.
  * @param WC_Order|null  $order     Order object.
  */
-do_action( 'wcgc_email_before_card_design', $gift_card, $order );
+do_action( 'bgcw_email_before_card_design', $gift_card, $order );
 ?>
 
 <div style="text-align: center; margin: 30px 0;">
@@ -59,7 +59,7 @@ do_action( 'wcgc_email_before_card_design', $gift_card, $order );
 			<?php
 			printf(
 				/* translators: %s: expiry date */
-				esc_html__( 'Expires: %s', 'smart-gift-cards-for-woocommerce' ),
+				esc_html__( 'Expires: %s', 'beltoft-gift-cards-for-woocommerce' ),
 				esc_html( date_i18n( get_option( 'date_format' ), strtotime( $gift_card->expires_at ) ) )
 			);
 			?>
@@ -74,7 +74,7 @@ do_action( 'wcgc_email_before_card_design', $gift_card, $order );
  * @param object         $gift_card Gift card data.
  * @param WC_Order|null  $order     Order object.
  */
-do_action( 'wcgc_email_after_card_design', $gift_card, $order );
+do_action( 'bgcw_email_after_card_design', $gift_card, $order );
 ?>
 
 <?php
@@ -82,14 +82,14 @@ do_action( 'wcgc_email_after_card_design', $gift_card, $order );
 $base_color = get_option( 'woocommerce_email_base_color', '#7f54b3' );
 ?>
 <p style="text-align: center; margin: 25px 0;">
-	<a href="<?php echo esc_url( add_query_arg( 'wcgc_apply', rawurlencode( $gift_card->code ), wc_get_page_permalink( 'shop' ) ) ); ?>"
+	<a href="<?php echo esc_url( add_query_arg( 'bgcw_apply', rawurlencode( $gift_card->code ), wc_get_page_permalink( 'shop' ) ) ); ?>"
 	   style="display: inline-block; background: <?php echo esc_attr( $base_color ); ?>; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">
-		<?php esc_html_e( 'Shop Now', 'smart-gift-cards-for-woocommerce' ); ?>
+		<?php esc_html_e( 'Shop Now', 'beltoft-gift-cards-for-woocommerce' ); ?>
 	</a>
 </p>
 
 <p style="font-size: 13px; color: #888; text-align: center;">
-	<?php esc_html_e( 'Click "Shop Now" to apply your gift card automatically, or enter the code at checkout in the coupon/gift card field.', 'smart-gift-cards-for-woocommerce' ); ?>
+	<?php esc_html_e( 'Click "Shop Now" to apply your gift card automatically, or enter the code at checkout in the coupon/gift card field.', 'beltoft-gift-cards-for-woocommerce' ); ?>
 </p>
 
 <?php

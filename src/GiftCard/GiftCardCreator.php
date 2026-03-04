@@ -1,8 +1,8 @@
 <?php
 
-namespace GiftCards\GiftCard;
+namespace Bgcw\GiftCard;
 
-use GiftCards\Support\Options;
+use Bgcw\Support\Options;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -28,7 +28,7 @@ class GiftCardCreator {
 		}
 
 		// Idempotency check.
-		if ( $order->get_meta( '_wcgc_cards_created' ) ) {
+		if ( $order->get_meta( '_bgcw_cards_created' ) ) {
 			return;
 		}
 
@@ -41,7 +41,7 @@ class GiftCardCreator {
 				continue;
 			}
 
-			$amount = (float) $item->get_meta( '_wcgc_amount' );
+			$amount = (float) $item->get_meta( '_bgcw_amount' );
 			if ( $amount <= 0 ) {
 				continue;
 			}
@@ -52,7 +52,7 @@ class GiftCardCreator {
 			}
 
 			$has_gift_card_items = true;
-			$created_qty         = absint( $item->get_meta( '_wcgc_created_qty', true ) );
+			$created_qty         = absint( $item->get_meta( '_bgcw_created_qty', true ) );
 
 			if ( $created_qty < $qty ) {
 				for ( $i = $created_qty; $i < $qty; $i++ ) {
@@ -64,7 +64,7 @@ class GiftCardCreator {
 					}
 				}
 
-				$item->update_meta_data( '_wcgc_created_qty', $created_qty );
+				$item->update_meta_data( '_bgcw_created_qty', $created_qty );
 				$item->save();
 			}
 
@@ -74,7 +74,7 @@ class GiftCardCreator {
 		}
 
 		if ( $has_gift_card_items && $all_items_created ) {
-			$order->update_meta_data( '_wcgc_cards_created', '1' );
+			$order->update_meta_data( '_bgcw_cards_created', '1' );
 			$order->save();
 		}
 	}
@@ -106,11 +106,11 @@ class GiftCardCreator {
 			'initial_amount'  => $amount,
 			'balance'         => $amount,
 			'currency'        => $order->get_currency(),
-			'sender_name'     => $item->get_meta( '_wcgc_sender_name' ) ?: $order->get_billing_first_name(),
-			'sender_email'    => $item->get_meta( '_wcgc_sender_email' ) ?: $order->get_billing_email(),
-			'recipient_name'  => $item->get_meta( '_wcgc_recipient_name' ) ?: '',
-			'recipient_email' => $item->get_meta( '_wcgc_recipient_email' ) ?: $order->get_billing_email(),
-			'message'         => $item->get_meta( '_wcgc_message' ) ?: '',
+			'sender_name'     => $item->get_meta( '_bgcw_sender_name' ) ?: $order->get_billing_first_name(),
+			'sender_email'    => $item->get_meta( '_bgcw_sender_email' ) ?: $order->get_billing_email(),
+			'recipient_name'  => $item->get_meta( '_bgcw_recipient_name' ) ?: '',
+			'recipient_email' => $item->get_meta( '_bgcw_recipient_email' ) ?: $order->get_billing_email(),
+			'message'         => $item->get_meta( '_bgcw_message' ) ?: '',
 			'order_id'        => $order->get_id(),
 			'customer_id'     => $order->get_customer_id(),
 			'status'          => 'active',
@@ -124,7 +124,7 @@ class GiftCardCreator {
 		 * @param \WC_Order       $order   Order object.
 		 * @param \WC_Order_Item  $item    Line item.
 		 */
-		$gc_data = apply_filters( 'wcgc_gift_card_creation_args', $gc_data, $order, $item );
+		$gc_data = apply_filters( 'bgcw_gift_card_creation_args', $gc_data, $order, $item );
 
 		$gc_id = Repository::insert( $gc_data );
 
@@ -141,7 +141,7 @@ class GiftCardCreator {
 			'balance_after' => $amount,
 			'note'          => sprintf(
 				/* translators: %s: order number */
-				__( 'Gift card created from order #%s', 'smart-gift-cards-for-woocommerce' ),
+				__( 'Gift card created from order #%s', 'beltoft-gift-cards-for-woocommerce' ),
 				$order->get_order_number()
 			),
 		] );
@@ -152,7 +152,7 @@ class GiftCardCreator {
 		 * @param int       $gc_id Gift card ID.
 		 * @param \WC_Order $order Order object.
 		 */
-		do_action( 'wcgc_gift_card_created', $gc_id, $order );
+		do_action( 'bgcw_gift_card_created', $gc_id, $order );
 
 		return true;
 	}
@@ -196,11 +196,11 @@ class GiftCardCreator {
 			'type'          => 'credit',
 			'amount'        => $amount,
 			'balance_after' => $amount,
-			'note'          => __( 'Manually created by admin', 'smart-gift-cards-for-woocommerce' ),
+			'note'          => __( 'Manually created by admin', 'beltoft-gift-cards-for-woocommerce' ),
 		] );
 
 		if ( ! empty( $data['recipient_email'] ) ) {
-			do_action( 'wcgc_gift_card_created', $gc_id, null );
+			do_action( 'bgcw_gift_card_created', $gc_id, null );
 		}
 
 		return $gc_id;

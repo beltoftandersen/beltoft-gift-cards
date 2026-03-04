@@ -1,12 +1,12 @@
 <?php
 
-namespace GiftCards\Support;
+namespace Bgcw\Support;
 
 defined( 'ABSPATH' ) || exit;
 
 class Options {
 
-	const OPTION = 'wcgc_options';
+	const OPTION = 'bgcw_options';
 
 	/** @var array|null Static cache for the current request. */
 	private static $cache = null;

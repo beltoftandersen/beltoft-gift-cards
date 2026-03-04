@@ -1,6 +1,6 @@
 <?php
 
-namespace GiftCards\Product;
+namespace Bgcw\Product;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -52,7 +52,7 @@ class GiftCardProductType {
 	 * @return array
 	 */
 	public static function add_to_selector( $types ) {
-		$types['gift-card'] = __( 'Gift card', 'smart-gift-cards-for-woocommerce' );
+		$types['gift-card'] = __( 'Gift card', 'beltoft-gift-cards-for-woocommerce' );
 		return $types;
 	}
 
@@ -79,7 +79,7 @@ class GiftCardProductType {
 	 */
 	public static function data_tabs( $tabs ) {
 		$tabs['gift_card'] = [
-			'label'    => __( 'Gift Card', 'smart-gift-cards-for-woocommerce' ),
+			'label'    => __( 'Gift Card', 'beltoft-gift-cards-for-woocommerce' ),
 			'target'   => 'gift_card_product_data',
 			'class'    => [ 'show_if_gift-card' ],
 			'priority' => 11,
@@ -107,23 +107,23 @@ class GiftCardProductType {
 		global $post;
 
 		$product_id = $post ? $post->ID : 0;
-		$amounts    = get_post_meta( $product_id, '_wcgc_amounts', true );
+		$amounts    = get_post_meta( $product_id, '_bgcw_amounts', true );
 		?>
 		<div id="gift_card_product_data" class="panel woocommerce_options_panel">
 			<div class="options_group">
 				<?php
 				woocommerce_wp_text_input( [
-					'id'          => '_wcgc_amounts',
+					'id'          => '_bgcw_amounts',
 					'value'       => $amounts,
-					'label'       => __( 'Predefined Amounts', 'smart-gift-cards-for-woocommerce' ),
-					'description' => __( 'Comma-separated amounts (e.g., 25,50,75,100).', 'smart-gift-cards-for-woocommerce' ),
+					'label'       => __( 'Predefined Amounts', 'beltoft-gift-cards-for-woocommerce' ),
+					'description' => __( 'Comma-separated amounts (e.g., 25,50,75,100).', 'beltoft-gift-cards-for-woocommerce' ),
 					'desc_tip'    => true,
 				] );
 				?>
 			</div>
 			<div class="options_group">
 				<p class="form-field">
-					<em><?php esc_html_e( 'Gift cards are always virtual and non-taxable. Custom amount and expiry settings are controlled from the Gift Cards settings page.', 'smart-gift-cards-for-woocommerce' ); ?></em>
+					<em><?php esc_html_e( 'Gift cards are always virtual and non-taxable. Custom amount and expiry settings are controlled from the Gift Cards settings page.', 'beltoft-gift-cards-for-woocommerce' ); ?></em>
 				</p>
 			</div>
 		</div>
@@ -137,8 +137,8 @@ class GiftCardProductType {
 	 */
 	public static function save_meta( $product_id ) {
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- WooCommerce handles nonce.
-		$amounts = isset( $_POST['_wcgc_amounts'] ) ? sanitize_text_field( wp_unslash( $_POST['_wcgc_amounts'] ) ) : '';
-		update_post_meta( $product_id, '_wcgc_amounts', $amounts );
+		$amounts = isset( $_POST['_bgcw_amounts'] ) ? sanitize_text_field( wp_unslash( $_POST['_bgcw_amounts'] ) ) : '';
+		update_post_meta( $product_id, '_bgcw_amounts', $amounts );
 	}
 
 	/**

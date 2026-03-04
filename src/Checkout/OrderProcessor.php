@@ -1,10 +1,10 @@
 <?php
 
-namespace GiftCards\Checkout;
+namespace Bgcw\Checkout;
 
-use GiftCards\Cart\CartHandler;
-use GiftCards\GiftCard\Repository;
-use GiftCards\GiftCard\TransactionRepository;
+use Bgcw\Cart\CartHandler;
+use Bgcw\GiftCard\Repository;
+use Bgcw\GiftCard\TransactionRepository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -57,7 +57,7 @@ class OrderProcessor {
 			return;
 		}
 
-		$order->update_meta_data( '_wcgc_pending_deductions', $deductions );
+		$order->update_meta_data( '_bgcw_pending_deductions', $deductions );
 		$order->save();
 	}
 
@@ -73,16 +73,16 @@ class OrderProcessor {
 		}
 
 		// Idempotency check.
-		if ( $order->get_meta( '_wcgc_deducted' ) ) {
+		if ( $order->get_meta( '_bgcw_deducted' ) ) {
 			return;
 		}
 
-		$deductions = $order->get_meta( '_wcgc_pending_deductions' );
+		$deductions = $order->get_meta( '_bgcw_pending_deductions' );
 		if ( empty( $deductions ) || ! is_array( $deductions ) ) {
 			return;
 		}
 
-		$processed = $order->get_meta( '_wcgc_deducted_amounts' );
+		$processed = $order->get_meta( '_bgcw_deducted_amounts' );
 		$processed = is_array( $processed ) ? $processed : [];
 		$failures  = [];
 
@@ -132,7 +132,7 @@ class OrderProcessor {
 				'balance_after' => $new_balance,
 				'note'          => sprintf(
 					/* translators: %s: order number */
-					__( 'Used on order #%s', 'smart-gift-cards-for-woocommerce' ),
+					__( 'Used on order #%s', 'beltoft-gift-cards-for-woocommerce' ),
 					$order->get_order_number()
 				),
 			] );
@@ -149,12 +149,12 @@ class OrderProcessor {
 			 * @param float $amount   Amount deducted.
 			 * @param int   $order_id Order ID.
 			 */
-			do_action( 'wcgc_after_deduct_balance', $gc->id, $amount, $order_id );
+			do_action( 'bgcw_after_deduct_balance', $gc->id, $amount, $order_id );
 
 			$processed[ $code ] = $amount;
 		}
 
-		$order->update_meta_data( '_wcgc_deducted_amounts', $processed );
+		$order->update_meta_data( '_bgcw_deducted_amounts', $processed );
 
 		$complete = true;
 		foreach ( $deductions as $code => $amount ) {
@@ -169,21 +169,21 @@ class OrderProcessor {
 		}
 
 		if ( $complete ) {
-			$order->update_meta_data( '_wcgc_deducted', '1' );
-			$order->delete_meta_data( '_wcgc_deduction_failures' );
+			$order->update_meta_data( '_bgcw_deducted', '1' );
+			$order->delete_meta_data( '_bgcw_deduction_failures' );
 		} else {
-			$order->delete_meta_data( '_wcgc_deducted' );
+			$order->delete_meta_data( '_bgcw_deducted' );
 			if ( ! empty( $failures ) ) {
-				$order->update_meta_data( '_wcgc_deduction_failures', array_values( array_unique( $failures ) ) );
+				$order->update_meta_data( '_bgcw_deduction_failures', array_values( array_unique( $failures ) ) );
 				$order->add_order_note(
 					sprintf(
 						/* translators: %s: comma-separated list of gift card codes */
-						__( 'Gift card deduction failed for: %s. Manual review required.', 'smart-gift-cards-for-woocommerce' ),
+						__( 'Gift card deduction failed for: %s. Manual review required.', 'beltoft-gift-cards-for-woocommerce' ),
 						implode( ', ', array_unique( $failures ) )
 					)
 				);
 			} else {
-				$order->delete_meta_data( '_wcgc_deduction_failures' );
+				$order->delete_meta_data( '_bgcw_deduction_failures' );
 			}
 		}
 
@@ -202,7 +202,7 @@ class OrderProcessor {
 		}
 
 		// Idempotency check.
-		if ( $order->get_meta( '_wcgc_restored' ) ) {
+		if ( $order->get_meta( '_bgcw_restored' ) ) {
 			return;
 		}
 
@@ -230,7 +230,7 @@ class OrderProcessor {
 			 * @param int    $gc_id     Gift card ID.
 			 * @param float  $amount    Amount to restore.
 			 */
-			if ( apply_filters( 'wcgc_refund_as_store_credit', false, $order_id, $gc->id, $amount ) ) {
+			if ( apply_filters( 'bgcw_refund_as_store_credit', false, $order_id, $gc->id, $amount ) ) {
 				continue; // Pro plugin handles this via the filter.
 			}
 
@@ -258,7 +258,7 @@ class OrderProcessor {
 				'balance_after' => $new_balance,
 				'note'          => sprintf(
 					/* translators: %s: order number */
-					__( 'Refunded from order #%s', 'smart-gift-cards-for-woocommerce' ),
+					__( 'Refunded from order #%s', 'beltoft-gift-cards-for-woocommerce' ),
 					$order->get_order_number()
 				),
 			] );
@@ -270,10 +270,10 @@ class OrderProcessor {
 			 * @param float $restored Amount restored.
 			 * @param int   $order_id Order ID.
 			 */
-			do_action( 'wcgc_after_restore_balance', $gc->id, $restored, $order_id );
+			do_action( 'bgcw_after_restore_balance', $gc->id, $restored, $order_id );
 		}
 
-		$order->update_meta_data( '_wcgc_restored', '1' );
+		$order->update_meta_data( '_bgcw_restored', '1' );
 		$order->save();
 	}
 
@@ -291,7 +291,7 @@ class OrderProcessor {
 		}
 
 		// Skip if already fully restored (from cancellation).
-		if ( $order->get_meta( '_wcgc_restored' ) ) {
+		if ( $order->get_meta( '_bgcw_restored' ) ) {
 			return;
 		}
 
@@ -316,7 +316,7 @@ class OrderProcessor {
 		$gc_restore = min( $total_deducted, $refund_amount * ( $total_deducted / $order_total_before_gc ) );
 
 		// Account for any previously partially restored amounts.
-		$already_restored     = (float) $order->get_meta( '_wcgc_partial_restored' );
+		$already_restored     = (float) $order->get_meta( '_bgcw_partial_restored' );
 		$remaining_to_restore = $total_deducted - $already_restored;
 		$gc_restore           = min( $gc_restore, $remaining_to_restore );
 		$gc_restore           = round( $gc_restore, 2 );
@@ -362,7 +362,7 @@ class OrderProcessor {
 				'balance_after' => $new_balance,
 				'note'          => sprintf(
 					/* translators: %s: order number */
-					__( 'Partial refund from order #%s', 'smart-gift-cards-for-woocommerce' ),
+					__( 'Partial refund from order #%s', 'beltoft-gift-cards-for-woocommerce' ),
 					$order->get_order_number()
 				),
 			] );
@@ -371,7 +371,7 @@ class OrderProcessor {
 		}
 
 		if ( $actual_restored > 0 ) {
-			$order->update_meta_data( '_wcgc_partial_restored', round( $already_restored + $actual_restored, 2 ) );
+			$order->update_meta_data( '_bgcw_partial_restored', round( $already_restored + $actual_restored, 2 ) );
 			$order->save();
 		}
 	}
@@ -383,7 +383,7 @@ class OrderProcessor {
 	 */
 	public static function clear_session( $order ) {
 		if ( WC()->session ) {
-			WC()->session->set( 'wcgc_applied_codes', [] );
+			WC()->session->set( 'bgcw_applied_codes', [] );
 		}
 	}
 
@@ -396,9 +396,9 @@ class OrderProcessor {
 	 * @return array<string,float>
 	 */
 	private static function get_effective_deductions( $order ) {
-		$deductions = $order->get_meta( '_wcgc_deducted_amounts' );
+		$deductions = $order->get_meta( '_bgcw_deducted_amounts' );
 		if ( empty( $deductions ) || ! is_array( $deductions ) ) {
-			$deductions = $order->get_meta( '_wcgc_pending_deductions' );
+			$deductions = $order->get_meta( '_bgcw_pending_deductions' );
 		}
 
 		$out = [];

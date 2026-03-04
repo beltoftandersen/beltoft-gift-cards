@@ -1,17 +1,17 @@
 <?php
 /**
- * Smart Gift Cards for WooCommerce - Uninstall
+ * Beltoft Gift Cards for WooCommerce - Uninstall
  *
  * Runs when the plugin is deleted from WordPress admin.
  *
- * @package GiftCards
+ * @package Bgcw
  */
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
 
 // Check if user opted in to cleanup.
-$wcgc_options = get_option( 'wcgc_options', [] );
-if ( ( $wcgc_options['cleanup_on_uninstall'] ?? '' ) !== '1' ) {
+$bgcw_options = get_option( 'bgcw_options', [] );
+if ( ( $bgcw_options['cleanup_on_uninstall'] ?? '' ) !== '1' ) {
 	return;
 }
 
@@ -19,13 +19,13 @@ global $wpdb;
 
 // Drop custom tables.
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uninstall cleanup; hardcoded table names.
-$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}wcgc_transactions" );
+$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}bgcw_transactions" );
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Uninstall cleanup; hardcoded table names.
-$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}wcgc_gift_cards" );
+$wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}bgcw_gift_cards" );
 
 // Delete plugin options.
-delete_option( 'wcgc_options' );
-delete_option( 'wcgc_db_version' );
+delete_option( 'bgcw_options' );
+delete_option( 'bgcw_db_version' );
 
 // Delete all order meta (HPOS-compatible).
 if ( class_exists( 'Automattic\WooCommerce\Utilities\OrderUtil' )
@@ -35,7 +35,7 @@ if ( class_exists( 'Automattic\WooCommerce\Utilities\OrderUtil' )
 	$wpdb->query(
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->prefix}wc_orders_meta WHERE meta_key LIKE %s",
-			$wpdb->esc_like( '_wcgc_' ) . '%'
+			$wpdb->esc_like( '_bgcw_' ) . '%'
 		)
 	);
 } else {
@@ -43,7 +43,7 @@ if ( class_exists( 'Automattic\WooCommerce\Utilities\OrderUtil' )
 	$wpdb->query(
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->postmeta} WHERE meta_key LIKE %s",
-			$wpdb->esc_like( '_wcgc_' ) . '%'
+			$wpdb->esc_like( '_bgcw_' ) . '%'
 		)
 	);
 }

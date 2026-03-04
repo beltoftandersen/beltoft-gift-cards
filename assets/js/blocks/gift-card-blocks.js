@@ -1,5 +1,5 @@
 /**
- * Smart Gift Cards for WooCommerce — Block Cart/Checkout Components.
+ * Beltoft Gift Cards for WooCommerce — Block Cart/Checkout Components.
  *
  * Vanilla JS (no build step) using wp.element.createElement.
  *
@@ -19,7 +19,7 @@
 	var ExperimentalOrderMeta = wc.blocksCheckout.ExperimentalOrderMeta;
 	var TotalsWrapper         = wc.blocksCheckout.TotalsWrapper;
 
-	var NS = 'smart-gift-cards-for-woocommerce';
+	var NS = 'beltoft-gift-cards-for-woocommerce';
 
 	/* ── Points blocked notice ───────────────────────────────── */
 
@@ -42,7 +42,7 @@
 				'.wclr-blocks-panel { display: none !important; }'
 			),
 			el( 'div', {
-				className: 'wcgc-blocks-points-notice',
+				className: 'bgcw-blocks-points-notice',
 				style: {
 					padding: '12px 16px',
 					margin: '0 0 12px',
@@ -56,7 +56,7 @@
 		);
 	}
 
-	registerPlugin( 'wcgc-points-blocked', {
+	registerPlugin( 'bgcw-points-blocked', {
 		render: function () {
 			return el( ExperimentalOrderMeta, {}, el( PointsBlockedNotice ) );
 		},

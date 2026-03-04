@@ -1,5 +1,5 @@
 /**
- * Smart Gift Cards for WooCommerce - Frontend JS
+ * Beltoft Gift Cards for WooCommerce - Frontend JS
  */
 (function($) {
 	'use strict';
@@ -8,111 +8,111 @@
 
 		/* ── Product Page: Amount Buttons ─────────────────────── */
 
-		var $amounts = $('.wcgc-amounts');
+		var $amounts = $('.bgcw-amounts');
 		if ($amounts.length) {
 			// Select first predefined button on load.
-			$amounts.find('.wcgc-amount-btn:not(.wcgc-custom-btn)').first().addClass('active');
+			$amounts.find('.bgcw-amount-btn:not(.bgcw-custom-btn)').first().addClass('active');
 
-			$amounts.on('click', '.wcgc-amount-btn', function(e) {
+			$amounts.on('click', '.bgcw-amount-btn', function(e) {
 				e.preventDefault();
 				var $btn = $(this);
 
-				$amounts.find('.wcgc-amount-btn').removeClass('active');
+				$amounts.find('.bgcw-amount-btn').removeClass('active');
 				$btn.addClass('active');
 
-				if ($btn.hasClass('wcgc-custom-btn')) {
-					$('.wcgc-custom-amount').slideDown(150);
-					$('#wcgc_amount').val('');
+				if ($btn.hasClass('bgcw-custom-btn')) {
+					$('.bgcw-custom-amount').slideDown(150);
+					$('#bgcw_amount').val('');
 				} else {
-					$('.wcgc-custom-amount').slideUp(150);
-					$('#wcgc_amount').val($btn.data('amount'));
-					$('#wcgc_custom_amount').val('');
+					$('.bgcw-custom-amount').slideUp(150);
+					$('#bgcw_amount').val($btn.data('amount'));
+					$('#bgcw_custom_amount').val('');
 				}
 			});
 
 			// Sync custom amount input to hidden field as whole numbers only.
-			$('#wcgc_custom_amount').on('input change', function() {
+			$('#bgcw_custom_amount').on('input change', function() {
 				var raw = $.trim($(this).val());
 				if (raw === '') {
-					$('#wcgc_amount').val('');
+					$('#bgcw_amount').val('');
 					return;
 				}
 
 				var amount = Math.round(parseFloat(raw));
 				if (isNaN(amount) || amount <= 0) {
-					$('#wcgc_amount').val('');
+					$('#bgcw_amount').val('');
 					return;
 				}
 
 				$(this).val(amount);
-				$('#wcgc_amount').val(amount);
+				$('#bgcw_amount').val(amount);
 			});
 		}
 
 		/* ── Product Page: Amount Dropdown ────────────────────── */
 
-		var $dropdown = $('#wcgc_amount_dropdown');
+		var $dropdown = $('#bgcw_amount_dropdown');
 		if ($dropdown.length) {
 			// Set initial value from first option.
-			$('#wcgc_amount').val($dropdown.val());
+			$('#bgcw_amount').val($dropdown.val());
 
 			$dropdown.on('change', function() {
 				var val = $(this).val();
 
 				if (val === 'custom') {
-					$('.wcgc-custom-amount').slideDown(150);
-					$('#wcgc_amount').val('');
+					$('.bgcw-custom-amount').slideDown(150);
+					$('#bgcw_amount').val('');
 				} else {
-					$('.wcgc-custom-amount').slideUp(150);
-					$('#wcgc_amount').val(val);
-					$('#wcgc_custom_amount').val('');
+					$('.bgcw-custom-amount').slideUp(150);
+					$('#bgcw_amount').val(val);
+					$('#bgcw_custom_amount').val('');
 				}
 			});
 
 			// Sync custom amount input to hidden field as whole numbers only.
-			$('#wcgc_custom_amount').on('input change', function() {
+			$('#bgcw_custom_amount').on('input change', function() {
 				var raw = $.trim($(this).val());
 				if (raw === '') {
-					$('#wcgc_amount').val('');
+					$('#bgcw_amount').val('');
 					return;
 				}
 
 				var amount = Math.round(parseFloat(raw));
 				if (isNaN(amount) || amount <= 0) {
-					$('#wcgc_amount').val('');
+					$('#bgcw_amount').val('');
 					return;
 				}
 
 				$(this).val(amount);
-				$('#wcgc_amount').val(amount);
+				$('#bgcw_amount').val(amount);
 			});
 		}
 
 		/* ── Dedicated Field: AJAX Apply / Remove ────────────── */
 
-		var $field = $('.wcgc-apply-field');
-		if ($field.length && typeof wcgc_params !== 'undefined') {
+		var $field = $('.bgcw-apply-field');
+		if ($field.length && typeof bgcw_params !== 'undefined') {
 
 			// Apply gift card.
-			$field.on('click', '.wcgc-apply-btn', function() {
+			$field.on('click', '.bgcw-apply-btn', function() {
 				var $btn    = $(this);
-				var $input  = $field.find('.wcgc-code-input');
-				var $notice = $field.find('.wcgc-field-notice');
+				var $input  = $field.find('.bgcw-code-input');
+				var $notice = $field.find('.bgcw-field-notice');
 				var code    = $.trim($input.val());
 
 				if (!code) {
-					$notice.text(wcgc_params.i18n.enter_code).removeClass('success').addClass('error').show();
+					$notice.text(bgcw_params.i18n.enter_code).removeClass('success').addClass('error').show();
 					return;
 				}
 
-				$btn.prop('disabled', true).text(wcgc_params.i18n.applying);
+				$btn.prop('disabled', true).text(bgcw_params.i18n.applying);
 				$notice.hide();
 
 				$.ajax({
-					url: wcgc_params.ajax_url.replace('%%endpoint%%', 'wcgc_apply_card'),
+					url: bgcw_params.ajax_url.replace('%%endpoint%%', 'bgcw_apply_card'),
 					type: 'POST',
 					data: {
-						nonce: wcgc_params.nonce,
+						nonce: bgcw_params.nonce,
 						code: code
 					},
 					success: function(res) {
@@ -126,35 +126,35 @@
 						}
 					},
 					error: function() {
-						$notice.text(wcgc_params.i18n.request_error).removeClass('success').addClass('error').show();
+						$notice.text(bgcw_params.i18n.request_error).removeClass('success').addClass('error').show();
 					},
 					complete: function() {
-						$btn.prop('disabled', false).text(wcgc_params.i18n.apply);
+						$btn.prop('disabled', false).text(bgcw_params.i18n.apply);
 					}
 				});
 			});
 
 			// Apply on Enter key.
-			$field.on('keypress', '.wcgc-code-input', function(e) {
+			$field.on('keypress', '.bgcw-code-input', function(e) {
 				if (e.which === 13) {
 					e.preventDefault();
-					$field.find('.wcgc-apply-btn').trigger('click');
+					$field.find('.bgcw-apply-btn').trigger('click');
 				}
 			});
 
 			// Remove gift card.
-			$field.on('click', '.wcgc-ajax-remove', function() {
+			$field.on('click', '.bgcw-ajax-remove', function() {
 				var $btn    = $(this);
 				var index   = $btn.data('index');
-				var $notice = $field.find('.wcgc-field-notice');
+				var $notice = $field.find('.bgcw-field-notice');
 
 				$btn.prop('disabled', true);
 
 				$.ajax({
-					url: wcgc_params.ajax_url.replace('%%endpoint%%', 'wcgc_remove_card'),
+					url: bgcw_params.ajax_url.replace('%%endpoint%%', 'bgcw_remove_card'),
 					type: 'POST',
 					data: {
-						nonce: wcgc_params.nonce,
+						nonce: bgcw_params.nonce,
 						index: index
 					},
 					success: function(res) {
@@ -165,7 +165,7 @@
 						}
 					},
 					error: function() {
-						$notice.text(wcgc_params.i18n.request_error).removeClass('success').addClass('error').show();
+						$notice.text(bgcw_params.i18n.request_error).removeClass('success').addClass('error').show();
 					},
 					complete: function() {
 						$btn.prop('disabled', false);
@@ -176,10 +176,10 @@
 
 		/* ── My Account: Toggle Transaction Rows ─────────────── */
 
-		$('.wcgc-toggle-transactions').on('click', function() {
+		$('.bgcw-toggle-transactions').on('click', function() {
 			var $btn   = $(this);
 			var cardId = $btn.closest('tr').data('card-id');
-			var $row   = $('.wcgc-transactions-row[data-card-id="' + cardId + '"]');
+			var $row   = $('.bgcw-transactions-row[data-card-id="' + cardId + '"]');
 
 			$row.toggle();
 			$btn.html($row.is(':visible') ? '&#9650;' : '&#9660;');

@@ -1,4 +1,4 @@
-=== Smart Gift Cards for WooCommerce ===
+=== Beltoft Gift Cards for WooCommerce ===
 Contributors: christian198521, Chimkins IT
 Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
@@ -12,13 +12,13 @@ Sell digital gift cards, deliver them by email, and let customers redeem them at
 
 == Description ==
 
-Smart Gift Cards for WooCommerce adds a gift card product type to your store. Customers purchase a gift card, choose an amount, and enter the recipient's email. When the order is processed, the recipient gets a branded email with their unique gift card code. Codes are redeemed at checkout through the standard WooCommerce coupon field — no extra steps for the customer.
+Beltoft Gift Cards for WooCommerce adds a gift card product type to your store. Customers purchase a gift card, choose an amount, and enter the recipient's email. When the order is processed, the recipient gets a branded email with their unique gift card code. Codes are redeemed at checkout through the standard WooCommerce coupon field — no extra steps for the customer.
 
 === Key Features ===
 1. Gift card product type — predefined amounts (e.g., $25, $50, $100) or custom amounts within configurable min/max.
 2. Email delivery using WooCommerce email templates — same look as your order emails.
 3. Coupon field redemption — gift card codes work in the standard WooCommerce coupon field, no setup required.
-4. Optional dedicated "Apply Gift Card" field on cart/checkout via settings or `[wcgc_apply_field]` shortcode.
+4. Optional dedicated "Apply Gift Card" field on cart/checkout via settings or `[bgcw_apply_field]` shortcode.
 5. Auto-apply from email — the "Shop Now" button in the delivery email automatically applies the gift card to the recipient's cart.
 6. Balance tracking with partial redemption — remaining balance carries over to the next purchase.
 7. My Account tab — customers view their gift cards, balances, and full transaction history.
@@ -30,7 +30,7 @@ Smart Gift Cards for WooCommerce adds a gift card product type to your store. Cu
 13. Order meta box showing gift cards created by and used on each order.
 14. Automatic balance restore on order cancel/refund, including proportional partial refund support.
 15. Loyalty Rewards integration — optionally block or allow customers from using loyalty points to purchase gift cards (requires Loyalty Rewards for WooCommerce).
-16. Shortcode `[wcgc_product_form]` for page builders (Bricks, Elementor, etc.).
+16. Shortcode `[bgcw_product_form]` for page builders (Bricks, Elementor, etc.).
 17. HPOS compatible — works with WooCommerce High-Performance Order Storage.
 18. Email settings (subject, heading, on/off) under WooCommerce > Settings > Emails.
 
@@ -42,7 +42,7 @@ Smart Gift Cards for WooCommerce adds a gift card product type to your store. Cu
 5. Partial use is tracked. The remaining balance stays on the gift card for future orders.
 
 == Installation ==
-1. Upload the `smart-gift-cards-for-woocommerce` folder to `/wp-content/plugins/` or install via the Plugins screen.
+1. Upload the `beltoft-gift-cards-for-woocommerce` folder to `/wp-content/plugins/` or install via the Plugins screen.
 2. Activate the plugin.
 3. Go to **WooCommerce > Gift Cards > Settings** to configure.
 4. Create a new product and select **"Gift card"** as the product type.
@@ -58,7 +58,7 @@ Smart Gift Cards for WooCommerce adds a gift card product type to your store. Cu
 === Redemption ===
 - Gift card codes always work in the standard WooCommerce coupon field — this is automatic.
 - To also show a dedicated "Apply Gift Card" field, enable it in settings with automatic placement or shortcode-only.
-- Shortcode: `[wcgc_apply_field]` — place it on cart or checkout pages.
+- Shortcode: `[bgcw_apply_field]` — place it on cart or checkout pages.
 - Recipients can click "Shop Now" in the delivery email to auto-apply the gift card to their cart.
 
 === Email Template ===
@@ -67,12 +67,12 @@ Smart Gift Cards for WooCommerce adds a gift card product type to your store. Cu
 - Override the template by copying `templates/emails/gift-card-delivery.php` to your theme's `woocommerce/emails/` folder.
 
 === Page Builders ===
-- For Bricks, Elementor, or other page builders that replace WooCommerce templates, use the WooCommerce Add to Cart element or the `[wcgc_product_form]` shortcode.
+- For Bricks, Elementor, or other page builders that replace WooCommerce templates, use the WooCommerce Add to Cart element or the `[bgcw_product_form]` shortcode.
 
 === Hooks & Filters ===
 Developers can extend the plugin:
 
-* `wcgc_gift_card_created` — fires after a gift card is created (used by the email system).
+* `bgcw_gift_card_created` — fires after a gift card is created (used by the email system).
 
 == Frequently Asked Questions ==
 
@@ -80,7 +80,7 @@ Developers can extend the plugin:
 Yes. Gift card codes are always accepted in the WooCommerce coupon field. This works automatically — customers just enter the code where they would enter a coupon.
 
 = Can I also show a separate gift card field? =
-Yes. Go to WooCommerce > Gift Cards > Settings and enable the "Dedicated Gift Card Field." You can choose automatic placement (cart & checkout), shortcode-only (`[wcgc_apply_field]`), or both.
+Yes. Go to WooCommerce > Gift Cards > Settings and enable the "Dedicated Gift Card Field." You can choose automatic placement (cart & checkout), shortcode-only (`[bgcw_apply_field]`), or both.
 
 = Do gift cards support partial redemption? =
 Yes. If a gift card balance exceeds the order total, only the needed amount is deducted. The remaining balance stays on the gift card for future use.
@@ -95,7 +95,7 @@ Yes. Go to WooCommerce > Gift Cards > Gift Cards tab and click "Add Gift Card." 
 No. Gift card products are set as non-taxable, and gift card discounts are applied as non-taxable negative fees.
 
 = Does it work with page builders like Bricks or Elementor? =
-Yes. Use the `[wcgc_product_form]` shortcode inside your page builder's product template to display the gift card amount selector and recipient fields.
+Yes. Use the `[bgcw_product_form]` shortcode inside your page builder's product template to display the gift card amount selector and recipient fields.
 
 = Do emails match my store's design? =
 Yes. They use WooCommerce's email template — same header, footer, and styling as order emails.

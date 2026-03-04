@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name:       Smart Gift Cards for WooCommerce
- * Plugin URI:        https://developer.wordpress.org/plugins/smart-gift-cards-for-woocommerce/
+ * Plugin Name:       Beltoft Gift Cards for WooCommerce
+ * Plugin URI:        https://developer.wordpress.org/plugins/beltoft-gift-cards-for-woocommerce/
  * Description:       Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
  * Version:           1.2.0
  * Requires at least: 5.8
@@ -10,14 +10,14 @@
  * Author URI:        https://chimkins.com/
  * License:           GPL-2.0-or-later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       smart-gift-cards-for-woocommerce
+ * Text Domain:       beltoft-gift-cards-for-woocommerce
  * Domain Path:       /languages/
  * Requires Plugins:  woocommerce
  *
  * WC requires at least: 6.0
  * WC tested up to:      9.6
  *
- * @package GiftCards
+ * @package Bgcw
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -27,10 +27,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /* ── PSR-4 autoloader ──────────────────────────────────────────── */
 spl_autoload_register(
 	function ( $class ) {
-		if ( strpos( $class, 'GiftCards\\' ) !== 0 ) {
+		if ( strpos( $class, 'Bgcw\\' ) !== 0 ) {
 			return;
 		}
-		$relative = substr( $class, strlen( 'GiftCards\\' ) );
+		$relative = substr( $class, strlen( 'Bgcw\\' ) );
 		$relative = str_replace( '\\', DIRECTORY_SEPARATOR, $relative ) . '.php';
 		$file     = plugin_dir_path( __FILE__ ) . 'src/' . $relative;
 		if ( file_exists( $file ) ) {
@@ -40,11 +40,11 @@ spl_autoload_register(
 );
 
 /* ── Constants ─────────────────────────────────────────────────── */
-define( 'WCGC_VERSION', '1.2.0' );
-define( 'WCGC_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WCGC_URL', plugin_dir_url( __FILE__ ) );
-define( 'WCGC_BASENAME', plugin_basename( __FILE__ ) );
-define( 'WCGC_DB_VERSION', '1.0' );
+define( 'BGCW_VERSION', '1.2.0' );
+define( 'BGCW_PATH', plugin_dir_path( __FILE__ ) );
+define( 'BGCW_URL', plugin_dir_url( __FILE__ ) );
+define( 'BGCW_BASENAME', plugin_basename( __FILE__ ) );
+define( 'BGCW_DB_VERSION', '1.0' );
 
 /* ── Activation / deactivation ─────────────────────────────────── */
 register_activation_hook(
@@ -52,9 +52,9 @@ register_activation_hook(
 	function () {
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			/* translators: %s: WooCommerce plugin name */
-			wp_die( esc_html__( 'Smart Gift Cards for WooCommerce requires WooCommerce to be installed and active.', 'smart-gift-cards-for-woocommerce' ) );
+			wp_die( esc_html__( 'Beltoft Gift Cards for WooCommerce requires WooCommerce to be installed and active.', 'beltoft-gift-cards-for-woocommerce' ) );
 		}
-		GiftCards\Support\Installer::activate();
+		Bgcw\Support\Installer::activate();
 	}
 );
 
@@ -72,17 +72,17 @@ add_action(
 		if ( ! class_exists( 'WooCommerce' ) ) {
 			return;
 		}
-		GiftCards\Plugin::init();
+		Bgcw\Plugin::init();
 	}
 );
 
 /* ── Settings link on Plugins page ─────────────────────────────── */
 add_filter(
-	'plugin_action_links_' . WCGC_BASENAME,
+	'plugin_action_links_' . BGCW_BASENAME,
 	function ( $links ) {
-		$url           = admin_url( 'admin.php?page=wcgc-gift-cards' );
+		$url           = admin_url( 'admin.php?page=bgcw-gift-cards' );
 		$settings_link = '<a href="' . esc_url( $url ) . '">'
-			. esc_html__( 'Settings', 'smart-gift-cards-for-woocommerce' )
+			. esc_html__( 'Settings', 'beltoft-gift-cards-for-woocommerce' )
 			. '</a>';
 		array_unshift( $links, $settings_link );
 		return $links;
