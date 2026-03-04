@@ -73,10 +73,13 @@
 	transform: none;
 }
 
-.bgcw-amount-btn:focus,
-.bgcw-amount-btn:focus-visible {
+.bgcw-amount-btn:focus {
 	outline: none;
-	box-shadow: none;
+}
+
+.bgcw-amount-btn:focus-visible {
+	outline: 2px solid var(--bgcw-amount-focus-color, #7f54b3);
+	outline-offset: 2px;
 }
 
 .bgcw-amount-btn.active {

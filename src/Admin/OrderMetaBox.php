@@ -25,8 +25,11 @@ class OrderMetaBox {
 		// Gift cards created by this order.
 		$created_cards = Repository::get_by_order( $order->get_id() );
 
-		// Gift cards used on this order.
-		$deductions = $order->get_meta( '_bgcw_pending_deductions' );
+		// Gift cards used on this order (prefer actual deducted amounts).
+		$deductions = $order->get_meta( '_bgcw_deducted_amounts' );
+		if ( empty( $deductions ) || ! is_array( $deductions ) ) {
+			$deductions = $order->get_meta( '_bgcw_pending_deductions' );
+		}
 		$status_labels = [
 			'active'   => __( 'Active', 'beltoft-gift-cards-for-woocommerce' ),
 			'disabled' => __( 'Disabled', 'beltoft-gift-cards-for-woocommerce' ),

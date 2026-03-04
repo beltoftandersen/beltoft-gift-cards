@@ -128,8 +128,17 @@ class MyAccount {
 								<td><?php echo wp_kses_post( wc_price( $gc->initial_amount, [ 'currency' => $gc->currency ] ) ); ?></td>
 								<td><strong><?php echo wp_kses_post( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) ); ?></strong></td>
 								<td>
+									<?php
+									$status_labels = [
+										'active'   => __( 'Active', 'beltoft-gift-cards-for-woocommerce' ),
+										'disabled' => __( 'Disabled', 'beltoft-gift-cards-for-woocommerce' ),
+										'expired'  => __( 'Expired', 'beltoft-gift-cards-for-woocommerce' ),
+										'redeemed' => __( 'Redeemed', 'beltoft-gift-cards-for-woocommerce' ),
+									];
+									$status_label = $status_labels[ $gc->status ] ?? ucfirst( $gc->status );
+									?>
 									<span class="bgcw-status bgcw-status--<?php echo esc_attr( $gc->status ); ?>">
-										<?php echo esc_html( ucfirst( $gc->status ) ); ?>
+										<?php echo esc_html( $status_label ); ?>
 									</span>
 								</td>
 								<td>
@@ -162,7 +171,15 @@ class MyAccount {
 												<?php foreach ( $transactions as $tx ) : ?>
 													<tr>
 														<td><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $tx->created_at ) ) ); ?></td>
-														<td><span class="bgcw-tx-type bgcw-tx-type--<?php echo esc_attr( $tx->type ); ?>"><?php echo esc_html( ucfirst( $tx->type ) ); ?></span></td>
+														<?php
+$tx_labels = [
+	'debit'  => __( 'Debit', 'beltoft-gift-cards-for-woocommerce' ),
+	'credit' => __( 'Credit', 'beltoft-gift-cards-for-woocommerce' ),
+	'refund' => __( 'Refund', 'beltoft-gift-cards-for-woocommerce' ),
+];
+$tx_label = $tx_labels[ $tx->type ] ?? ucfirst( $tx->type );
+?>
+														<td><span class="bgcw-tx-type bgcw-tx-type--<?php echo esc_attr( $tx->type ); ?>"><?php echo esc_html( $tx_label ); ?></span></td>
 														<td>
 															<?php
 															$prefix = $tx->type === 'debit' ? '-' : '+';

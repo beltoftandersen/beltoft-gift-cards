@@ -80,7 +80,7 @@ Developers can extend the plugin:
 Yes. Gift card codes are always accepted in the WooCommerce coupon field. This works automatically — customers just enter the code where they would enter a coupon.
 
 = Can I also show a separate gift card field? =
-Yes. Go to WooCommerce > Gift Cards > Settings and enable the "Dedicated Gift Card Field." You can choose automatic placement (cart & checkout), shortcode-only (`[bgcw_apply_field]`), or both.
+Yes. Go to WooCommerce > Gift Cards > Settings and enable the "Dedicated Gift Card Field." You can choose automatic placement (cart & checkout) or shortcode-only (`[bgcw_apply_field]`).
 
 = Do gift cards support partial redemption? =
 Yes. If a gift card balance exceeds the order total, only the needed amount is deducted. The remaining balance stays on the gift card for future use.

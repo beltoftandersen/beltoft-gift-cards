@@ -54,8 +54,8 @@ class SettingsPage {
 		// ── Amounts Section ──
 		add_settings_section( 'bgcw_amounts', __( 'Amounts', 'beltoft-gift-cards-for-woocommerce' ), '__return_null', $settings_slug );
 		self::add_checkbox( 'allow_custom_amount', __( 'Allow Custom Amount', 'beltoft-gift-cards-for-woocommerce' ), 'bgcw_amounts', $settings_slug );
-		self::add_number( 'min_custom_amount', __( 'Minimum Custom Amount', 'beltoft-gift-cards-for-woocommerce' ), 'bgcw_amounts', '0.01', '0', '', $settings_slug );
-		self::add_number( 'max_custom_amount', __( 'Maximum Custom Amount', 'beltoft-gift-cards-for-woocommerce' ), 'bgcw_amounts', '0.01', '0', '', $settings_slug );
+		self::add_number( 'min_custom_amount', __( 'Minimum Custom Amount', 'beltoft-gift-cards-for-woocommerce' ), 'bgcw_amounts', '1', '0', '', $settings_slug );
+		self::add_number( 'max_custom_amount', __( 'Maximum Custom Amount', 'beltoft-gift-cards-for-woocommerce' ), 'bgcw_amounts', '1', '0', '', $settings_slug );
 
 		// ── Expiry Section ──
 		add_settings_section( 'bgcw_expiry', __( 'Expiry', 'beltoft-gift-cards-for-woocommerce' ), '__return_null', $settings_slug );
