@@ -3,6 +3,7 @@
 namespace Bgcw\Blocks;
 
 use Bgcw\Support\Options;
+use Bgcw\Cart\CartHandler;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -54,9 +55,20 @@ class StoreApiExtension {
 			}
 		}
 
+		// Collect applied gift card codes so blocks JS can identify them exactly.
+		$gift_card_codes = [];
+		if ( WC()->cart ) {
+			foreach ( WC()->cart->get_applied_coupons() as $coupon_code ) {
+				if ( CartHandler::is_gift_card_coupon( $coupon_code ) ) {
+					$gift_card_codes[] = strtoupper( (string) $coupon_code );
+				}
+			}
+		}
+
 		return [
 			'points_blocked'         => $blocked,
 			'points_blocked_message' => $message,
+			'gift_card_codes'        => $gift_card_codes,
 		];
 	}
 
@@ -78,6 +90,13 @@ class StoreApiExtension {
 				'type'        => 'string',
 				'context'     => [ 'view', 'edit' ],
 				'readonly'    => true,
+			],
+			'gift_card_codes'        => [
+				'description' => 'Applied gift card codes (uppercased).',
+				'type'        => 'array',
+				'context'     => [ 'view', 'edit' ],
+				'readonly'    => true,
+				'items'       => [ 'type' => 'string' ],
 			],
 		];
 	}

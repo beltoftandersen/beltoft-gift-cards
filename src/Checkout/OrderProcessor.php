@@ -46,7 +46,8 @@ class OrderProcessor {
 		foreach ( $order->get_items( 'coupon' ) as $coupon_item ) {
 			$code = strtoupper( $coupon_item->get_code() );
 			if ( CartHandler::is_gift_card_coupon( $code ) ) {
-				$discount = round( (float) $coupon_item->get_discount(), 2 );
+				// Include coupon tax so stored deductions match the full order-level discount impact.
+				$discount = round( (float) $coupon_item->get_discount() + (float) $coupon_item->get_discount_tax(), 2 );
 				if ( $discount > 0 ) {
 					$deductions[ $code ] = $discount;
 				}
@@ -74,6 +75,12 @@ class OrderProcessor {
 
 		// Idempotency check.
 		if ( $order->get_meta( '_bgcw_deducted' ) ) {
+			return;
+		}
+
+		// Order-level lock to prevent concurrent hook invocations from processing simultaneously.
+		// add_post_meta with $unique=true fails if the key already exists.
+		if ( ! add_post_meta( $order_id, '_bgcw_deduction_lock', '1', true ) ) {
 			return;
 		}
 
@@ -188,6 +195,7 @@ class OrderProcessor {
 		}
 
 		$order->save();
+		delete_post_meta( $order_id, '_bgcw_deduction_lock' );
 	}
 
 	/**

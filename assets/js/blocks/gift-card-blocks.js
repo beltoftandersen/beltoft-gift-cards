@@ -71,12 +71,22 @@
 	if ( registerFilters ) {
 		registerFilters( NS, {
 			coupons: function ( coupons ) {
+				// Read applied gift card codes from the Store API extension data.
+				var cartStore = wp.data.select( 'wc/store/cart' );
+				var cartData  = cartStore && cartStore.getCartData ? cartStore.getCartData() : null;
+				var gcData    = ( ( cartData && cartData.extensions ) || {} )[ NS ] || {};
+				var gcCodes   = Array.isArray( gcData.gift_card_codes ) ? gcData.gift_card_codes : [];
+				var gcSet     = {};
+
+				gcCodes.forEach( function ( value ) {
+					gcSet[ String( value ).toUpperCase() ] = true;
+				} );
+
 				return coupons.map( function ( coupon ) {
 					var code = ( coupon.code || '' ).toUpperCase();
 
-					// Gift card codes follow PREFIX-XXXX-XXXX-XXXX pattern.
-					// Check against the Store API extension data to confirm.
-					if ( code.indexOf( '-' ) !== -1 && code.length >= 14 ) {
+					// Only relabel coupons confirmed as gift cards by the Store API extension.
+					if ( gcSet[ code ] ) {
 						// Use the label WC already assigned (from CartHandler::coupon_label).
 						// If WC Blocks stripped it, at least keep the masked code.
 						if ( ! coupon.label || coupon.label === coupon.code ) {

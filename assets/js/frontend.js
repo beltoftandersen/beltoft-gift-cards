@@ -53,8 +53,14 @@
 
 		var $dropdown = $('#bgcw_amount_dropdown');
 		if ($dropdown.length) {
-			// Set initial value from first option.
-			$('#bgcw_amount').val($dropdown.val());
+			// Set initial value from first option and handle custom-only case.
+			var initialVal = $dropdown.val();
+			if (initialVal === 'custom') {
+				$('.bgcw-custom-amount').show();
+				$('#bgcw_amount').val('');
+			} else {
+				$('#bgcw_amount').val(initialVal);
+			}
 
 			$dropdown.on('change', function() {
 				var val = $(this).val();
