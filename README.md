@@ -2,7 +2,7 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.2.0
+- Stable version: 1.3.0
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+
 - Author: Chimkins IT
 - Text domain: beltoft-gift-cards-for-woocommerce
@@ -94,6 +94,16 @@ Developers can extend the plugin:
 - Translation template: `languages/beltoft-gift-cards-for-woocommerce.pot`
 
 ## Changelog
+
+### 1.3.0
+
+- Improved: MySQL advisory lock for concurrent balance deductions.
+- Improved: SQL-level pagination for My Account gift cards.
+- Improved: Bulk gift card code lookups in cart and Store API.
+- Improved: Expiry sync moved to WP-Cron (hourly) with composite DB index.
+- Fixed: Tax-inclusive discount amount in balance deductions.
+- Fixed: Refund safety guard requires prior deduction before restoring balance.
+- Added: Block checkout support — gift card codes identified via Store API extension.
 
 ### 1.0.0
 

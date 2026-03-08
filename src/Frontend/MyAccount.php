@@ -77,29 +77,15 @@ class MyAccount {
 		$user_id = get_current_user_id();
 		$email   = wp_get_current_user()->user_email;
 
-		// Get cards purchased by this customer + received by email.
-		$purchased = Repository::get_by_customer( $user_id );
-		$received  = Repository::get_by_recipient( $email );
-
-		// Merge and deduplicate by ID.
-		$all_cards = [];
-		foreach ( array_merge( $purchased, $received ) as $gc ) {
-			$all_cards[ $gc->id ] = $gc;
-		}
-		$all_cards = array_values( $all_cards );
-
-		// Sort by created_at DESC.
-		usort( $all_cards, function ( $a, $b ) {
-			return strtotime( $b->created_at ) - strtotime( $a->created_at );
-		} );
-
-		// Paginate.
-		$total_cards = count( $all_cards );
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only pagination parameter.
 		$current_page = max( 1, isset( $_GET['gc_page'] ) ? absint( $_GET['gc_page'] ) : 1 );
+
+		// SQL-level UNION, dedup, sort, and pagination.
+		$result       = Repository::get_for_account( $user_id, $email, $current_page, self::PER_PAGE );
+		$all_cards    = $result['cards'];
+		$total_cards  = $result['total'];
 		$total_pages  = max( 1, (int) ceil( $total_cards / self::PER_PAGE ) );
 		$current_page = min( $current_page, $total_pages );
-		$all_cards    = array_slice( $all_cards, ( $current_page - 1 ) * self::PER_PAGE, self::PER_PAGE );
 
 		// Batch-load all transactions in a single query.
 		$card_ids    = array_map( function ( $gc ) { return $gc->id; }, $all_cards );

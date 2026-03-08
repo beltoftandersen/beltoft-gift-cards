@@ -102,6 +102,71 @@ class Repository {
 	}
 
 	/**
+	 * Find multiple gift cards by codes in a single query.
+	 *
+	 * Results are cached in the request-scoped code cache.
+	 *
+	 * @param string[] $codes Gift card codes.
+	 * @return array<string, object> Keyed by uppercased code.
+	 */
+	public static function find_by_codes( array $codes ) {
+		global $wpdb;
+
+		$codes = array_unique( array_filter( array_map( function ( $c ) {
+			return strtoupper( trim( (string) $c ) );
+		}, $codes ) ) );
+
+		if ( empty( $codes ) ) {
+			return [];
+		}
+
+		// Return from cache if all codes are already cached.
+		$results = [];
+		$missing = [];
+		foreach ( $codes as $code ) {
+			if ( array_key_exists( $code, self::$code_cache ) ) {
+				if ( self::$code_cache[ $code ] ) {
+					$results[ $code ] = self::$code_cache[ $code ];
+				}
+			} else {
+				$missing[] = $code;
+			}
+		}
+
+		if ( empty( $missing ) ) {
+			return $results;
+		}
+
+		$placeholders = implode( ', ', array_fill( 0, count( $missing ), '%s' ) );
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- Dynamic IN clause with validated count.
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$wpdb->prefix}bgcw_gift_cards WHERE code IN ({$placeholders})",
+				...$missing
+			)
+		);
+		// phpcs:enable
+
+		$found_keys = [];
+		foreach ( $rows as $row ) {
+			$key                     = strtoupper( $row->code );
+			self::$code_cache[ $key ] = $row;
+			$results[ $key ]          = $row;
+			$found_keys[]             = $key;
+		}
+
+		// Cache misses as null.
+		foreach ( $missing as $code ) {
+			if ( ! in_array( $code, $found_keys, true ) ) {
+				self::$code_cache[ $code ] = null;
+			}
+		}
+
+		return $results;
+	}
+
+	/**
 	 * Invalidate the request-scoped code cache.
 	 *
 	 * @param string|null $code Specific code to invalidate, or null for all.
@@ -184,6 +249,63 @@ class Repository {
 				$email
 			)
 		);
+	}
+
+	/**
+	 * Get paginated gift cards owned by or received by a user.
+	 *
+	 * Uses UNION to combine customer_id and recipient_email matches,
+	 * deduplicates, sorts, and paginates at the SQL level.
+	 *
+	 * @param int    $customer_id User ID.
+	 * @param string $email       User email.
+	 * @param int    $page        1-based page number.
+	 * @param int    $per_page    Items per page.
+	 * @return array { 'cards' => object[], 'total' => int }
+	 */
+	public static function get_for_account( $customer_id, $email, $page = 1, $per_page = 20 ) {
+		global $wpdb;
+
+		$table  = $wpdb->prefix . 'bgcw_gift_cards';
+		$offset = max( 0, ( (int) $page - 1 ) * (int) $per_page );
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table with UNION dedup.
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table is safe: $wpdb->prefix . literal string.
+		$total = (int) $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM (
+					SELECT id FROM {$table} WHERE customer_id = %d
+					UNION
+					SELECT id FROM {$table} WHERE recipient_email = %s
+				) AS combined",
+				$customer_id,
+				$email
+			)
+		);
+
+		$cards = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT * FROM {$table}
+				WHERE id IN (
+					SELECT id FROM {$table} WHERE customer_id = %d
+					UNION
+					SELECT id FROM {$table} WHERE recipient_email = %s
+				)
+				ORDER BY created_at DESC
+				LIMIT %d OFFSET %d",
+				$customer_id,
+				$email,
+				(int) $per_page,
+				$offset
+			)
+		);
+		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+		return [
+			'cards' => $cards ?: [],
+			'total' => $total,
+		];
 	}
 
 	/**

@@ -57,7 +57,8 @@ class Installer {
 			KEY recipient_email (recipient_email),
 			KEY order_id (order_id),
 			KEY customer_id (customer_id),
-			KEY status (status)
+			KEY status (status),
+			KEY status_expires (status, expires_at)
 		) {$charset};
 
 		CREATE TABLE {$transactions_table} (

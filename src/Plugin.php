@@ -26,10 +26,10 @@ class Plugin {
 	public static function init() {
 		Installer::maybe_upgrade();
 
-		// Throttle expiry sync to once per hour.
-		if ( false === get_transient( 'bgcw_expiry_sync' ) ) {
-			GiftCardRepository::sync_expired_statuses();
-			set_transient( 'bgcw_expiry_sync', 1, HOUR_IN_SECONDS );
+		// Schedule hourly expiry sync via WP-Cron instead of running on frontend requests.
+		add_action( 'bgcw_expiry_sync', [ GiftCardRepository::class, 'sync_expired_statuses' ] );
+		if ( ! wp_next_scheduled( 'bgcw_expiry_sync' ) ) {
+			wp_schedule_event( time(), 'hourly', 'bgcw_expiry_sync' );
 		}
 
 		// Invalidate Options cache when changed externally (e.g., via wp option update).

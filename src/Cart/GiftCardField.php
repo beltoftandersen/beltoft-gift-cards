@@ -59,12 +59,18 @@ class GiftCardField {
 		}
 		self::$rendered = true;
 
-		// Get applied gift card codes from WC cart coupons.
-		$applied = [];
+		// Get applied gift card codes from WC cart coupons via bulk lookup.
+		$applied   = [];
+		$gc_lookup = [];
 		if ( WC()->cart ) {
-			foreach ( WC()->cart->get_applied_coupons() as $code ) {
-				if ( CartHandler::is_gift_card_coupon( $code ) ) {
-					$applied[] = $code;
+			$coupons = WC()->cart->get_applied_coupons();
+			if ( ! empty( $coupons ) ) {
+				$gc_lookup = Repository::find_by_codes( $coupons );
+				foreach ( $coupons as $code ) {
+					$key = strtoupper( trim( $code ) );
+					if ( isset( $gc_lookup[ $key ] ) ) {
+						$applied[] = $code;
+					}
 				}
 			}
 		}
@@ -75,7 +81,7 @@ class GiftCardField {
 			<?php if ( ! empty( $applied ) ) : ?>
 				<div class="bgcw-applied-list">
 					<?php foreach ( $applied as $index => $code ) : ?>
-						<?php $gc = Repository::find_by_code( $code ); ?>
+						<?php $gc = $gc_lookup[ strtoupper( trim( $code ) ) ] ?? null; ?>
 						<?php if ( $gc ) : ?>
 							<div class="bgcw-applied-item">
 								<span class="bgcw-applied-code"><?php echo esc_html( CartHandler::mask_code( $code ) ); ?></span>

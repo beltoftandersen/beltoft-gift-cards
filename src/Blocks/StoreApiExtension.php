@@ -4,6 +4,7 @@ namespace Bgcw\Blocks;
 
 use Bgcw\Support\Options;
 use Bgcw\Cart\CartHandler;
+use Bgcw\GiftCard\Repository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -56,12 +57,13 @@ class StoreApiExtension {
 		}
 
 		// Collect applied gift card codes so blocks JS can identify them exactly.
+		// Uses bulk lookup to avoid per-coupon DB queries.
 		$gift_card_codes = [];
 		if ( WC()->cart ) {
-			foreach ( WC()->cart->get_applied_coupons() as $coupon_code ) {
-				if ( CartHandler::is_gift_card_coupon( $coupon_code ) ) {
-					$gift_card_codes[] = strtoupper( (string) $coupon_code );
-				}
+			$coupons = WC()->cart->get_applied_coupons();
+			if ( ! empty( $coupons ) ) {
+				$found = Repository::find_by_codes( $coupons );
+				$gift_card_codes = array_keys( $found );
 			}
 		}
 
