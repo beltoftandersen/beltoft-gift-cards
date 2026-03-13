@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,6 +117,10 @@ By default, no. If you have the Loyalty Rewards for WooCommerce plugin active, a
 8. Settings page.
 
 == Changelog ==
+
+= 1.4.1 =
+* Added `width: 100%` to gift card product fields container for better theme compatibility.
+* Added placeholder text to Predefined Amounts field on the product edit page.
 
 = 1.4.0 =
 * Renamed plugin slug and folder to `beltoft-gift-cards`.

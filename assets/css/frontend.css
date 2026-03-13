@@ -32,6 +32,7 @@
 /* Amount selector */
 .bgcw-product-fields {
 	margin: 20px 0;
+	width: 100%;
 }
 
 .bgcw-amount-selector label {

@@ -116,6 +116,7 @@ class GiftCardProductType {
 					'id'          => '_bgcw_amounts',
 					'value'       => $amounts,
 					'label'       => __( 'Predefined Amounts', 'beltoft-gift-cards' ),
+					'placeholder' => '10,20,30...',
 					'description' => __( 'Comma-separated amounts (e.g., 25,50,75,100).', 'beltoft-gift-cards' ),
 					'desc_tip'    => true,
 				] );
