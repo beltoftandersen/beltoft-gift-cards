@@ -97,6 +97,9 @@ class GiftCardProductType {
 		if ( isset( $tabs['shipping'] ) ) {
 			$tabs['shipping']['class'][] = 'hide_if_gift-card';
 		}
+		if ( isset( $tabs['general'] ) ) {
+			$tabs['general']['class'][] = 'show_if_gift-card';
+		}
 		if ( isset( $tabs['inventory'] ) ) {
 			$tabs['inventory']['class'][] = 'show_if_gift-card';
 		}
@@ -157,8 +160,15 @@ class GiftCardProductType {
 		$js = "jQuery(function($) {"
 			. "var showHide = function() {"
 			. "var isGiftCard = $('select#product-type').val() === 'gift-card';"
-			. "if (isGiftCard) { $('.pricing').hide(); $('#gift_card_product_data').show(); }"
-			. "else { $('#gift_card_product_data').hide(); }"
+			. "if (isGiftCard) {"
+			. "  $('.show_if_simple:not(:has(#_tax_status))').hide();"
+			. "  $('._regular_price_field, ._sale_price_field, ._sale_price_dates_field').hide();"
+			. "  $('#general_product_data').show();"
+			. "  $('#_tax_status').closest('.options_group').show();"
+			. "  $('#gift_card_product_data').show();"
+			. "} else {"
+			. "  $('#gift_card_product_data').hide();"
+			. "}"
 			. "};"
 			. "$('select#product-type').on('change', showHide);"
 			. "showHide();"

@@ -89,5 +89,6 @@ class Installer {
 			self::create_tables();
 			update_option( self::DB_VERSION_KEY, BGCW_DB_VERSION );
 		}
+
 	}
 }

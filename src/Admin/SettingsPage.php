@@ -115,6 +115,14 @@ class SettingsPage {
 			);
 		}
 
+		// ── Order Processing Section ──
+		add_settings_section( 'bgcw_order', __( 'Order Processing', 'beltoft-gift-cards' ), '__return_null', $settings_slug );
+		self::add_select( 'create_on_status', __( 'Create & Send Gift Cards On', 'beltoft-gift-cards' ), 'bgcw_order', [
+			'processing' => __( 'Processing (recommended)', 'beltoft-gift-cards' ),
+			'completed'  => __( 'Completed', 'beltoft-gift-cards' ),
+			'both'       => __( 'Processing or Completed (whichever comes first)', 'beltoft-gift-cards' ),
+		], $settings_slug );
+
 		// ── Advanced Section ──
 		add_settings_section( 'bgcw_advanced', __( 'Advanced', 'beltoft-gift-cards' ), '__return_null', $settings_slug );
 		self::add_checkbox( 'cleanup_on_uninstall', __( 'Delete All Data on Uninstall', 'beltoft-gift-cards' ), 'bgcw_advanced', $settings_slug );

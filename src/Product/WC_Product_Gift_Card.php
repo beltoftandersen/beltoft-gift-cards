@@ -31,16 +31,6 @@ class WC_Product_Gift_Card extends \WC_Product {
 	}
 
 	/**
-	 * Gift cards are never taxable.
-	 *
-	 * @param string $context Context.
-	 * @return string
-	 */
-	public function get_tax_status( $context = 'view' ) {
-		return 'none';
-	}
-
-	/**
 	 * Return the product price.
 	 *
 	 * If a price has been explicitly set (e.g. via set_price() in the cart),

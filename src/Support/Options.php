@@ -27,6 +27,7 @@ class Options {
 			'dedicated_field_placement' => 'auto',
 			'product_form_placement'    => 'auto',
 			'allow_points_for_gift_cards' => '1',
+			'create_on_status'          => 'processing',
 			'cleanup_on_uninstall'      => '0',
 		];
 	}
@@ -76,6 +77,7 @@ class Options {
 			'dedicated_field_placement' => 'select',
 			'product_form_placement'      => 'select',
 			'allow_points_for_gift_cards' => 'bool',
+			'create_on_status'            => 'select',
 			'cleanup_on_uninstall'        => 'bool',
 		];
 
@@ -83,6 +85,7 @@ class Options {
 			'dedicated_field_placement' => [ 'auto', 'shortcode' ],
 			'product_form_placement'   => [ 'auto', 'shortcode' ],
 			'amount_display_style'     => [ 'buttons', 'dropdown' ],
+			'create_on_status'         => [ 'processing', 'completed', 'both' ],
 		];
 
 		foreach ( $fields as $field => $type ) {

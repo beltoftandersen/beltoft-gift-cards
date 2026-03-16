@@ -12,8 +12,17 @@ class GiftCardCreator {
 	 * Initialize hooks.
 	 */
 	public static function init() {
-		add_action( 'woocommerce_order_status_processing', [ __CLASS__, 'maybe_create_gift_cards' ] );
-		add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'maybe_create_gift_cards' ] );
+		$trigger = Options::get( 'create_on_status' );
+
+		if ( 'completed' === $trigger ) {
+			add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'maybe_create_gift_cards' ] );
+		} elseif ( 'both' === $trigger ) {
+			add_action( 'woocommerce_order_status_processing', [ __CLASS__, 'maybe_create_gift_cards' ] );
+			add_action( 'woocommerce_order_status_completed', [ __CLASS__, 'maybe_create_gift_cards' ] );
+		} else {
+			// Default: processing.
+			add_action( 'woocommerce_order_status_processing', [ __CLASS__, 'maybe_create_gift_cards' ] );
+		}
 	}
 
 	/**
