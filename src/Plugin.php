@@ -50,8 +50,8 @@ class Plugin {
 			OrderMetaBox::init();
 		}
 
-		// Frontend + AJAX + Store API (block cart/checkout).
-		if ( ! is_admin() || wp_doing_ajax() || self::is_store_api_request() ) {
+		// Frontend + AJAX.
+		if ( ! is_admin() || wp_doing_ajax() ) {
 			ProductPage::init();
 			MyAccount::init();
 			GiftCardField::init();
@@ -142,22 +142,6 @@ class Plugin {
 				return;
 			}
 		}
-	}
-
-	/**
-	 * Check if this is a WooCommerce Store API request (block cart/checkout).
-	 *
-	 * @return bool
-	 */
-	private static function is_store_api_request() {
-		if ( ! empty( $_SERVER['REQUEST_URI'] ) ) {
-			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Read-only check.
-			$uri = wp_unslash( $_SERVER['REQUEST_URI'] );
-			if ( strpos( $uri, 'wc/store' ) !== false ) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**
