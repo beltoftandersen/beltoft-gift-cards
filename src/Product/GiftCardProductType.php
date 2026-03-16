@@ -97,6 +97,9 @@ class GiftCardProductType {
 		if ( isset( $tabs['shipping'] ) ) {
 			$tabs['shipping']['class'][] = 'hide_if_gift-card';
 		}
+		if ( isset( $tabs['inventory'] ) ) {
+			$tabs['inventory']['class'][] = 'show_if_gift-card';
+		}
 		return $tabs;
 	}
 
