@@ -41,12 +41,22 @@ class WC_Product_Gift_Card extends \WC_Product {
 	}
 
 	/**
-	 * Return the lowest predefined amount for catalog price display.
+	 * Return the product price.
+	 *
+	 * If a price has been explicitly set (e.g. via set_price() in the cart),
+	 * return that. Otherwise fall back to the lowest predefined amount for
+	 * catalog display.
 	 *
 	 * @param string $context Context.
 	 * @return string
 	 */
 	public function get_price( $context = 'view' ) {
+		// Respect prices set at runtime (e.g. cart item price override).
+		$set_price = parent::get_price( $context );
+		if ( '' !== $set_price && null !== $set_price ) {
+			return $set_price;
+		}
+
 		$amounts_str = get_post_meta( $this->get_id(), '_bgcw_amounts', true );
 		$amounts     = array_filter( array_map( 'floatval', explode( ',', (string) $amounts_str ) ) );
 		if ( ! empty( $amounts ) ) {

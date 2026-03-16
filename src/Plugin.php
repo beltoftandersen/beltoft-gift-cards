@@ -41,6 +41,9 @@ class Plugin {
 		CartHandler::init();
 		OrderProcessor::init();
 
+		// Gift card cart price must fire in all contexts (frontend, AJAX, Store API).
+		add_action( 'woocommerce_before_calculate_totals', [ ProductPage::class, 'set_cart_price' ], 20 );
+
 		// Register email class.
 		add_filter( 'woocommerce_email_classes', [ __CLASS__, 'register_email_class' ] );
 
