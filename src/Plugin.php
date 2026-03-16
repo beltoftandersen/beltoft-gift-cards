@@ -47,6 +47,11 @@ class Plugin {
 		// Register email class.
 		add_filter( 'woocommerce_email_classes', [ __CLASS__, 'register_email_class' ] );
 
+		// Ensure email classes are loaded before gift card creation fires.
+		// WC may defer transactional emails, so the email constructor (which
+		// registers the bgcw_gift_card_created listener) may not have run yet.
+		add_action( 'bgcw_gift_card_created', [ __CLASS__, 'ensure_mailer_loaded' ], 5, 0 );
+
 		// Admin-only classes.
 		if ( is_admin() ) {
 			SettingsPage::init();
@@ -86,6 +91,19 @@ class Plugin {
 	public static function register_email_class( $email_classes ) {
 		$email_classes['BGCW_Gift_Card_Delivery'] = new GiftCardDeliveryEmail();
 		return $email_classes;
+	}
+
+	/**
+	 * Ensure WC mailer is loaded so the email class constructor runs.
+	 *
+	 * When woocommerce_defer_transactional_emails is true, WC never calls
+	 * WC()->mailer() during the request, so our email class constructor
+	 * (which registers the bgcw_gift_card_created listener at priority 10)
+	 * never fires. Calling WC()->mailer() here at priority 5 ensures the
+	 * email classes are instantiated before the trigger fires at priority 10.
+	 */
+	public static function ensure_mailer_loaded() {
+		WC()->mailer();
 	}
 
 	/**
