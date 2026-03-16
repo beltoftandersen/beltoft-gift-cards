@@ -46,7 +46,7 @@ class ProductPage {
 		add_filter( 'woocommerce_add_to_cart_validation', [ __CLASS__, 'validate' ], 10, 3 );
 		add_filter( 'woocommerce_add_cart_item_data', [ __CLASS__, 'add_cart_data' ], 10, 2 );
 		add_filter( 'woocommerce_get_item_data', [ __CLASS__, 'display_cart_data' ], 10, 2 );
-		add_action( 'woocommerce_before_calculate_totals', [ __CLASS__, 'set_cart_price' ] );
+		add_action( 'woocommerce_before_calculate_totals', [ __CLASS__, 'set_cart_price' ], 20 );
 		add_action( 'woocommerce_checkout_create_order_line_item', [ __CLASS__, 'save_order_item_meta' ], 10, 4 );
 	}
 
@@ -350,10 +350,6 @@ class ProductPage {
 	 * @param \WC_Cart $cart Cart object.
 	 */
 	public static function set_cart_price( $cart ) {
-		if ( is_admin() && ! defined( 'DOING_AJAX' ) ) {
-			return;
-		}
-
 		foreach ( $cart->get_cart() as $cart_item ) {
 			if ( isset( $cart_item['bgcw_amount'] ) && $cart_item['bgcw_amount'] > 0 ) {
 				$cart_item['data']->set_price( $cart_item['bgcw_amount'] );
