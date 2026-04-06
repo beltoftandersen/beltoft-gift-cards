@@ -3,7 +3,7 @@
  * Plugin Name:       Beltoft Gift Cards for WooCommerce
  * Plugin URI:        https://wordpress.org/plugins/beltoft-gift-cards/
  * Description:       Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
- * Version:           1.4.2
+ * Version:           1.4.3
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            beltoft.net
@@ -40,7 +40,7 @@ spl_autoload_register(
 );
 
 /* ── Constants ─────────────────────────────────────────────────── */
-define( 'BGCW_VERSION', '1.4.2' );
+define( 'BGCW_VERSION', '1.4.3' );
 define( 'BGCW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BGCW_URL', plugin_dir_url( __FILE__ ) );
 define( 'BGCW_BASENAME', plugin_basename( __FILE__ ) );

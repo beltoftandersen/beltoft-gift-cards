@@ -2,7 +2,7 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.4.2
+- Stable version: 1.4.3
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
@@ -94,6 +94,10 @@ Developers can extend the plugin:
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.4.3
+
+- Fixed General settings tab missing on non-gift-card products.
 
 ### 1.4.2
 

@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -117,6 +117,9 @@ By default, no. If you have the Loyalty Rewards for WooCommerce plugin active, a
 8. Settings page.
 
 == Changelog ==
+
+= 1.4.3 =
+* Fixed General settings tab missing on non-gift-card products.
 
 = 1.4.2 =
 * Added GitHub Actions workflow for automated WordPress.org deployment.
