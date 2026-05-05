@@ -150,21 +150,58 @@ class ProductPage {
 				<?php endif; ?>
 			</div>
 
+			<?php
+			/**
+			 * Filter whether to show the Recipient Name field on the product page.
+			 *
+			 * @param bool        $show    Whether to show the field. Default true.
+			 * @param \WC_Product $product Current product.
+			 */
+			$show_recipient_name = apply_filters( 'bgcw_show_recipient_name_field', true, $product );
+
+			/**
+			 * Filter whether to show the Recipient Email field on the product page.
+			 *
+			 * When false, the buyer's billing email is used as the recipient when the
+			 * gift card is created and the email validation is skipped.
+			 *
+			 * @param bool        $show    Whether to show the field. Default true.
+			 * @param \WC_Product $product Current product.
+			 */
+			$show_recipient_email = apply_filters( 'bgcw_show_recipient_email_field', true, $product );
+
+			/**
+			 * Filter whether to show the Personal Message field on the product page.
+			 *
+			 * @param bool        $show    Whether to show the field. Default true.
+			 * @param \WC_Product $product Current product.
+			 */
+			$show_personal_message = apply_filters( 'bgcw_show_personal_message_field', true, $product );
+
+			if ( $show_recipient_name || $show_recipient_email || $show_personal_message ) :
+			?>
 			<div class="bgcw-recipient-fields">
 				<h4><?php esc_html_e( 'Recipient Details', 'beltoft-gift-cards' ); ?></h4>
-				<p class="form-row form-row-first">
-					<label for="bgcw_recipient_name"><?php esc_html_e( 'Recipient Name', 'beltoft-gift-cards' ); ?></label>
-					<input type="text" name="bgcw_recipient_name" id="bgcw_recipient_name" class="input-text" />
-				</p>
-				<p class="form-row form-row-last">
-					<label for="bgcw_recipient_email"><?php esc_html_e( 'Recipient Email', 'beltoft-gift-cards' ); ?> <abbr class="required" title="<?php esc_attr_e( 'required', 'beltoft-gift-cards' ); ?>">*</abbr></label>
-					<input type="email" name="bgcw_recipient_email" id="bgcw_recipient_email" class="input-text" required />
-				</p>
-				<p class="form-row form-row-wide">
-					<label for="bgcw_message"><?php esc_html_e( 'Personal Message (optional)', 'beltoft-gift-cards' ); ?></label>
-					<textarea name="bgcw_message" id="bgcw_message" rows="3" class="input-text"></textarea>
-				</p>
+				<?php if ( $show_recipient_name ) : ?>
+					<p class="form-row form-row-first">
+						<label for="bgcw_recipient_name"><?php esc_html_e( 'Recipient Name', 'beltoft-gift-cards' ); ?></label>
+						<input type="text" name="bgcw_recipient_name" id="bgcw_recipient_name" class="input-text" />
+					</p>
+				<?php endif; ?>
+				<?php if ( $show_recipient_email ) : ?>
+					<p class="form-row form-row-last">
+						<label for="bgcw_recipient_email"><?php esc_html_e( 'Recipient Email', 'beltoft-gift-cards' ); ?> <abbr class="required" title="<?php esc_attr_e( 'required', 'beltoft-gift-cards' ); ?>">*</abbr></label>
+						<input type="email" name="bgcw_recipient_email" id="bgcw_recipient_email" class="input-text" required />
+					</p>
+				<?php endif; ?>
+				<?php if ( $show_personal_message ) : ?>
+					<p class="form-row form-row-wide">
+						<label for="bgcw_message"><?php esc_html_e( 'Personal Message (optional)', 'beltoft-gift-cards' ); ?></label>
+						<textarea name="bgcw_message" id="bgcw_message" rows="3" class="input-text"></textarea>
+					</p>
+				<?php endif; ?>
 			</div>
+			<?php endif; ?>
 
 			<?php
 			/**
@@ -244,11 +281,14 @@ class ProductPage {
 			}
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Missing
-		$email = isset( $_POST['bgcw_recipient_email'] ) ? sanitize_email( wp_unslash( $_POST['bgcw_recipient_email'] ) ) : '';
-		if ( empty( $email ) || ! is_email( $email ) ) {
-			wc_add_notice( __( 'Please enter a valid recipient email address.', 'beltoft-gift-cards' ), 'error' );
-			return false;
+		/** This filter is documented in src/Frontend/ProductPage.php */
+		if ( apply_filters( 'bgcw_show_recipient_email_field', true, $product ) ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$email = isset( $_POST['bgcw_recipient_email'] ) ? sanitize_email( wp_unslash( $_POST['bgcw_recipient_email'] ) ) : '';
+			if ( empty( $email ) || ! is_email( $email ) ) {
+				wc_add_notice( __( 'Please enter a valid recipient email address.', 'beltoft-gift-cards' ), 'error' );
+				return false;
+			}
 		}
 
 		/**

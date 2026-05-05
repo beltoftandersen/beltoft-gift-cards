@@ -24,15 +24,22 @@ class TransactionRepository {
 		global $wpdb;
 
 		$defaults = [
-			'gift_card_id' => 0,
-			'order_id'     => null,
-			'type'         => 'credit',
-			'amount'       => 0,
+			'gift_card_id'  => 0,
+			'order_id'      => null,
+			'type'          => 'credit',
+			'amount'        => 0,
 			'balance_after' => 0,
-			'note'         => '',
+			'note'          => '',
+			'note_key'      => '',
+			'note_args'     => null,
 		];
 
 		$data = wp_parse_args( $data, $defaults );
+
+		// Allow callers to pass an array for note_args; encode to JSON for storage.
+		if ( is_array( $data['note_args'] ) ) {
+			$data['note_args'] = wp_json_encode( $data['note_args'] );
+		}
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table with no WP API.
 		$result = $wpdb->insert(
@@ -45,6 +52,8 @@ class TransactionRepository {
 				'%f', // amount.
 				'%f', // balance_after.
 				'%s', // note.
+				'%s', // note_key.
+				'%s', // note_args.
 			]
 		);
 

@@ -2,7 +2,7 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.4.3
+- Stable version: 1.4.4
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
@@ -87,6 +87,15 @@ For Bricks, Elementor, or other page builders that replace WooCommerce templates
 Developers can extend the plugin:
 
 - `bgcw_gift_card_created` — fires after a gift card is created (used by the email system)
+- `bgcw_show_recipient_name_field` — return false to hide the Recipient Name field on the product page
+- `bgcw_show_recipient_email_field` — return false to hide the Recipient Email field on the product page. The buyer's billing email is used as the recipient and the email validation is skipped
+- `bgcw_show_personal_message_field` — return false to hide the Personal Message field on the product page
+
+Example — hide the Recipient Email field on every gift card product:
+
+```php
+add_filter( 'bgcw_show_recipient_email_field', '__return_false' );
+```
 
 ## Translations
 
@@ -94,6 +103,12 @@ Developers can extend the plugin:
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.4.4
+
+- Added: Show/Hide toggle for gift card codes on the My Account → Gift Cards page (codes are masked by default).
+- Added: Filters `bgcw_show_recipient_name_field`, `bgcw_show_recipient_email_field`, and `bgcw_show_personal_message_field` to hide individual recipient fields on the product page.
+- Fixed: Transaction notes now translate at display time instead of being stored in the locale that was active when the row was written.
 
 ### 1.4.3
 

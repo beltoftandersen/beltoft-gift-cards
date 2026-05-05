@@ -4,6 +4,7 @@ namespace Bgcw\Checkout;
 
 use Bgcw\Cart\CartHandler;
 use Bgcw\GiftCard\Repository;
+use Bgcw\GiftCard\TransactionNote;
 use Bgcw\GiftCard\TransactionRepository;
 
 defined( 'ABSPATH' ) || exit;
@@ -149,11 +150,8 @@ class OrderProcessor {
 					'type'          => 'debit',
 					'amount'        => $amount,
 					'balance_after' => $new_balance,
-					'note'          => sprintf(
-						/* translators: %s: order number */
-						__( 'Used on order #%s', 'beltoft-gift-cards' ),
-						$order->get_order_number()
-					),
+					'note_key'      => TransactionNote::KEY_ORDER_USED,
+					'note_args'     => [ 'order_number' => (string) $order->get_order_number() ],
 				] );
 
 				// Mark as redeemed if balance is zero.
@@ -279,11 +277,8 @@ class OrderProcessor {
 				'type'          => 'refund',
 				'amount'        => $restored,
 				'balance_after' => $new_balance,
-				'note'          => sprintf(
-					/* translators: %s: order number */
-					__( 'Refunded from order #%s', 'beltoft-gift-cards' ),
-					$order->get_order_number()
-				),
+				'note_key'      => TransactionNote::KEY_ORDER_REFUNDED,
+				'note_args'     => [ 'order_number' => (string) $order->get_order_number() ],
 			] );
 
 			/**
@@ -383,11 +378,8 @@ class OrderProcessor {
 				'type'          => 'refund',
 				'amount'        => $restored,
 				'balance_after' => $new_balance,
-				'note'          => sprintf(
-					/* translators: %s: order number */
-					__( 'Partial refund from order #%s', 'beltoft-gift-cards' ),
-					$order->get_order_number()
-				),
+				'note_key'      => TransactionNote::KEY_ORDER_PARTIAL_REFUND,
+				'note_args'     => [ 'order_number' => (string) $order->get_order_number() ],
 			] );
 
 			$actual_restored += $restored;

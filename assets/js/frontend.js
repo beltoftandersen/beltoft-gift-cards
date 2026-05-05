@@ -191,5 +191,22 @@
 			$btn.html($row.is(':visible') ? '&#9650;' : '&#9660;');
 		});
 
+		/* ── My Account: Toggle Gift Card Code Visibility ───── */
+
+		$('.bgcw-toggle-code').on('click', function() {
+			var $btn    = $(this);
+			var $code   = $btn.siblings('.bgcw-code');
+			var $masked = $code.find('.bgcw-code-masked');
+			var $full   = $code.find('.bgcw-code-full');
+			var showing = $full.is(':visible');
+
+			$masked.prop('hidden', !showing);
+			$full.prop('hidden', showing);
+
+			$btn.attr('aria-pressed', showing ? 'false' : 'true');
+			$btn.text(showing ? $btn.data('show-label') : $btn.data('hide-label'));
+			$btn.attr('title', showing ? $btn.data('show-label') : $btn.data('hide-label'));
+		});
+
 	});
 })(jQuery);

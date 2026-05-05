@@ -69,6 +69,8 @@ class Installer {
 			amount decimal(10,2) NOT NULL DEFAULT 0.00,
 			balance_after decimal(10,2) NOT NULL DEFAULT 0.00,
 			note varchar(255) NOT NULL DEFAULT '',
+			note_key varchar(64) NOT NULL DEFAULT '',
+			note_args text DEFAULT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY  (id),
 			KEY gift_card_id (gift_card_id),

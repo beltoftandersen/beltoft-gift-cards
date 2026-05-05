@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.4.3
+Stable tag: 1.4.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -73,6 +73,13 @@ Beltoft Gift Cards for WooCommerce adds a gift card product type to your store. 
 Developers can extend the plugin:
 
 * `bgcw_gift_card_created` — fires after a gift card is created (used by the email system).
+* `bgcw_show_recipient_name_field` — return false to hide the Recipient Name field on the product page.
+* `bgcw_show_recipient_email_field` — return false to hide the Recipient Email field on the product page. The buyer's billing email is used as the recipient and the email validation is skipped.
+* `bgcw_show_personal_message_field` — return false to hide the Personal Message field on the product page.
+
+Example — hide the Recipient Email field on every gift card product:
+
+`add_filter( 'bgcw_show_recipient_email_field', '__return_false' );`
 
 == Frequently Asked Questions ==
 
@@ -117,6 +124,11 @@ By default, no. If you have the Loyalty Rewards for WooCommerce plugin active, a
 8. Settings page.
 
 == Changelog ==
+
+= 1.4.4 =
+* Added: Show/Hide toggle for gift card codes on the My Account → Gift Cards page (codes are masked by default).
+* Added: Filters `bgcw_show_recipient_name_field`, `bgcw_show_recipient_email_field`, and `bgcw_show_personal_message_field` to hide individual recipient fields on the product page.
+* Fixed: Transaction notes now translate at display time instead of being stored in the locale that was active when the row was written.
 
 = 1.4.3 =
 * Fixed General settings tab missing on non-gift-card products.

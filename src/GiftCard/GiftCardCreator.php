@@ -148,11 +148,8 @@ class GiftCardCreator {
 			'type'          => 'credit',
 			'amount'        => $amount,
 			'balance_after' => $amount,
-			'note'          => sprintf(
-				/* translators: %s: order number */
-				__( 'Gift card created from order #%s', 'beltoft-gift-cards' ),
-				$order->get_order_number()
-			),
+			'note_key'      => TransactionNote::KEY_ORDER_CREATED,
+			'note_args'     => [ 'order_number' => (string) $order->get_order_number() ],
 		] );
 
 		/**
@@ -205,7 +202,7 @@ class GiftCardCreator {
 			'type'          => 'credit',
 			'amount'        => $amount,
 			'balance_after' => $amount,
-			'note'          => __( 'Manually created by admin', 'beltoft-gift-cards' ),
+			'note_key'      => TransactionNote::KEY_MANUAL_CREATED,
 		] );
 
 		if ( ! empty( $data['recipient_email'] ) ) {

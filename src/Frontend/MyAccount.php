@@ -3,6 +3,7 @@
 namespace Bgcw\Frontend;
 
 use Bgcw\GiftCard\Repository;
+use Bgcw\GiftCard\TransactionNote;
 use Bgcw\GiftCard\TransactionRepository;
 use Bgcw\Cart\CartHandler;
 
@@ -108,7 +109,18 @@ class MyAccount {
 						<?php foreach ( $all_cards as $gc ) : ?>
 							<tr class="bgcw-card-row" data-card-id="<?php echo esc_attr( $gc->id ); ?>">
 								<td>
-									<code><?php echo esc_html( CartHandler::mask_code( $gc->code ) ); ?></code>
+									<code class="bgcw-code">
+										<span class="bgcw-code-masked"><?php echo esc_html( CartHandler::mask_code( $gc->code ) ); ?></span>
+										<span class="bgcw-code-full" hidden><?php echo esc_html( $gc->code ); ?></span>
+									</code>
+									<button
+										type="button"
+										class="bgcw-toggle-code"
+										aria-pressed="false"
+										data-show-label="<?php esc_attr_e( 'Show code', 'beltoft-gift-cards' ); ?>"
+										data-hide-label="<?php esc_attr_e( 'Hide code', 'beltoft-gift-cards' ); ?>"
+										title="<?php esc_attr_e( 'Show code', 'beltoft-gift-cards' ); ?>"
+									><?php esc_html_e( 'Show', 'beltoft-gift-cards' ); ?></button>
 									<button type="button" class="bgcw-toggle-transactions" title="<?php esc_attr_e( 'Show transactions', 'beltoft-gift-cards' ); ?>">&#9660;</button>
 								</td>
 								<td><?php echo wp_kses_post( wc_price( $gc->initial_amount, [ 'currency' => $gc->currency ] ) ); ?></td>
@@ -173,7 +185,7 @@ $tx_label = $tx_labels[ $tx->type ] ?? ucfirst( $tx->type );
 															?>
 														</td>
 														<td><?php echo wp_kses_post( wc_price( $tx->balance_after, [ 'currency' => $gc->currency ] ) ); ?></td>
-														<td><?php echo esc_html( $tx->note ); ?></td>
+														<td><?php echo esc_html( TransactionNote::format( $tx ) ); ?></td>
 													</tr>
 												<?php endforeach; ?>
 											</tbody>
