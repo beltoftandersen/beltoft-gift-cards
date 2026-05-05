@@ -104,6 +104,10 @@ add_filter( 'bgcw_show_recipient_email_field', '__return_false' );
 
 ## Changelog
 
+### 1.4.5
+
+- Fixed: Initial "Show" button label on the My Account → Gift Cards page now reads "Show code", matching the toggled "Hide code" / "Show code" labels for consistency.
+
 ### 1.4.4
 
 - Added: Show/Hide toggle for gift card codes on the My Account → Gift Cards page (codes are masked by default).

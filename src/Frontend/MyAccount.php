@@ -120,7 +120,7 @@ class MyAccount {
 										data-show-label="<?php esc_attr_e( 'Show code', 'beltoft-gift-cards' ); ?>"
 										data-hide-label="<?php esc_attr_e( 'Hide code', 'beltoft-gift-cards' ); ?>"
 										title="<?php esc_attr_e( 'Show code', 'beltoft-gift-cards' ); ?>"
-									><?php esc_html_e( 'Show', 'beltoft-gift-cards' ); ?></button>
+									><?php esc_html_e( 'Show code', 'beltoft-gift-cards' ); ?></button>
 									<button type="button" class="bgcw-toggle-transactions" title="<?php esc_attr_e( 'Show transactions', 'beltoft-gift-cards' ); ?>">&#9660;</button>
 								</td>
 								<td><?php echo wp_kses_post( wc_price( $gc->initial_amount, [ 'currency' => $gc->currency ] ) ); ?></td>

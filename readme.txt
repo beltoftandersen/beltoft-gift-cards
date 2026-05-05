@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,9 @@ By default, no. If you have the Loyalty Rewards for WooCommerce plugin active, a
 8. Settings page.
 
 == Changelog ==
+
+= 1.4.5 =
+* Fixed: Initial "Show" button label on the My Account → Gift Cards page now reads "Show code", matching the toggled "Hide code" / "Show code" labels for consistency.
 
 = 1.4.4 =
 * Added: Show/Hide toggle for gift card codes on the My Account → Gift Cards page (codes are masked by default).
