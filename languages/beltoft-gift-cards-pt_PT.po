@@ -771,3 +771,15 @@ msgstr ""
 
 #~ msgid "https://chimkins.com/"
 #~ msgstr "https://chimkins.com/"
+
+#: src/Admin/SettingsPage.php
+msgid "Coupons"
+msgstr "Cupões"
+
+#: src/Admin/SettingsPage.php
+msgid "Block Coupons on Gift Card Products"
+msgstr "Bloquear cupões em produtos de cartão presente"
+
+#: src/Admin/SettingsPage.php
+msgid "Prevent WooCommerce coupons from discounting gift card products. Other items in the cart are still discounted. Recommended, as discounted gift cards can be resold or redeemed at full value."
+msgstr "Impede que os cupões do WooCommerce apliquem desconto a produtos de cartão presente. Os outros artigos no carrinho continuam a ter desconto. Recomendado, pois cartões presente com desconto podem ser revendidos ou utilizados pelo valor total."

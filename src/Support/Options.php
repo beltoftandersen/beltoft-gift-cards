@@ -28,6 +28,7 @@ class Options {
 			'product_form_placement'    => 'auto',
 			'allow_points_for_gift_cards' => '1',
 			'create_on_status'          => 'processing',
+			'block_coupons_on_gift_cards' => '1',
 			'cleanup_on_uninstall'      => '0',
 		];
 	}
@@ -78,6 +79,7 @@ class Options {
 			'product_form_placement'      => 'select',
 			'allow_points_for_gift_cards' => 'bool',
 			'create_on_status'            => 'select',
+			'block_coupons_on_gift_cards' => 'bool',
 			'cleanup_on_uninstall'        => 'bool',
 		];
 

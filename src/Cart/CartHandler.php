@@ -3,6 +3,7 @@
 namespace Bgcw\Cart;
 
 use Bgcw\GiftCard\Repository;
+use Bgcw\Support\Options;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,6 +18,7 @@ class CartHandler {
 		add_filter( 'woocommerce_cart_totals_coupon_label', [ __CLASS__, 'coupon_label' ], 10, 2 );
 		add_filter( 'woocommerce_coupon_is_valid', [ __CLASS__, 'validate_coupon' ], 10, 2 );
 		add_filter( 'woocommerce_coupon_message', [ __CLASS__, 'coupon_message' ], 10, 3 );
+		add_filter( 'woocommerce_coupon_is_valid_for_product', [ __CLASS__, 'coupon_valid_for_product' ], 10, 4 );
 
 		// Sync session tracking when coupons are added/removed.
 		add_action( 'woocommerce_applied_coupon', [ __CLASS__, 'on_coupon_applied' ] );
@@ -125,6 +127,45 @@ class CartHandler {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Prevent regular coupons from discounting gift card products.
+	 *
+	 * A discounted gift card is redeemed at its full face value, so allowing
+	 * coupons on gift card line items lets a buyer stack the discount twice.
+	 * Gift card codes themselves (virtual coupons) are still allowed so a
+	 * gift card can pay for another gift card.
+	 *
+	 * @param bool        $valid   Whether the coupon applies to this product.
+	 * @param \WC_Product $product Product being checked.
+	 * @param \WC_Coupon  $coupon  Coupon object.
+	 * @param array       $values  Cart item values.
+	 * @return bool
+	 */
+	public static function coupon_valid_for_product( $valid, $product, $coupon, $values ) {
+		if ( ! $valid || Options::get( 'block_coupons_on_gift_cards' ) !== '1' ) {
+			return $valid;
+		}
+
+		if ( ! $product instanceof \WC_Product || $product->get_type() !== 'gift-card' ) {
+			return $valid;
+		}
+
+		if ( self::is_gift_card_coupon( $coupon->get_code() ) ) {
+			return $valid;
+		}
+
+		/**
+		 * Filter whether a regular coupon may discount a gift card product.
+		 *
+		 * Return true to allow a specific coupon (e.g. a deliberate gift card promotion).
+		 *
+		 * @param bool        $allowed Default false when blocking is enabled.
+		 * @param \WC_Coupon  $coupon  Coupon object.
+		 * @param \WC_Product $product Gift card product.
+		 */
+		return (bool) apply_filters( 'bgcw_coupon_valid_for_gift_card', false, $coupon, $product );
 	}
 
 	/**

@@ -115,6 +115,16 @@ class SettingsPage {
 			);
 		}
 
+		// ── Coupons Section ──
+		add_settings_section( 'bgcw_coupons', __( 'Coupons', 'beltoft-gift-cards' ), '__return_null', $settings_slug );
+		self::add_checkbox(
+			'block_coupons_on_gift_cards',
+			__( 'Block Coupons on Gift Card Products', 'beltoft-gift-cards' ),
+			'bgcw_coupons',
+			$settings_slug,
+			__( 'Prevent WooCommerce coupons from discounting gift card products. Other items in the cart are still discounted. Recommended, as discounted gift cards can be resold or redeemed at full value.', 'beltoft-gift-cards' )
+		);
+
 		// ── Order Processing Section ──
 		add_settings_section( 'bgcw_order', __( 'Order Processing', 'beltoft-gift-cards' ), '__return_null', $settings_slug );
 		self::add_select( 'create_on_status', __( 'Create & Send Gift Cards On', 'beltoft-gift-cards' ), 'bgcw_order', [

@@ -2,8 +2,8 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.4.6
-- Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+ (tested up to WordPress 7.0)
+- Stable version: 1.4.7
+- Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+ (tested up to WordPress 7.1)
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
 
@@ -17,6 +17,7 @@ This plugin adds a gift card product type to your WooCommerce store. Customers p
 - Email delivery using WooCommerce email templates — same look as your order emails
 - Coupon field redemption — codes work in the standard WooCommerce coupon field, no setup required
 - Optional dedicated "Apply Gift Card" field on cart/checkout via settings or shortcode
+- Block regular coupons from discounting gift card products (on by default) so a discounted card can't be redeemed at full value
 - Auto-apply from email — the "Shop Now" button in the delivery email automatically applies the gift card to the recipient's cart
 - Virtual coupon integration — gift card discounts display natively between subtotal and total with WooCommerce [Remove] link
 - Balance tracking with partial redemption — remaining balance carries over
@@ -90,6 +91,7 @@ Developers can extend the plugin:
 - `bgcw_show_recipient_name_field` — return false to hide the Recipient Name field on the product page
 - `bgcw_show_recipient_email_field` — return false to hide the Recipient Email field on the product page. The buyer's billing email is used as the recipient and the email validation is skipped
 - `bgcw_show_personal_message_field` — return false to hide the Personal Message field on the product page
+- `bgcw_coupon_valid_for_gift_card` — return true to let a specific coupon discount gift card products when coupon blocking is enabled
 
 Example — hide the Recipient Email field on every gift card product:
 
@@ -103,6 +105,12 @@ add_filter( 'bgcw_show_recipient_email_field', '__return_false' );
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.4.7
+
+- Added: "Block Coupons on Gift Card Products" setting (enabled by default). WooCommerce coupons no longer discount gift card line items, which closes a loophole where a discounted gift card was redeemed at full face value. Other items in the cart are still discounted.
+- Added: `bgcw_coupon_valid_for_gift_card` filter to allow specific coupons on gift card products.
+- Tested with WordPress 7.1 and WooCommerce 10.7.
 
 ### 1.4.6
 
