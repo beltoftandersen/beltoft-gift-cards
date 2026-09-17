@@ -286,8 +286,9 @@ class GiftCardListTable extends \WP_List_Table {
 			$args['status'] = sanitize_key( wp_unslash( $_GET['status'] ) );
 		}
 
-		if ( ! empty( $_GET['s'] ) ) {
-			$args['search'] = sanitize_text_field( wp_unslash( $_GET['s'] ) );
+		// Search box is submitted via POST (same form as bulk actions), so read from $_REQUEST.
+		if ( ! empty( $_REQUEST['s'] ) ) {
+			$args['search'] = sanitize_text_field( wp_unslash( $_REQUEST['s'] ) );
 		}
 
 		if ( isset( $_GET['orderby'] ) ) {
