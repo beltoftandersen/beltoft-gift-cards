@@ -39,10 +39,11 @@ class Repository {
 			'order_id'        => null,
 			'customer_id'     => null,
 			'status'          => 'active',
+			'source'          => Source::PROMOTION,
 			'expires_at'      => null,
 		];
 
-		$data = wp_parse_args( $data, $defaults );
+		$data = array_merge( $defaults, array_intersect_key( $data, $defaults ) );
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table with no WP API.
 		$result = $wpdb->insert(
@@ -61,6 +62,7 @@ class Repository {
 				'%d', // order_id.
 				'%d', // customer_id.
 				'%s', // status.
+				'%s', // source.
 				'%s', // expires_at.
 			]
 		);

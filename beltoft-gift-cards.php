@@ -44,7 +44,7 @@ define( 'BGCW_VERSION', '1.4.8' );
 define( 'BGCW_PATH', plugin_dir_path( __FILE__ ) );
 define( 'BGCW_URL', plugin_dir_url( __FILE__ ) );
 define( 'BGCW_BASENAME', plugin_basename( __FILE__ ) );
-define( 'BGCW_DB_VERSION', '1.2' );
+define( 'BGCW_DB_VERSION', '1.3' );
 
 /* ── Activation / deactivation ─────────────────────────────────── */
 register_activation_hook(

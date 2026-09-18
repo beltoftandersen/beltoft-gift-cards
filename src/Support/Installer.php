@@ -50,6 +50,7 @@ class Installer {
 			order_id bigint(20) unsigned DEFAULT NULL,
 			customer_id bigint(20) unsigned DEFAULT NULL,
 			status varchar(20) NOT NULL DEFAULT 'active',
+			source varchar(20) NOT NULL DEFAULT '',
 			expires_at datetime DEFAULT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY  (id),
@@ -58,7 +59,8 @@ class Installer {
 			KEY order_id (order_id),
 			KEY customer_id (customer_id),
 			KEY status (status),
-			KEY status_expires (status, expires_at)
+			KEY status_expires (status, expires_at),
+			KEY source (source)
 		) {$charset};
 
 		CREATE TABLE {$transactions_table} (
@@ -89,8 +91,26 @@ class Installer {
 
 		if ( version_compare( $installed, BGCW_DB_VERSION, '<' ) ) {
 			self::create_tables();
+
+			if ( version_compare( $installed, '1.3', '<' ) ) {
+				self::backfill_source();
+			}
+
 			update_option( self::DB_VERSION_KEY, BGCW_DB_VERSION );
 		}
+	}
 
+	/**
+	 * 1.3: classify pre-existing rows. Cards from orders are paid; older
+	 * manual cards are assumed free (promotion) and can be corrected via REST.
+	 */
+	private static function backfill_source() {
+		global $wpdb;
+		$table = $wpdb->prefix . 'bgcw_gift_cards';
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-off migration on custom table.
+		$wpdb->query( "UPDATE {$table} SET source = 'order' WHERE source = '' AND order_id IS NOT NULL" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- One-off migration on custom table.
+		$wpdb->query( "UPDATE {$table} SET source = 'promotion' WHERE source = '' AND order_id IS NULL" );
 	}
 }
