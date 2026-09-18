@@ -434,6 +434,61 @@ class Repository {
 	}
 
 	/**
+	 * Update editable gift card fields.
+	 *
+	 * @param int   $id     Gift card ID.
+	 * @param array $fields Whitelisted keys: status, source, sender_name, sender_email,
+	 *                      recipient_name, recipient_email, message, expires_at (null allowed).
+	 * @return bool
+	 */
+	public static function update( $id, $fields ) {
+		$allowed = [
+			'status'          => '%s',
+			'source'          => '%s',
+			'sender_name'     => '%s',
+			'sender_email'    => '%s',
+			'recipient_name'  => '%s',
+			'recipient_email' => '%s',
+			'message'         => '%s',
+			'expires_at'      => '%s',
+		];
+
+		$data    = [];
+		$formats = [];
+		foreach ( $allowed as $key => $format ) {
+			if ( ! array_key_exists( $key, $fields ) ) {
+				continue;
+			}
+			$data[ $key ] = $fields[ $key ];
+			$formats[]    = $format;
+		}
+
+		if ( empty( $data ) ) {
+			return false;
+		}
+		if ( isset( $data['status'] ) && ! in_array( $data['status'], self::VALID_STATUSES, true ) ) {
+			return false;
+		}
+		if ( isset( $data['source'] ) && ! Source::is_valid( $data['source'] ) ) {
+			return false;
+		}
+
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Custom table.
+		$result = $wpdb->update( self::table(), $data, [ 'id' => $id ], $formats, [ '%d' ] );
+
+		if ( false === $result ) {
+			return false;
+		}
+
+		self::$code_cache = [];
+		wp_cache_delete( 'bgcw_gift_card_' . $id, 'bgcw' );
+
+		return true;
+	}
+
+	/**
 	 * Build WHERE clause and parameter values from filter args.
 	 *
 	 * @param array $args Query args with optional 'status' and 'search' keys.
@@ -448,6 +503,11 @@ class Repository {
 		if ( ! empty( $args['status'] ) ) {
 			$clauses[] = 'status = %s';
 			$values[]  = $args['status'];
+		}
+
+		if ( ! empty( $args['source'] ) ) {
+			$clauses[] = 'source = %s';
+			$values[]  = $args['source'];
 		}
 
 		if ( ! empty( $args['search'] ) ) {
@@ -478,6 +538,7 @@ class Repository {
 			'orderby'  => 'created_at',
 			'order'    => 'DESC',
 			'status'   => '',
+			'source'   => '',
 			'search'   => '',
 		];
 
@@ -485,7 +546,7 @@ class Repository {
 
 		list( $where_sql, $values ) = self::build_where( $args );
 
-		$allowed_orderby = [ 'id', 'code', 'balance', 'initial_amount', 'status', 'created_at', 'expires_at' ];
+		$allowed_orderby = [ 'id', 'code', 'balance', 'initial_amount', 'status', 'source', 'created_at', 'expires_at' ];
 		$orderby         = in_array( $args['orderby'], $allowed_orderby, true ) ? $args['orderby'] : 'created_at';
 		$order           = strtoupper( $args['order'] ) === 'ASC' ? 'ASC' : 'DESC';
 
