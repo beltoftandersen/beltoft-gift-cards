@@ -17,7 +17,13 @@ class OrderProcessor {
 	 */
 	public static function init() {
 		// Save pending deductions when order is created.
+		//
+		// Classic (shortcode) checkout fires woocommerce_checkout_order_created.
+		// Block checkout (Store API) never fires that hook; it fires
+		// woocommerce_store_api_checkout_order_processed instead. Both handlers
+		// accept a WC_Order, so we hook both paths to the same callbacks.
 		add_action( 'woocommerce_checkout_order_created', [ __CLASS__, 'save_pending_deductions' ] );
+		add_action( 'woocommerce_store_api_checkout_order_processed', [ __CLASS__, 'save_pending_deductions' ] );
 
 		// Deduct balances on payment / status change (idempotency-guarded).
 		add_action( 'woocommerce_payment_complete', [ __CLASS__, 'deduct_gift_card_balances' ] );
@@ -31,8 +37,9 @@ class OrderProcessor {
 		// Handle partial refunds.
 		add_action( 'woocommerce_order_partially_refunded', [ __CLASS__, 'handle_partial_refund' ], 10, 2 );
 
-		// Clear session after order is placed.
+		// Clear session after order is placed (classic and block checkout).
 		add_action( 'woocommerce_checkout_order_created', [ __CLASS__, 'clear_session' ], 100 );
+		add_action( 'woocommerce_store_api_checkout_order_processed', [ __CLASS__, 'clear_session' ], 100 );
 	}
 
 	/**

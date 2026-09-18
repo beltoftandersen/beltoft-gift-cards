@@ -42,3 +42,33 @@ bgcw_assert_eq( 40.0, (float) Repository::find( $paid )->balance, 'paid card bal
 // Cleanup.
 $order->delete( true );
 foreach ( [ $paid, $free ] as $id ) { TransactionRepository::delete_by_gift_card( $id ); Repository::delete( $id ); }
+
+// Both classic and block (Store API) checkout must reach the same handlers.
+bgcw_assert( has_action( 'woocommerce_checkout_order_created', [ 'Bgcw\\Checkout\\OrderProcessor', 'save_pending_deductions' ] ) !== false, 'classic checkout hook registered' );
+bgcw_assert( has_action( 'woocommerce_store_api_checkout_order_processed', [ 'Bgcw\\Checkout\\OrderProcessor', 'save_pending_deductions' ] ) !== false, 'store api hook registered' );
+
+$paid2 = Repository::insert( [ 'code' => $tag . '-PAID2', 'initial_amount' => 50, 'balance' => 50, 'source' => 'paid_offline' ] );
+
+$order2 = wc_create_order();
+$c2 = new WC_Order_Item_Coupon();
+$c2->set_code( $tag . '-PAID2' );
+$c2->set_discount( 5.00 );
+$c2->set_discount_tax( 0 );
+$order2->add_item( $c2 );
+$order2->save();
+
+// Simulate block checkout, which fires this action instead of
+// woocommerce_checkout_order_created.
+do_action( 'woocommerce_store_api_checkout_order_processed', $order2 );
+$order2 = wc_get_order( $order2->get_id() );
+
+$by_code2 = [];
+foreach ( $order2->get_items( 'coupon' ) as $ci ) {
+	$by_code2[ strtoupper( $ci->get_code() ) ] = $ci;
+}
+bgcw_assert_eq( '5', (string) $order2->get_meta( '_bgcw_pending_deductions' )[ $tag . '-PAID2' ], 'block checkout stamps pending deductions' );
+bgcw_assert_eq( 'paid_offline', $by_code2[ $tag . '-PAID2' ]->get_meta( 'bgcw_source' ), 'block checkout stamps coupon source' );
+
+$order2->delete( true );
+TransactionRepository::delete_by_gift_card( $paid2 );
+Repository::delete( $paid2 );

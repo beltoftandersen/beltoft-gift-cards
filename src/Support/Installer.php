@@ -12,6 +12,11 @@ class Installer {
 	 * Activation hook.
 	 */
 	public static function activate() {
+		// dbDelta is idempotent, so re-run it unconditionally on activation. This
+		// repairs a table that was dropped (e.g. deactivate/reactivate cycles)
+		// even when the stored DB version already matches BGCW_DB_VERSION and
+		// maybe_upgrade() would otherwise no-op.
+		self::create_tables();
 		self::maybe_upgrade();
 
 		if ( false === get_option( Options::OPTION ) ) {
