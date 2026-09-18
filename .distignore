@@ -3,3 +3,6 @@
 .gitignore
 .distignore
 CLAUDE.md
+.superpowers
+tests
+docs
