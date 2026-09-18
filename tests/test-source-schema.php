@@ -25,9 +25,12 @@ $id2 = Repository::insert( [ 'code' => 'TEST-SRC-' . wp_rand( 1000, 9999 ), 'ini
 bgcw_assert_eq( 'paid_offline', Repository::find( $id1 )->source, 'insert stores explicit source' );
 bgcw_assert_eq( 'promotion', Repository::find( $id2 )->source, 'insert defaults source to promotion' );
 
+// Cleanup any leftover legacy rows from prior test runs.
+$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}bgcw_gift_cards WHERE code LIKE %s", 'TEST-LEG-%' ) );
+
 // Activation-path regression: legacy rows from pre-migration must be backfilled.
 update_option( 'bgcw_db_version', '1.2' );
-$legacy_id = $wpdb->insert(
+$inserted = $wpdb->insert(
 	$wpdb->prefix . 'bgcw_gift_cards',
 	[
 		'code'            => 'TEST-LEG-' . wp_rand( 1000, 9999 ),
@@ -39,7 +42,8 @@ $legacy_id = $wpdb->insert(
 	],
 	[ '%s', '%f', '%f', '%s', '%s', '%s' ]
 );
-bgcw_assert_eq( 1, $legacy_id, 'legacy row inserted' );
+$legacy_id = (int) $wpdb->insert_id;
+bgcw_assert( false !== $inserted && $legacy_id > 0, 'legacy row inserted' );
 Bgcw\Support\Installer::activate();
 bgcw_assert_eq( '1.3', get_option( 'bgcw_db_version' ), 'activation updates db version to 1.3' );
 $legacy_row = $wpdb->get_row( $wpdb->prepare( "SELECT source FROM {$wpdb->prefix}bgcw_gift_cards WHERE id = %d", $legacy_id ) );
