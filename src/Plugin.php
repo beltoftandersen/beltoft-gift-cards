@@ -77,6 +77,9 @@ class Plugin {
 		add_action( 'woocommerce_blocks_cart_block_registration', [ __CLASS__, 'register_block_integration' ] );
 		add_action( 'woocommerce_blocks_checkout_block_registration', [ __CLASS__, 'register_block_integration' ] );
 
+		// REST API for external systems (accounting, ERP).
+		add_action( 'rest_api_init', [ __CLASS__, 'register_rest_routes' ] );
+
 		// Assets.
 		add_action( 'admin_enqueue_scripts', [ __CLASS__, 'enqueue_admin_assets' ] );
 		add_action( 'wp_enqueue_scripts', [ __CLASS__, 'enqueue_frontend_assets' ] );
@@ -113,6 +116,13 @@ class Plugin {
 	 */
 	public static function register_block_integration( $registry ) {
 		$registry->register( new BlockIntegration() );
+	}
+
+	/**
+	 * Register REST controllers.
+	 */
+	public static function register_rest_routes() {
+		( new \Bgcw\Rest\GiftCardsController() )->register_routes();
 	}
 
 	/**
