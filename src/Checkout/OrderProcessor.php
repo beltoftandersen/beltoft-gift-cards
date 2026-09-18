@@ -4,6 +4,7 @@ namespace Bgcw\Checkout;
 
 use Bgcw\Cart\CartHandler;
 use Bgcw\GiftCard\Repository;
+use Bgcw\GiftCard\Source;
 use Bgcw\GiftCard\TransactionNote;
 use Bgcw\GiftCard\TransactionRepository;
 
@@ -43,23 +44,45 @@ class OrderProcessor {
 	 */
 	public static function save_pending_deductions( $order ) {
 		$deductions = [];
+		$gc_items   = [];
 
 		foreach ( $order->get_items( 'coupon' ) as $coupon_item ) {
 			$code = strtoupper( $coupon_item->get_code() );
-			if ( CartHandler::is_gift_card_coupon( $code ) ) {
-				// Include coupon tax so stored deductions match the full order-level discount impact.
-				$discount = round( (float) $coupon_item->get_discount() + (float) $coupon_item->get_discount_tax(), 2 );
-				if ( $discount > 0 ) {
-					$deductions[ $code ] = $discount;
-				}
+			if ( ! CartHandler::is_gift_card_coupon( $code ) ) {
+				continue;
+			}
+			$gc_items[ $code ] = $coupon_item;
+
+			// Include coupon tax so stored deductions match the full order-level discount impact.
+			$discount = round( (float) $coupon_item->get_discount() + (float) $coupon_item->get_discount_tax(), 2 );
+			if ( $discount > 0 ) {
+				$deductions[ $code ] = $discount;
 			}
 		}
 
-		if ( empty( $deductions ) ) {
+		if ( empty( $gc_items ) ) {
 			return;
 		}
 
-		$order->update_meta_data( '_bgcw_pending_deductions', $deductions );
+		// Stamp each gift card coupon line with its origin so exports and
+		// accounting systems can tell paid from free cards at rest.
+		$cards = Repository::find_by_codes( array_keys( $gc_items ) );
+		foreach ( $gc_items as $code => $coupon_item ) {
+			$gc = $cards[ $code ] ?? null;
+			if ( ! $gc ) {
+				continue;
+			}
+			$source = (string) ( $gc->source ?? '' );
+			$coupon_item->update_meta_data( 'bgcw_gift_card_id', (int) $gc->id );
+			$coupon_item->update_meta_data( 'bgcw_source', $source );
+			$coupon_item->update_meta_data( 'bgcw_is_paid', Source::is_paid( $source ) ? 'yes' : 'no' );
+			$coupon_item->update_meta_data( 'bgcw_source_order_id', (int) $gc->order_id );
+			$coupon_item->save();
+		}
+
+		if ( ! empty( $deductions ) ) {
+			$order->update_meta_data( '_bgcw_pending_deductions', $deductions );
+		}
 		$order->save();
 	}
 
@@ -105,6 +128,9 @@ class OrderProcessor {
 			$processed = $order->get_meta( '_bgcw_deducted_amounts' );
 			$processed = is_array( $processed ) ? $processed : [];
 			$failures  = [];
+
+			$paid_total = (float) $order->get_meta( '_bgcw_paid_redeemed_total' );
+			$free_total = (float) $order->get_meta( '_bgcw_free_redeemed_total' );
 
 			foreach ( $deductions as $code => $amount ) {
 				$amount = round( (float) $amount, 2 );
@@ -169,9 +195,17 @@ class OrderProcessor {
 				do_action( 'bgcw_after_deduct_balance', $gc->id, $amount, $order_id );
 
 				$processed[ $code ] = $amount;
+
+				if ( Source::is_paid( (string) ( $gc->source ?? '' ) ) ) {
+					$paid_total += $amount;
+				} else {
+					$free_total += $amount;
+				}
 			}
 
 			$order->update_meta_data( '_bgcw_deducted_amounts', $processed );
+			$order->update_meta_data( '_bgcw_paid_redeemed_total', number_format( $paid_total, 2, '.', '' ) );
+			$order->update_meta_data( '_bgcw_free_redeemed_total', number_format( $free_total, 2, '.', '' ) );
 
 			$complete = true;
 			foreach ( $deductions as $code => $amount ) {
