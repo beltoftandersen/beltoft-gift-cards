@@ -783,3 +783,60 @@ msgstr "Bloquear cupões em produtos de cartão presente"
 #: src/Admin/SettingsPage.php
 msgid "Prevent WooCommerce coupons from discounting gift card products. Other items in the cart are still discounted. Recommended, as discounted gift cards can be resold or redeemed at full value."
 msgstr "Impede que os cupões do WooCommerce apliquem desconto a produtos de cartão presente. Os outros artigos no carrinho continuam a ter desconto. Recomendado, pois cartões presente com desconto podem ser revendidos ou utilizados pelo valor total."
+
+msgid "Shop order"
+msgstr "Encomenda da loja"
+
+msgid "Paid offline"
+msgstr "Pago fora da loja"
+
+msgid "Promotion (free)"
+msgstr "Promoção (grátis)"
+
+msgid "Compensation (free)"
+msgstr "Compensação (grátis)"
+
+msgid "Source"
+msgstr "Origem"
+
+msgid "Paid offline counts as a paid card at redemption; promotion and compensation count as free."
+msgstr "Pago fora da loja conta como cartão pago na utilização; promoção e compensação contam como grátis."
+
+msgid "Failed to create gift card. Please check the amount and source."
+msgstr "Falha ao criar o cartão presente. Verifique o valor e a origem."
+
+msgid "Balance adjustment"
+msgstr "Ajuste de saldo"
+
+msgid "Sorry, you are not allowed to manage gift cards."
+msgstr "Não tem permissão para gerir cartões presente."
+
+msgid "Gift card not found."
+msgstr "Cartão presente não encontrado."
+
+msgid "expires_at must be an ISO 8601 date or null."
+msgstr "expires_at tem de ser uma data ISO 8601 ou null."
+
+msgid "Gift card could not be created."
+msgstr "Não foi possível criar o cartão presente."
+
+msgid "No updatable fields were provided."
+msgstr "Não foram fornecidos campos atualizáveis."
+
+msgid "Gift card could not be updated."
+msgstr "Não foi possível atualizar o cartão presente."
+
+msgid "Amount must be non-zero."
+msgstr "O valor não pode ser zero."
+
+msgid "Insufficient balance for this debit."
+msgstr "Saldo insuficiente para este débito."
+
+msgid "Gift cards cannot be trashed. Pass force=true to delete permanently."
+msgstr "Os cartões presente não podem ir para o lixo. Use force=true para eliminar permanentemente."
+
+msgid "Gift card could not be deleted."
+msgstr "Não foi possível eliminar o cartão presente."
+
+msgid "Balance was changed but the transaction could not be recorded."
+msgstr "O saldo foi alterado, mas não foi possível registar a transação."

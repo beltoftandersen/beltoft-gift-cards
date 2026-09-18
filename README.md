@@ -2,7 +2,7 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.4.8
+- Stable version: 1.5.0
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+ (tested up to WordPress 7.1)
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
@@ -38,6 +38,8 @@ This plugin adds a gift card product type to your WooCommerce store. Customers p
 - Clean uninstall with opt-in data removal
 - Portuguese (pt_PT) translation included
 - PSR-4 codebase, no Composer dependency
+- Gift card source tracking (shop order, paid offline, promotion, compensation) — the redeeming order records whether the card was paid or free, for accounting
+- REST API (`wc-bgcw/v1`) to list, create, update, adjust, and delete gift cards from external systems; works with WooCommerce REST API keys
 
 ## How It Works
 
@@ -83,6 +85,29 @@ For Bricks, Elementor, or other page builders that replace WooCommerce templates
 [bgcw_product_form]
 ```
 
+## REST API
+
+Base: `https://your-store.example/wp-json/wc-bgcw/v1/`. Authenticate with WooCommerce REST API keys (Basic auth over HTTPS) or a WordPress application password. Requires the `manage_woocommerce` capability.
+
+| Method | Route | Purpose |
+|---|---|---|
+| GET | `/gift-cards` | List. Params: `page`, `per_page` (≤100), `search`, `status`, `source`, `orderby`, `order`. |
+| POST | `/gift-cards` | Create. Body: `amount`*, `source`* (`paid_offline`, `promotion`, `compensation`), `recipient_name`, `recipient_email`, `sender_name`, `sender_email`, `message`, `expires_at` (ISO 8601 or `null`), `send_email` (default true). |
+| GET | `/gift-cards/{id}` | Single card. |
+| GET | `/gift-cards/code/{code}` | Single card by code. |
+| PATCH | `/gift-cards/{id}` | Update `status` (`active`/`disabled`), `source`, recipient/sender fields, `message`, `expires_at`. |
+| POST | `/gift-cards/{id}/adjust` | Change balance. Body: `amount` (positive credit, negative debit), `note`. |
+| GET | `/gift-cards/{id}/transactions` | Ledger. |
+| DELETE | `/gift-cards/{id}?force=true` | Permanently delete card and ledger. |
+
+Every card includes `source` and `is_paid`. On redeemed orders, each gift card coupon line carries `bgcw_gift_card_id`, `bgcw_source`, `bgcw_is_paid`, `bgcw_source_order_id`, and the order carries `_bgcw_paid_redeemed_total` / `_bgcw_free_redeemed_total`.
+
+Validation failures return HTTP 400; failures while creating, updating, deleting a card, or recording a ledger entry return HTTP 500 (`bgcw_rest_create_failed`, `bgcw_rest_update_failed`, `bgcw_rest_delete_failed`, `bgcw_rest_ledger_failed`). The `/adjust` `amount` is bounded to ±1,000,000.
+
+```bash
+curl -u ck_xxx:cs_xxx "https://your-store.example/wp-json/wc-bgcw/v1/gift-cards?source=promotion"
+```
+
 ## Hooks & Filters
 
 Developers can extend the plugin:
@@ -92,6 +117,7 @@ Developers can extend the plugin:
 - `bgcw_show_recipient_email_field` — return false to hide the Recipient Email field on the product page. The buyer's billing email is used as the recipient and the email validation is skipped
 - `bgcw_show_personal_message_field` — return false to hide the Personal Message field on the product page
 - `bgcw_coupon_valid_for_gift_card` — return true to let a specific coupon discount gift card products when coupon blocking is enabled
+- `bgcw_rest_permission` — filter REST access (default: `manage_woocommerce`)
 
 Example — hide the Recipient Email field on every gift card product:
 
@@ -105,6 +131,14 @@ add_filter( 'bgcw_show_recipient_email_field', '__return_false' );
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.5.0
+
+- Added: Gift card `source` (shop order, paid offline, promotion, compensation). Manual creation now asks for a source.
+- Added: Redeeming orders record each gift card's source and paid/free status on the coupon line, plus paid/free redeemed totals on the order.
+- Added: REST API `wc-bgcw/v1` for listing, creating, updating, adjusting, and deleting gift cards. Works with WooCommerce REST API keys.
+- Added: `bgcw_rest_permission` filter.
+- Changed: Existing manual gift cards are classified as `promotion`; change individual cards via the REST API if they were paid.
 
 ### 1.4.8
 

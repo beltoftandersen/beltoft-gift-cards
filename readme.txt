@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.8
+Stable tag: 1.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -33,6 +33,8 @@ Beltoft Gift Cards for WooCommerce adds a gift card product type to your store. 
 16. Shortcode `[bgcw_product_form]` for page builders (Bricks, Elementor, etc.).
 17. HPOS compatible — works with WooCommerce High-Performance Order Storage.
 18. Email settings (subject, heading, on/off) under WooCommerce > Settings > Emails.
+19. Gift card source tracking (shop order, paid offline, promotion, compensation) — the redeeming order records whether the card was paid or free, for accounting.
+20. REST API (`wc-bgcw/v1`) to list, create, update, adjust, and delete gift cards from external systems; works with WooCommerce REST API keys.
 
 === How It Works ===
 1. Create a "Gift Card" product in WooCommerce and set the predefined amounts.
@@ -69,6 +71,26 @@ Beltoft Gift Cards for WooCommerce adds a gift card product type to your store. 
 === Page Builders ===
 - For Bricks, Elementor, or other page builders that replace WooCommerce templates, use the WooCommerce Add to Cart element or the `[bgcw_product_form]` shortcode.
 
+== REST API ==
+
+Base: `https://your-store.example/wp-json/wc-bgcw/v1/`. Authenticate with WooCommerce REST API keys (Basic auth over HTTPS) or a WordPress application password. Requires the `manage_woocommerce` capability.
+
+GET /gift-cards — List. Params: page, per_page (<= 100), search, status, source, orderby, order.
+POST /gift-cards — Create. Body: amount*, source* (paid_offline, promotion, compensation), recipient_name, recipient_email, sender_name, sender_email, message, expires_at (ISO 8601 or null), send_email (default true).
+GET /gift-cards/{id} — Single card.
+GET /gift-cards/code/{code} — Single card by code.
+PATCH /gift-cards/{id} — Update status (active/disabled), source, recipient/sender fields, message, expires_at.
+POST /gift-cards/{id}/adjust — Change balance. Body: amount (positive credit, negative debit), note.
+GET /gift-cards/{id}/transactions — Ledger.
+DELETE /gift-cards/{id}?force=true — Permanently delete card and ledger.
+
+Every card includes `source` and `is_paid`. On redeemed orders, each gift card coupon line carries `bgcw_gift_card_id`, `bgcw_source`, `bgcw_is_paid`, `bgcw_source_order_id`, and the order carries `_bgcw_paid_redeemed_total` / `_bgcw_free_redeemed_total`.
+
+Validation failures return HTTP 400; failures while creating, updating, deleting a card, or recording a ledger entry return HTTP 500 (`bgcw_rest_create_failed`, `bgcw_rest_update_failed`, `bgcw_rest_delete_failed`, `bgcw_rest_ledger_failed`). The `/adjust` amount is bounded to +/-1,000,000.
+
+Example:
+`curl -u ck_xxx:cs_xxx "https://your-store.example/wp-json/wc-bgcw/v1/gift-cards?source=promotion"`
+
 === Hooks & Filters ===
 Developers can extend the plugin:
 
@@ -76,6 +98,7 @@ Developers can extend the plugin:
 * `bgcw_show_recipient_name_field` — return false to hide the Recipient Name field on the product page.
 * `bgcw_show_recipient_email_field` — return false to hide the Recipient Email field on the product page. The buyer's billing email is used as the recipient and the email validation is skipped.
 * `bgcw_show_personal_message_field` — return false to hide the Personal Message field on the product page.
+* `bgcw_rest_permission` — filter REST access (default: `manage_woocommerce`).
 
 Example — hide the Recipient Email field on every gift card product:
 
@@ -113,6 +136,9 @@ Yes. A "Gift Cards" tab is added to My Account where customers can view all thei
 = Can customers use loyalty points to buy gift cards? =
 By default, no. If you have the Loyalty Rewards for WooCommerce plugin active, an "Integrations" section appears in the gift card settings where you can allow or block loyalty point redemption on gift card purchases.
 
+= Can I access gift cards from my accounting system? =
+Yes. Use the REST API (`wc-bgcw/v1`) with WooCommerce REST API keys to list, create, update, adjust, and delete gift cards, including their source and paid/free status. See the REST API section above.
+
 == Screenshots ==
 1. Gift card product page with amount selector and recipient fields.
 2. Gift card delivery email sent to the recipient.
@@ -124,6 +150,13 @@ By default, no. If you have the Loyalty Rewards for WooCommerce plugin active, a
 8. Settings page.
 
 == Changelog ==
+
+= 1.5.0 =
+* Added: Gift card `source` (shop order, paid offline, promotion, compensation). Manual creation now asks for a source.
+* Added: Redeeming orders record each gift card's source and paid/free status on the coupon line, plus paid/free redeemed totals on the order.
+* Added: REST API `wc-bgcw/v1` for listing, creating, updating, adjusting, and deleting gift cards. Works with WooCommerce REST API keys.
+* Added: `bgcw_rest_permission` filter.
+* Changed: Existing manual gift cards are classified as `promotion`; change individual cards via the REST API if they were paid.
 
 = 1.4.8 =
 * Fixed: Search in the admin Gift Cards list did nothing.
