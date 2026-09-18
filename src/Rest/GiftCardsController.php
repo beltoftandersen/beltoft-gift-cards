@@ -80,7 +80,7 @@ class GiftCardsController extends \WP_REST_Controller {
 
 		register_rest_route(
 			$this->namespace,
-			'/' . $this->rest_base . '/code/(?P<code>[A-Za-z0-9\-]+)',
+			'/' . $this->rest_base . '/code/(?P<code>[^/]+)',
 			[
 				[
 					'methods'             => WP_REST_Server::READABLE,
@@ -220,9 +220,9 @@ class GiftCardsController extends \WP_REST_Controller {
 		$args = [
 			'source'          => [ 'type' => 'string', 'enum' => $create ? Source::manual_sources() : Source::all() ],
 			'sender_name'     => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
-			'sender_email'    => [ 'type' => 'string', 'format' => 'email' ],
+			'sender_email'    => [ 'type' => 'string', 'validate_callback' => [ $this, 'validate_optional_email' ] ],
 			'recipient_name'  => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
-			'recipient_email' => [ 'type' => 'string', 'format' => 'email' ],
+			'recipient_email' => [ 'type' => 'string', 'validate_callback' => [ $this, 'validate_optional_email' ] ],
 			'message'         => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field' ],
 			'expires_at'      => [
 				'type'              => [ 'string', 'null' ],
@@ -293,7 +293,12 @@ class GiftCardsController extends \WP_REST_Controller {
 			return new WP_Error( 'bgcw_rest_create_failed', __( 'Gift card could not be created.', 'beltoft-gift-cards' ), [ 'status' => 500 ] );
 		}
 
-		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $id ) ), 201 );
+		$created = Repository::find( $id );
+		if ( ! $created ) {
+			return $this->not_found( 500 );
+		}
+
+		return new WP_REST_Response( $this->prepare_gift_card( $created ), 201 );
 	}
 
 	/**
@@ -324,7 +329,12 @@ class GiftCardsController extends \WP_REST_Controller {
 			return new WP_Error( 'bgcw_rest_update_failed', __( 'Gift card could not be updated.', 'beltoft-gift-cards' ), [ 'status' => 500 ] );
 		}
 
-		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $gc->id ) ), 200 );
+		$updated = Repository::find( $gc->id );
+		if ( ! $updated ) {
+			return $this->not_found( 500 );
+		}
+
+		return new WP_REST_Response( $this->prepare_gift_card( $updated ), 200 );
 	}
 
 	/**
@@ -355,6 +365,9 @@ class GiftCardsController extends \WP_REST_Controller {
 		}
 
 		$updated = Repository::find( $gc->id );
+		if ( ! $updated ) {
+			return $this->not_found( 500 );
+		}
 
 		$tx_id = TransactionRepository::insert( [
 			'gift_card_id'  => $gc->id,
@@ -375,7 +388,12 @@ class GiftCardsController extends \WP_REST_Controller {
 			Repository::update_status( $gc->id, 'active' );
 		}
 
-		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $gc->id ) ), 200 );
+		$final = Repository::find( $gc->id );
+		if ( ! $final ) {
+			return $this->not_found( 500 );
+		}
+
+		return new WP_REST_Response( $this->prepare_gift_card( $final ), 200 );
 	}
 
 	/**
@@ -449,7 +467,7 @@ class GiftCardsController extends \WP_REST_Controller {
 	}
 
 	/**
-	 * MySQL datetime → ISO 8601 (no timezone suffix; stored values are site-local like WC).
+	 * MySQL datetime (stored in UTC) → ISO 8601 in UTC, with a trailing "Z".
 	 *
 	 * @param string|null $mysql Datetime.
 	 * @return string|null
@@ -458,14 +476,29 @@ class GiftCardsController extends \WP_REST_Controller {
 		if ( empty( $mysql ) || '0000-00-00 00:00:00' === $mysql ) {
 			return null;
 		}
-		return mysql2date( 'Y-m-d\TH:i:s', $mysql, false );
+		return mysql2date( 'Y-m-d\TH:i:s\Z', $mysql, false );
+	}
+
+	/**
+	 * Allow an empty string (to clear the field) or a valid email address.
+	 * `format => email` in the arg schema rejects "", so PATCH could never
+	 * clear an email column; this callback replaces that constraint.
+	 *
+	 * @param mixed $value Value to validate.
+	 * @return true|WP_Error
+	 */
+	public function validate_optional_email( $value ) {
+		if ( '' === $value || is_email( (string) $value ) ) {
+			return true;
+		}
+		return new WP_Error( 'rest_invalid_param', __( 'Must be a valid email address or empty.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
 	}
 
 	private function money( $value ) {
 		return number_format( (float) $value, 2, '.', '' );
 	}
 
-	private function not_found() {
-		return new WP_Error( 'bgcw_rest_not_found', __( 'Gift card not found.', 'beltoft-gift-cards' ), [ 'status' => 404 ] );
+	private function not_found( $status = 404 ) {
+		return new WP_Error( 'bgcw_rest_not_found', __( 'Gift card not found.', 'beltoft-gift-cards' ), [ 'status' => $status ] );
 	}
 }

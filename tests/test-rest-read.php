@@ -33,7 +33,7 @@ bgcw_assert_eq( '1', $res->get_headers()['X-WP-Total'] ?? null, 'X-WP-Total head
 bgcw_assert_eq( $tag . '-A', $data[0]['code'], 'list item code' );
 bgcw_assert_eq( true, $data[0]['is_paid'], 'is_paid computed' );
 bgcw_assert_eq( '15.00', $data[0]['balance'], 'balance as 2dp string' );
-bgcw_assert_eq( '2031-06-01T12:00:00', $data[0]['expires_at'], 'expires_at ISO 8601' );
+bgcw_assert_eq( '2031-06-01T12:00:00Z', $data[0]['expires_at'], 'expires_at ISO 8601 in UTC' );
 
 // Invalid source param → 400.
 $res = bgcw_rest( 'GET', '/wc-bgcw/v1/gift-cards', [ 'source' => 'bogus' ] );

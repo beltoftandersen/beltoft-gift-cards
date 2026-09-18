@@ -11,6 +11,7 @@ if ( ! defined( 'WP_CLI' ) ) {
 
 $GLOBALS['bgcw_test_failures'] = 0;
 $GLOBALS['bgcw_test_passes']   = 0;
+$GLOBALS['bgcw_test_cleanups'] = [];
 
 function bgcw_assert( $cond, $msg ) {
 	if ( $cond ) {
@@ -35,8 +36,28 @@ function bgcw_test_admin_id() {
 	return $users ? (int) $users[0] : 0;
 }
 
+/**
+ * Register a cleanup callback that runs on shutdown, even after a recorded
+ * FAIL. Prefer this over a test file's own register_shutdown_function() so
+ * cleanup order is predictable and a failure in one callback cannot skip the
+ * others.
+ *
+ * @param callable $fn Cleanup callback, called with no arguments.
+ */
+function bgcw_test_register_cleanup( callable $fn ) {
+	$GLOBALS['bgcw_test_cleanups'][] = $fn;
+}
+
 register_shutdown_function(
 	function () {
+		foreach ( $GLOBALS['bgcw_test_cleanups'] as $cleanup ) {
+			try {
+				$cleanup();
+			} catch ( \Throwable $e ) {
+				echo '  cleanup error - ' . $e->getMessage() . "\n";
+			}
+		}
+
 		$f = $GLOBALS['bgcw_test_failures'];
 		$p = $GLOBALS['bgcw_test_passes'];
 		echo $f ? "RESULT: {$f} failed, {$p} passed\n" : "RESULT: all {$p} passed\n";

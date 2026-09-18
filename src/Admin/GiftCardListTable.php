@@ -132,7 +132,11 @@ class GiftCardListTable extends \WP_List_Table {
 	 */
 	public function column_order( $item ) {
 		if ( empty( $item->order_id ) ) {
-			return esc_html( \Bgcw\GiftCard\Source::label( $item->source ?? '' ) );
+			$label = \Bgcw\GiftCard\Source::label( $item->source ?? '' );
+			if ( '' === $label ) {
+				$label = __( 'Manual', 'beltoft-gift-cards' );
+			}
+			return esc_html( $label );
 		}
 		$order = wc_get_order( $item->order_id );
 		if ( ! $order ) {

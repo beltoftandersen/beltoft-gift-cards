@@ -41,6 +41,9 @@ class Repository {
 			'status'          => 'active',
 			'source'          => Source::PROMOTION,
 			'expires_at'      => null,
+			// Always write in UTC regardless of MySQL's configured timezone, so
+			// created_at is directly comparable to the UTC expires_at values.
+			'created_at'      => current_time( 'mysql', true ),
 		];
 
 		$data = array_merge( $defaults, array_intersect_key( $data, $defaults ) );
@@ -64,6 +67,7 @@ class Repository {
 				'%s', // status.
 				'%s', // source.
 				'%s', // expires_at.
+				'%s', // created_at.
 			]
 		);
 

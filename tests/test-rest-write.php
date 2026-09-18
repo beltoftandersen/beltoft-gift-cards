@@ -12,7 +12,7 @@ function bgcw_rest_w( $method, $route, $params = [] ) {
 
 wp_set_current_user( bgcw_test_admin_id() );
 $created_ids = [];
-register_shutdown_function( function () use ( &$created_ids ) {
+bgcw_test_register_cleanup( function () use ( &$created_ids ) {
 	foreach ( $created_ids as $cid ) {
 		TransactionRepository::delete_by_gift_card( $cid );
 		Repository::delete( $cid );
@@ -39,7 +39,7 @@ $card = $res->get_data();
 $created_ids[] = $card['id'];
 bgcw_assert_eq( '25.00', $card['balance'], 'created balance' );
 bgcw_assert_eq( 'paid_offline', $card['source'], 'created source' );
-bgcw_assert_eq( '2032-01-31T00:00:00', $card['expires_at'], 'created expires_at' );
+bgcw_assert_eq( '2032-01-31T00:00:00Z', $card['expires_at'], 'created expires_at in UTC' );
 bgcw_assert( preg_match( '/^[A-Z0-9\-]+$/', $card['code'] ) === 1, 'created code format' );
 
 // Unauthenticated write attempts are rejected on every write route.
@@ -73,6 +73,12 @@ bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$id}", [ 'status' => 'active' ] )
 $res = bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$id}", [ 'expires_at' => null ] );
 bgcw_assert_eq( 200, $res->get_status(), 'patch expires_at null is 200' );
 bgcw_assert_eq( null, $res->get_data()['expires_at'], 'patch expires_at null clears expiry' );
+
+// Patch recipient_email to '' clears it (format=>email would have rejected this).
+$res = bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$id}", [ 'recipient_email' => '' ] );
+bgcw_assert_eq( 200, $res->get_status(), 'patch recipient_email empty is 200' );
+bgcw_assert_eq( '', $res->get_data()['recipient_email'], 'patch recipient_email empty clears it' );
+bgcw_assert_eq( 400, bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$id}", [ 'recipient_email' => 'not-an-email' ] )->get_status(), 'patch invalid recipient_email is 400' );
 
 // Adjust.
 $res = bgcw_rest_w( 'POST', "/wc-bgcw/v1/gift-cards/{$id}/adjust", [ 'amount' => -5, 'note' => 'Test debit' ] );
