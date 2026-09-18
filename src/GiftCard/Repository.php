@@ -461,15 +461,18 @@ class Repository {
 			}
 			$data[ $key ] = $fields[ $key ];
 			$formats[]    = $format;
+			if ( null === $fields[ $key ] && 'expires_at' !== $key ) {
+				return false;
+			}
 		}
 
 		if ( empty( $data ) ) {
 			return false;
 		}
-		if ( isset( $data['status'] ) && ! in_array( $data['status'], self::VALID_STATUSES, true ) ) {
+		if ( array_key_exists( 'status', $data ) && ! in_array( $data['status'], self::VALID_STATUSES, true ) ) {
 			return false;
 		}
-		if ( isset( $data['source'] ) && ! Source::is_valid( $data['source'] ) ) {
+		if ( array_key_exists( 'source', $data ) && ! Source::is_valid( $data['source'] ) ) {
 			return false;
 		}
 
@@ -491,7 +494,7 @@ class Repository {
 	/**
 	 * Build WHERE clause and parameter values from filter args.
 	 *
-	 * @param array $args Query args with optional 'status' and 'search' keys.
+	 * @param array $args Query args with optional 'status', 'source', and 'search' keys.
 	 * @return array { string $sql, array $values }
 	 */
 	private static function build_where( $args ) {

@@ -16,6 +16,11 @@ bgcw_assert_eq( false, Repository::update( $a, [ 'status' => 'nope' ] ), 'update
 bgcw_assert_eq( false, Repository::update( $a, [ 'source' => 'nope' ] ), 'update with invalid source fails' );
 bgcw_assert_eq( false, Repository::update( $a, [ 'balance' => 999 ] ), 'update ignores non-whitelisted field' );
 
+bgcw_assert_eq( false, Repository::update( $a, [ 'status' => null ] ), 'update with null status fails' );
+bgcw_assert_eq( false, Repository::update( $a, [ 'source' => null ] ), 'update with null source fails' );
+bgcw_assert_eq( false, Repository::update( $a, [ 'recipient_name' => null ] ), 'update with null text field fails' );
+bgcw_assert_eq( 'promotion', Repository::find( $a )->source, 'row untouched after rejected null updates' );
+
 bgcw_assert( Repository::update( $a, [ 'source' => 'compensation', 'recipient_name' => 'Renamed', 'expires_at' => null, 'status' => 'disabled' ] ), 'update succeeds' );
 $fresh = Repository::find( $a );
 bgcw_assert_eq( 'compensation', $fresh->source, 'source updated' );
