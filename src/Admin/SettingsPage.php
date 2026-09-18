@@ -262,6 +262,17 @@ class SettingsPage {
 							<td><input type="number" name="bgcw_amount" id="bgcw_amount" step="0.01" min="0.01" class="small-text" required /></td>
 						</tr>
 						<tr>
+							<th><label for="bgcw_source"><?php esc_html_e( 'Source', 'beltoft-gift-cards' ); ?></label></th>
+							<td>
+								<select name="bgcw_source" id="bgcw_source" required>
+									<?php foreach ( \Bgcw\GiftCard\Source::manual_sources() as $bgcw_source ) : ?>
+										<option value="<?php echo esc_attr( $bgcw_source ); ?>"><?php echo esc_html( \Bgcw\GiftCard\Source::label( $bgcw_source ) ); ?></option>
+									<?php endforeach; ?>
+								</select>
+								<p class="description"><?php esc_html_e( 'Paid offline counts as a paid card at redemption; promotion and compensation count as free.', 'beltoft-gift-cards' ); ?></p>
+							</td>
+						</tr>
+						<tr>
 							<th><label for="bgcw_recipient_name"><?php esc_html_e( 'Recipient Name', 'beltoft-gift-cards' ); ?></label></th>
 							<td><input type="text" name="bgcw_recipient_name" id="bgcw_recipient_name" class="regular-text" /></td>
 						</tr>
@@ -331,6 +342,7 @@ class SettingsPage {
 
 		$gc_id = GiftCardCreator::create_manual( [
 			'amount'          => isset( $_POST['bgcw_amount'] ) ? (float) sanitize_text_field( wp_unslash( $_POST['bgcw_amount'] ) ) : 0,
+			'source'          => isset( $_POST['bgcw_source'] ) ? sanitize_key( wp_unslash( $_POST['bgcw_source'] ) ) : '',
 			'recipient_name'  => isset( $_POST['bgcw_recipient_name'] ) ? sanitize_text_field( wp_unslash( $_POST['bgcw_recipient_name'] ) ) : '',
 			'recipient_email' => isset( $_POST['bgcw_recipient_email'] ) ? sanitize_email( wp_unslash( $_POST['bgcw_recipient_email'] ) ) : '',
 			'message'         => isset( $_POST['bgcw_message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['bgcw_message'] ) ) : '',
@@ -339,7 +351,7 @@ class SettingsPage {
 		if ( $gc_id ) {
 			self::set_manual_create_notice( 'success', __( 'Gift card created successfully!', 'beltoft-gift-cards' ) );
 		} else {
-			self::set_manual_create_notice( 'error', __( 'Failed to create gift card. Please check the amount.', 'beltoft-gift-cards' ) );
+			self::set_manual_create_notice( 'error', __( 'Failed to create gift card. Please check the amount and source.', 'beltoft-gift-cards' ) );
 		}
 
 		// Post/Redirect/Get to prevent duplicate gift card creation on refresh.

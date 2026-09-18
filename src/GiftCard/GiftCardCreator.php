@@ -123,6 +123,7 @@ class GiftCardCreator {
 			'order_id'        => $order->get_id(),
 			'customer_id'     => $order->get_customer_id(),
 			'status'          => 'active',
+			'source'          => Source::ORDER,
 			'expires_at'      => $expires_at,
 		];
 
@@ -164,9 +165,19 @@ class GiftCardCreator {
 	}
 
 	/**
-	 * Manually create a gift card (admin).
+	 * Manually create a gift card (admin UI or REST).
 	 *
-	 * @param array $data Gift card data.
+	 * @param array $data {
+	 *     @type float       $amount          Required, > 0.
+	 *     @type string      $source          Required, one of Source::manual_sources().
+	 *     @type string      $sender_name
+	 *     @type string      $sender_email
+	 *     @type string      $recipient_name
+	 *     @type string      $recipient_email
+	 *     @type string      $message
+	 *     @type string|null $expires_at      MySQL datetime; null = never expires; omit = settings default.
+	 *     @type bool        $send_email      Default true. Only sends when recipient_email is set.
+	 * }
 	 * @return int|false Gift card ID or false.
 	 */
 	public static function create_manual( $data ) {
@@ -174,6 +185,13 @@ class GiftCardCreator {
 		if ( $amount <= 0 ) {
 			return false;
 		}
+
+		$source = (string) ( $data['source'] ?? '' );
+		if ( ! in_array( $source, Source::manual_sources(), true ) ) {
+			return false;
+		}
+
+		$expires_at = array_key_exists( 'expires_at', $data ) ? $data['expires_at'] : self::calculate_expiry();
 
 		$code = CodeGenerator::generate();
 
@@ -190,7 +208,8 @@ class GiftCardCreator {
 			'order_id'        => null,
 			'customer_id'     => null,
 			'status'          => 'active',
-			'expires_at'      => self::calculate_expiry(),
+			'source'          => $source,
+			'expires_at'      => $expires_at,
 		] );
 
 		if ( ! $gc_id ) {
@@ -205,7 +224,8 @@ class GiftCardCreator {
 			'note_key'      => TransactionNote::KEY_MANUAL_CREATED,
 		] );
 
-		if ( ! empty( $data['recipient_email'] ) ) {
+		$send_email = ! array_key_exists( 'send_email', $data ) || ! empty( $data['send_email'] );
+		if ( $send_email && ! empty( $data['recipient_email'] ) ) {
 			do_action( 'bgcw_gift_card_created', $gc_id, null );
 		}
 
