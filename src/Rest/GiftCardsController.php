@@ -2,6 +2,7 @@
 
 namespace Bgcw\Rest;
 
+use Bgcw\GiftCard\GiftCardCreator;
 use Bgcw\GiftCard\Repository;
 use Bgcw\GiftCard\Source;
 use Bgcw\GiftCard\TransactionNote;
@@ -110,7 +111,7 @@ class GiftCardsController extends \WP_REST_Controller {
 					'callback'            => [ $this, 'adjust_balance' ],
 					'permission_callback' => [ $this, 'permissions_check' ],
 					'args'                => [
-						'amount' => [ 'type' => 'number', 'required' => true ],
+						'amount' => [ 'type' => 'number', 'required' => true, 'minimum' => -1000000, 'maximum' => 1000000 ],
 						'note'   => [ 'type' => 'string', 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ],
 					],
 				],
@@ -242,6 +243,9 @@ class GiftCardsController extends \WP_REST_Controller {
 
 	/**
 	 * Accept null or an ISO 8601 / MySQL datetime string.
+	 *
+	 * @param mixed $value Value to validate.
+	 * @return true|WP_Error
 	 */
 	public function validate_expires_at( $value ) {
 		if ( null === $value ) {
@@ -264,6 +268,10 @@ class GiftCardsController extends \WP_REST_Controller {
 		return gmdate( 'Y-m-d H:i:s', strtotime( (string) $value ) );
 	}
 
+	/**
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public function create_item( $request ) {
 		$data = [
 			'amount'          => (float) $request['amount'],
@@ -280,14 +288,18 @@ class GiftCardsController extends \WP_REST_Controller {
 			$data['expires_at'] = $this->to_mysql_datetime( $request['expires_at'] );
 		}
 
-		$id = \Bgcw\GiftCard\GiftCardCreator::create_manual( $data );
+		$id = GiftCardCreator::create_manual( $data );
 		if ( ! $id ) {
-			return new WP_Error( 'bgcw_rest_create_failed', __( 'Gift card could not be created.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+			return new WP_Error( 'bgcw_rest_create_failed', __( 'Gift card could not be created.', 'beltoft-gift-cards' ), [ 'status' => 500 ] );
 		}
 
 		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $id ) ), 201 );
 	}
 
+	/**
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public function update_item( $request ) {
 		$gc = Repository::find( (int) $request['id'] );
 		if ( ! $gc ) {
@@ -309,12 +321,16 @@ class GiftCardsController extends \WP_REST_Controller {
 		}
 
 		if ( ! Repository::update( $gc->id, $fields ) ) {
-			return new WP_Error( 'bgcw_rest_update_failed', __( 'Gift card could not be updated.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+			return new WP_Error( 'bgcw_rest_update_failed', __( 'Gift card could not be updated.', 'beltoft-gift-cards' ), [ 'status' => 500 ] );
 		}
 
 		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $gc->id ) ), 200 );
 	}
 
+	/**
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public function adjust_balance( $request ) {
 		$gc = Repository::find( (int) $request['id'] );
 		if ( ! $gc ) {
@@ -332,15 +348,15 @@ class GiftCardsController extends \WP_REST_Controller {
 			}
 			$type = 'debit';
 		} else {
-			if ( ! Repository::update_balance( $gc->id, (float) $gc->balance + $amount ) ) {
-				return new WP_Error( 'bgcw_rest_update_failed', __( 'Gift card could not be updated.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+			if ( ! Repository::add_balance( $gc->id, $amount ) ) {
+				return new WP_Error( 'bgcw_rest_update_failed', __( 'Gift card could not be updated.', 'beltoft-gift-cards' ), [ 'status' => 500 ] );
 			}
 			$type = 'credit';
 		}
 
 		$updated = Repository::find( $gc->id );
 
-		TransactionRepository::insert( [
+		$tx_id = TransactionRepository::insert( [
 			'gift_card_id'  => $gc->id,
 			'type'          => $type,
 			'amount'        => abs( $amount ),
@@ -348,6 +364,10 @@ class GiftCardsController extends \WP_REST_Controller {
 			'note_key'      => TransactionNote::KEY_ADJUSTMENT,
 			'note_args'     => [ 'note' => (string) $request['note'] ],
 		] );
+
+		if ( ! $tx_id ) {
+			return new WP_Error( 'bgcw_rest_ledger_failed', __( 'Balance was changed but the transaction could not be recorded.', 'beltoft-gift-cards' ), [ 'status' => 500 ] );
+		}
 
 		if ( (float) $updated->balance <= 0 && 'active' === $updated->status ) {
 			Repository::update_status( $gc->id, 'redeemed' );
@@ -358,6 +378,10 @@ class GiftCardsController extends \WP_REST_Controller {
 		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $gc->id ) ), 200 );
 	}
 
+	/**
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|WP_Error
+	 */
 	public function delete_item( $request ) {
 		$gc = Repository::find( (int) $request['id'] );
 		if ( ! $gc ) {
@@ -369,8 +393,12 @@ class GiftCardsController extends \WP_REST_Controller {
 		}
 
 		$previous = $this->prepare_gift_card( $gc );
+
+		if ( ! Repository::delete( $gc->id ) ) {
+			return new WP_Error( 'bgcw_rest_delete_failed', __( 'Gift card could not be deleted.', 'beltoft-gift-cards' ), [ 'status' => 500 ] );
+		}
+
 		TransactionRepository::delete_by_gift_card( $gc->id );
-		Repository::delete( $gc->id );
 		Repository::invalidate_code_cache( $gc->code );
 
 		return new WP_REST_Response( [ 'deleted' => true, 'previous' => $previous ], 200 );

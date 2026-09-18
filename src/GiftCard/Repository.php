@@ -375,6 +375,33 @@ class Repository {
 	}
 
 	/**
+	 * Atomically add to gift card balance.
+	 *
+	 * @param int   $id     Gift card ID.
+	 * @param float $amount Amount to add (> 0).
+	 * @return bool True if a row was updated.
+	 */
+	public static function add_balance( $id, $amount ) {
+		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- Atomic balance credit on custom table.
+		$rows = $wpdb->query(
+			$wpdb->prepare(
+				"UPDATE {$wpdb->prefix}bgcw_gift_cards SET balance = balance + %f WHERE id = %d",
+				$amount,
+				$id
+			)
+		);
+
+		if ( $rows ) {
+			self::$code_cache = [];
+			wp_cache_delete( 'bgcw_gift_card_' . $id, 'bgcw' );
+		}
+
+		return (bool) $rows;
+	}
+
+	/**
 	 * Valid gift card statuses.
 	 */
 	const VALID_STATUSES = [ 'active', 'disabled', 'expired', 'redeemed' ];

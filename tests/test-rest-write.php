@@ -12,6 +12,12 @@ function bgcw_rest_w( $method, $route, $params = [] ) {
 
 wp_set_current_user( bgcw_test_admin_id() );
 $created_ids = [];
+register_shutdown_function( function () use ( &$created_ids ) {
+	foreach ( $created_ids as $cid ) {
+		TransactionRepository::delete_by_gift_card( $cid );
+		Repository::delete( $cid );
+	}
+} );
 
 // Create: validation.
 bgcw_assert_eq( 400, bgcw_rest_w( 'POST', '/wc-bgcw/v1/gift-cards', [ 'amount' => 10 ] )->get_status(), 'create without source is 400' );
@@ -36,6 +42,16 @@ bgcw_assert_eq( 'paid_offline', $card['source'], 'created source' );
 bgcw_assert_eq( '2032-01-31T00:00:00', $card['expires_at'], 'created expires_at' );
 bgcw_assert( preg_match( '/^[A-Z0-9\-]+$/', $card['code'] ) === 1, 'created code format' );
 
+// Unauthenticated write attempts are rejected on every write route.
+wp_set_current_user( 0 );
+bgcw_assert_eq( 401, bgcw_rest_w( 'POST', '/wc-bgcw/v1/gift-cards', [ 'amount' => 5, 'source' => 'promotion' ] )->get_status(), 'anonymous create is 401' );
+bgcw_assert_eq( 401, bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$card['id']}", [ 'status' => 'active' ] )->get_status(), 'anonymous patch is 401' );
+$balance_before_anon_adjust = (string) Repository::find( $card['id'] )->balance;
+bgcw_assert_eq( 401, bgcw_rest_w( 'POST', "/wc-bgcw/v1/gift-cards/{$card['id']}/adjust", [ 'amount' => 1 ] )->get_status(), 'anonymous adjust is 401' );
+bgcw_assert_eq( $balance_before_anon_adjust, (string) Repository::find( $card['id'] )->balance, 'balance unchanged after anonymous adjust' );
+bgcw_assert_eq( 401, bgcw_rest_w( 'DELETE', "/wc-bgcw/v1/gift-cards/{$card['id']}", [ 'force' => true ] )->get_status(), 'anonymous delete is 401' );
+wp_set_current_user( bgcw_test_admin_id() );
+
 // Create with expires_at null → never expires.
 $res = bgcw_rest_w( 'POST', '/wc-bgcw/v1/gift-cards', [ 'amount' => 1, 'source' => 'promotion', 'expires_at' => null, 'send_email' => false ] );
 $created_ids[] = $res->get_data()['id'];
@@ -52,6 +68,11 @@ bgcw_assert_eq( 400, bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$id}", [ 'st
 bgcw_assert_eq( 400, bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$id}", [] )->get_status(), 'empty patch is 400' );
 bgcw_assert_eq( 404, bgcw_rest_w( 'PATCH', '/wc-bgcw/v1/gift-cards/999999999', [ 'status' => 'active' ] )->get_status(), 'patch unknown is 404' );
 bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$id}", [ 'status' => 'active' ] );
+
+// Patch expires_at to null clears the expiry set at creation.
+$res = bgcw_rest_w( 'PATCH', "/wc-bgcw/v1/gift-cards/{$id}", [ 'expires_at' => null ] );
+bgcw_assert_eq( 200, $res->get_status(), 'patch expires_at null is 200' );
+bgcw_assert_eq( null, $res->get_data()['expires_at'], 'patch expires_at null clears expiry' );
 
 // Adjust.
 $res = bgcw_rest_w( 'POST', "/wc-bgcw/v1/gift-cards/{$id}/adjust", [ 'amount' => -5, 'note' => 'Test debit' ] );
@@ -70,6 +91,13 @@ bgcw_assert( in_array( 'Test debit', $notes, true ) && in_array( 'Test credit', 
 $res = bgcw_rest_w( 'POST', "/wc-bgcw/v1/gift-cards/{$id}/adjust", [ 'amount' => -22.5 ] );
 bgcw_assert_eq( 'redeemed', $res->get_data()['status'], 'zero balance → redeemed' );
 
+// Crediting a redeemed card reactivates it; debiting back to zero re-redeems it.
+$res = bgcw_rest_w( 'POST', "/wc-bgcw/v1/gift-cards/{$id}/adjust", [ 'amount' => 1 ] );
+bgcw_assert_eq( 'active', $res->get_data()['status'], 'credit on redeemed card reactivates' );
+bgcw_assert_eq( '1.00', $res->get_data()['balance'], 'balance after reactivating credit' );
+$res = bgcw_rest_w( 'POST', "/wc-bgcw/v1/gift-cards/{$id}/adjust", [ 'amount' => -1 ] );
+bgcw_assert_eq( 'redeemed', $res->get_data()['status'], 'debit back to zero → redeemed again' );
+
 // Delete.
 bgcw_assert_eq( 400, bgcw_rest_w( 'DELETE', "/wc-bgcw/v1/gift-cards/{$id}" )->get_status(), 'delete without force is 400' );
 $res = bgcw_rest_w( 'DELETE', "/wc-bgcw/v1/gift-cards/{$id}", [ 'force' => true ] );
@@ -77,6 +105,3 @@ bgcw_assert_eq( 200, $res->get_status(), 'forced delete is 200' );
 bgcw_assert_eq( true, $res->get_data()['deleted'], 'deleted flag' );
 bgcw_assert_eq( null, Repository::find( $id ), 'row gone' );
 bgcw_assert_eq( [], TransactionRepository::get_by_gift_card( $id ), 'transactions gone' );
-
-// Cleanup remaining.
-foreach ( $created_ids as $cid ) { if ( $cid !== $id ) { TransactionRepository::delete_by_gift_card( $cid ); Repository::delete( $cid ); } }
