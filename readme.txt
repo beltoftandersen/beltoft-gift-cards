@@ -84,7 +84,9 @@ POST /gift-cards/{id}/adjust — Change balance. Body: amount (positive credit, 
 GET /gift-cards/{id}/transactions — Ledger.
 DELETE /gift-cards/{id}?force=true — Permanently delete card and ledger.
 
-Every card includes `source` and `is_paid`. On redeemed orders, each gift card coupon line carries `bgcw_gift_card_id`, `bgcw_source`, `bgcw_is_paid`, `bgcw_source_order_id`, and the order carries `_bgcw_paid_redeemed_total` / `_bgcw_free_redeemed_total`.
+All datetimes in responses (`created_at`, `expires_at`, transaction `created_at`) are ISO 8601 in UTC with a trailing `Z` (e.g. `2032-01-31T00:00:00Z`). On input, `expires_at` accepts an ISO 8601 datetime (interpreted as UTC when no offset is given), a MySQL datetime string, or `null` to clear it. `recipient_email` and `sender_email` accept a valid email address or an empty string to clear the field.
+
+Every card includes `source` and `is_paid`. On redeemed orders, each gift card coupon line carries `bgcw_gift_card_id`, `bgcw_source`, `bgcw_is_paid`, `bgcw_source_order_id`, and the order carries `_bgcw_paid_redeemed_total` / `_bgcw_free_redeemed_total`. Those two order totals reflect amounts actually deducted and are not reduced by later refunds; refunds appear as separate `refund` transactions in the ledger.
 
 Validation failures return HTTP 400; failures while creating, updating, deleting a card, or recording a ledger entry return HTTP 500 (`bgcw_rest_create_failed`, `bgcw_rest_update_failed`, `bgcw_rest_delete_failed`, `bgcw_rest_ledger_failed`). The `/adjust` amount is bounded to +/-1,000,000.
 
@@ -119,7 +121,7 @@ Yes. If a gift card balance exceeds the order total, only the needed amount is d
 Gift card balances are automatically restored when an order is cancelled or fully refunded. Partial refunds proportionally restore the gift card balance.
 
 = Can I create gift cards manually? =
-Yes. Go to WooCommerce > Gift Cards > Gift Cards tab and click "Add Gift Card." You can specify the amount, recipient, and message.
+Yes. Go to WooCommerce > Gift Cards > Gift Cards tab and click "Add Gift Card." You can specify the amount, recipient, and message. You must also choose a Source (Paid offline, Promotion, or Compensation), which determines whether the card is treated as paid or free when it is redeemed.
 
 = Are gift cards taxable? =
 No. Gift card products are set as non-taxable, and gift card discounts are applied as non-taxable negative fees.
@@ -156,7 +158,8 @@ Yes. Use the REST API (`wc-bgcw/v1`) with WooCommerce REST API keys to list, cre
 * Added: Redeeming orders record each gift card's source and paid/free status on the coupon line, plus paid/free redeemed totals on the order.
 * Added: REST API `wc-bgcw/v1` for listing, creating, updating, adjusting, and deleting gift cards. Works with WooCommerce REST API keys.
 * Added: `bgcw_rest_permission` filter.
-* Changed: Existing manual gift cards are classified as `promotion`; change individual cards via the REST API if they were paid.
+* Changed: Existing gift cards are classified by source on upgrade: cards with an order ID become "order" (paid), all others "promotion" (free). If you use the Pro add-on's store credit or BOGO features, review those cards' source via the REST API and adjust with PATCH.
+* Fixed: Gift card balances were not deducted, and no gift card data was recorded, on orders placed through the block (Store API) checkout.
 
 = 1.4.8 =
 * Fixed: Search in the admin Gift Cards list did nothing.
