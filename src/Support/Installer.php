@@ -12,13 +12,11 @@ class Installer {
 	 * Activation hook.
 	 */
 	public static function activate() {
-		self::create_tables();
+		self::maybe_upgrade();
 
 		if ( false === get_option( Options::OPTION ) ) {
 			add_option( Options::OPTION, Options::defaults(), '', false );
 		}
-
-		update_option( self::DB_VERSION_KEY, BGCW_DB_VERSION );
 
 		// Flush rewrite rules for My Account endpoint.
 		add_rewrite_endpoint( 'gift-cards', EP_ROOT | EP_PAGES );
