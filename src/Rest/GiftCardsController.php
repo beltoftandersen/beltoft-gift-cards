@@ -39,6 +39,12 @@ class GiftCardsController extends \WP_REST_Controller {
 					'permission_callback' => [ $this, 'permissions_check' ],
 					'args'                => $this->get_collection_params(),
 				],
+				[
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => [ $this, 'create_item' ],
+					'permission_callback' => [ $this, 'permissions_check' ],
+					'args'                => $this->get_write_args( true ),
+				],
 			]
 		);
 
@@ -53,6 +59,20 @@ class GiftCardsController extends \WP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_item' ],
 					'permission_callback' => [ $this, 'permissions_check' ],
+				],
+				[
+					'methods'             => 'PATCH',
+					'callback'            => [ $this, 'update_item' ],
+					'permission_callback' => [ $this, 'permissions_check' ],
+					'args'                => $this->get_write_args( false ),
+				],
+				[
+					'methods'             => WP_REST_Server::DELETABLE,
+					'callback'            => [ $this, 'delete_item' ],
+					'permission_callback' => [ $this, 'permissions_check' ],
+					'args'                => [
+						'force' => [ 'type' => 'boolean', 'default' => false ],
+					],
 				],
 			]
 		);
@@ -77,6 +97,22 @@ class GiftCardsController extends \WP_REST_Controller {
 					'methods'             => WP_REST_Server::READABLE,
 					'callback'            => [ $this, 'get_transactions' ],
 					'permission_callback' => [ $this, 'permissions_check' ],
+				],
+			]
+		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base . '/(?P<id>[\d]+)/adjust',
+			[
+				[
+					'methods'             => WP_REST_Server::CREATABLE,
+					'callback'            => [ $this, 'adjust_balance' ],
+					'permission_callback' => [ $this, 'permissions_check' ],
+					'args'                => [
+						'amount' => [ 'type' => 'number', 'required' => true ],
+						'note'   => [ 'type' => 'string', 'default' => '', 'sanitize_callback' => 'sanitize_text_field' ],
+					],
 				],
 			]
 		);
@@ -171,6 +207,173 @@ class GiftCardsController extends \WP_REST_Controller {
 		}
 		$rows = TransactionRepository::get_by_gift_card( $gc->id );
 		return new WP_REST_Response( array_map( [ $this, 'prepare_transaction' ], $rows ), 200 );
+	}
+
+	/**
+	 * Argument schema shared by create (POST) and update (PATCH).
+	 *
+	 * @param bool $create Whether this is the create route.
+	 * @return array
+	 */
+	private function get_write_args( $create ) {
+		$args = [
+			'source'          => [ 'type' => 'string', 'enum' => $create ? Source::manual_sources() : Source::all() ],
+			'sender_name'     => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
+			'sender_email'    => [ 'type' => 'string', 'format' => 'email' ],
+			'recipient_name'  => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_text_field' ],
+			'recipient_email' => [ 'type' => 'string', 'format' => 'email' ],
+			'message'         => [ 'type' => 'string', 'sanitize_callback' => 'sanitize_textarea_field' ],
+			'expires_at'      => [
+				'type'              => [ 'string', 'null' ],
+				'validate_callback' => [ $this, 'validate_expires_at' ],
+			],
+		];
+
+		if ( $create ) {
+			$args['amount']     = [ 'type' => 'number', 'required' => true, 'minimum' => 0, 'exclusiveMinimum' => true ];
+			$args['source']['required'] = true;
+			$args['send_email'] = [ 'type' => 'boolean', 'default' => true ];
+		} else {
+			$args['status'] = [ 'type' => 'string', 'enum' => [ 'active', 'disabled' ] ];
+		}
+
+		return $args;
+	}
+
+	/**
+	 * Accept null or an ISO 8601 / MySQL datetime string.
+	 */
+	public function validate_expires_at( $value ) {
+		if ( null === $value ) {
+			return true;
+		}
+		if ( is_string( $value ) && false !== strtotime( $value ) ) {
+			return true;
+		}
+		return new WP_Error( 'rest_invalid_param', __( 'expires_at must be an ISO 8601 date or null.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+	}
+
+	/**
+	 * Normalise request datetime → MySQL datetime (or null). Assumes the value
+	 * is already validated. Missing key → default handled by caller.
+	 */
+	private function to_mysql_datetime( $value ) {
+		if ( null === $value ) {
+			return null;
+		}
+		return gmdate( 'Y-m-d H:i:s', strtotime( (string) $value ) );
+	}
+
+	public function create_item( $request ) {
+		$data = [
+			'amount'          => (float) $request['amount'],
+			'source'          => (string) $request['source'],
+			'sender_name'     => (string) $request->get_param( 'sender_name' ),
+			'sender_email'    => (string) $request->get_param( 'sender_email' ),
+			'recipient_name'  => (string) $request->get_param( 'recipient_name' ),
+			'recipient_email' => (string) $request->get_param( 'recipient_email' ),
+			'message'         => (string) $request->get_param( 'message' ),
+			'send_email'      => (bool) $request['send_email'],
+		];
+
+		if ( $request->has_param( 'expires_at' ) ) {
+			$data['expires_at'] = $this->to_mysql_datetime( $request['expires_at'] );
+		}
+
+		$id = \Bgcw\GiftCard\GiftCardCreator::create_manual( $data );
+		if ( ! $id ) {
+			return new WP_Error( 'bgcw_rest_create_failed', __( 'Gift card could not be created.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+		}
+
+		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $id ) ), 201 );
+	}
+
+	public function update_item( $request ) {
+		$gc = Repository::find( (int) $request['id'] );
+		if ( ! $gc ) {
+			return $this->not_found();
+		}
+
+		$fields = [];
+		foreach ( [ 'status', 'source', 'sender_name', 'sender_email', 'recipient_name', 'recipient_email', 'message' ] as $key ) {
+			if ( $request->has_param( $key ) ) {
+				$fields[ $key ] = (string) $request[ $key ];
+			}
+		}
+		if ( $request->has_param( 'expires_at' ) ) {
+			$fields['expires_at'] = $this->to_mysql_datetime( $request['expires_at'] );
+		}
+
+		if ( empty( $fields ) ) {
+			return new WP_Error( 'bgcw_rest_nothing_to_update', __( 'No updatable fields were provided.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+		}
+
+		if ( ! Repository::update( $gc->id, $fields ) ) {
+			return new WP_Error( 'bgcw_rest_update_failed', __( 'Gift card could not be updated.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+		}
+
+		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $gc->id ) ), 200 );
+	}
+
+	public function adjust_balance( $request ) {
+		$gc = Repository::find( (int) $request['id'] );
+		if ( ! $gc ) {
+			return $this->not_found();
+		}
+
+		$amount = round( (float) $request['amount'], 2 );
+		if ( 0.0 === $amount ) {
+			return new WP_Error( 'bgcw_rest_invalid_amount', __( 'Amount must be non-zero.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+		}
+
+		if ( $amount < 0 ) {
+			if ( ! Repository::deduct_balance( $gc->id, abs( $amount ) ) ) {
+				return new WP_Error( 'bgcw_rest_insufficient_balance', __( 'Insufficient balance for this debit.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+			}
+			$type = 'debit';
+		} else {
+			if ( ! Repository::update_balance( $gc->id, (float) $gc->balance + $amount ) ) {
+				return new WP_Error( 'bgcw_rest_update_failed', __( 'Gift card could not be updated.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+			}
+			$type = 'credit';
+		}
+
+		$updated = Repository::find( $gc->id );
+
+		TransactionRepository::insert( [
+			'gift_card_id'  => $gc->id,
+			'type'          => $type,
+			'amount'        => abs( $amount ),
+			'balance_after' => (float) $updated->balance,
+			'note_key'      => TransactionNote::KEY_ADJUSTMENT,
+			'note_args'     => [ 'note' => (string) $request['note'] ],
+		] );
+
+		if ( (float) $updated->balance <= 0 && 'active' === $updated->status ) {
+			Repository::update_status( $gc->id, 'redeemed' );
+		} elseif ( (float) $updated->balance > 0 && 'redeemed' === $updated->status ) {
+			Repository::update_status( $gc->id, 'active' );
+		}
+
+		return new WP_REST_Response( $this->prepare_gift_card( Repository::find( $gc->id ) ), 200 );
+	}
+
+	public function delete_item( $request ) {
+		$gc = Repository::find( (int) $request['id'] );
+		if ( ! $gc ) {
+			return $this->not_found();
+		}
+
+		if ( ! $request['force'] ) {
+			return new WP_Error( 'bgcw_rest_force_required', __( 'Gift cards cannot be trashed. Pass force=true to delete permanently.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+		}
+
+		$previous = $this->prepare_gift_card( $gc );
+		TransactionRepository::delete_by_gift_card( $gc->id );
+		Repository::delete( $gc->id );
+		Repository::invalidate_code_cache( $gc->code );
+
+		return new WP_REST_Response( [ 'deleted' => true, 'previous' => $previous ], 200 );
 	}
 
 	/**

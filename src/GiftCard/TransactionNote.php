@@ -21,6 +21,7 @@ class TransactionNote {
 	const KEY_ORDER_USED           = 'order_used';
 	const KEY_ORDER_REFUNDED       = 'order_refunded';
 	const KEY_ORDER_PARTIAL_REFUND = 'order_partial_refund';
+	const KEY_ADJUSTMENT           = 'adjustment';
 
 	/**
 	 * Render a localized note for a transaction row.
@@ -77,6 +78,10 @@ class TransactionNote {
 					__( 'Partial refund from order #%s', 'beltoft-gift-cards' ),
 					$order_number
 				);
+
+			case self::KEY_ADJUSTMENT:
+				$note = isset( $args['note'] ) ? trim( (string) $args['note'] ) : '';
+				return '' !== $note ? $note : __( 'Balance adjustment', 'beltoft-gift-cards' );
 		}
 
 		// Unknown key — fall back to legacy `note` if any.
