@@ -6,10 +6,14 @@ use Bgcw\GiftCard\Repository;
 use Bgcw\GiftCard\TransactionRepository;
 
 // Missing source is rejected.
-bgcw_assert_eq( false, GiftCardCreator::create_manual( [ 'amount' => 10 ] ), 'manual create without source fails' );
+$bad   = [];
+$bad[] = GiftCardCreator::create_manual( [ 'amount' => 10 ] );
+bgcw_assert_eq( false, $bad[0], 'manual create without source fails' );
 // Non-manual source is rejected.
-bgcw_assert_eq( false, GiftCardCreator::create_manual( [ 'amount' => 10, 'source' => 'order' ] ), 'manual create with source=order fails' );
-bgcw_assert_eq( false, GiftCardCreator::create_manual( [ 'amount' => 10, 'source' => 'bogus' ] ), 'manual create with unknown source fails' );
+$bad[] = GiftCardCreator::create_manual( [ 'amount' => 10, 'source' => 'order' ] );
+bgcw_assert_eq( false, $bad[1], 'manual create with source=order fails' );
+$bad[] = GiftCardCreator::create_manual( [ 'amount' => 10, 'source' => 'bogus' ] );
+bgcw_assert_eq( false, $bad[2], 'manual create with unknown source fails' );
 
 // Valid manual create stores source, sender, expiry.
 $id = GiftCardCreator::create_manual( [
@@ -56,4 +60,5 @@ bgcw_assert_eq( 'order', $created[0]->source ?? null, 'stored order card source=
 foreach ( $created as $c ) { TransactionRepository::delete_by_gift_card( $c->id ); Repository::delete( $c->id ); }
 TransactionRepository::delete_by_gift_card( $id ); Repository::delete( $id );
 TransactionRepository::delete_by_gift_card( $id2 ); Repository::delete( $id2 );
+foreach ( $bad as $b ) { if ( $b ) { TransactionRepository::delete_by_gift_card( $b ); Repository::delete( $b ); } }
 $order->delete( true );
