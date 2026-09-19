@@ -122,6 +122,14 @@ class MyAccount {
 										title="<?php esc_attr_e( 'Show code', 'beltoft-gift-cards' ); ?>"
 									><?php esc_html_e( 'Show code', 'beltoft-gift-cards' ); ?></button>
 									<button type="button" class="bgcw-toggle-transactions" title="<?php esc_attr_e( 'Show transactions', 'beltoft-gift-cards' ); ?>">&#9660;</button>
+									<?php
+									/**
+									 * Fires inside each gift card row on the My Account page, after the built-in buttons.
+									 *
+									 * @param object $gc Gift card row.
+									 */
+									do_action( 'bgcw_my_account_card_actions', $gc );
+									?>
 								</td>
 								<td><?php echo wp_kses_post( wc_price( $gc->initial_amount, [ 'currency' => $gc->currency ] ) ); ?></td>
 								<td><strong><?php echo wp_kses_post( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) ); ?></strong></td>

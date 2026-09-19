@@ -690,6 +690,20 @@ class Repository {
 		global $wpdb;
 
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Custom table.
-		return (bool) $wpdb->delete( self::table(), [ 'id' => $id ], [ '%d' ] );
+		$deleted = (bool) $wpdb->delete( self::table(), [ 'id' => $id ], [ '%d' ] );
+
+		if ( $deleted ) {
+			self::invalidate_code_cache();
+			wp_cache_delete( 'bgcw_gift_card_' . $id, 'bgcw' );
+
+			/**
+			 * Fires after a gift card row has been deleted.
+			 *
+			 * @param int $id Gift card ID.
+			 */
+			do_action( 'bgcw_gift_card_deleted', (int) $id );
+		}
+
+		return $deleted;
 	}
 }
