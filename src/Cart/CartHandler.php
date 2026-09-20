@@ -29,6 +29,9 @@ class CartHandler {
 		add_action( 'wp_loaded', [ __CLASS__, 'handle_remove_gift_card' ], 15 );
 		add_action( 'wp_loaded', [ __CLASS__, 'handle_auto_apply' ], 16 );
 
+		// A product-locked code from the email link waits until its product is in the cart.
+		add_action( 'woocommerce_add_to_cart', [ __CLASS__, 'apply_pending_locked_code' ], 20 );
+
 		// Clear on cart empty.
 		add_action( 'woocommerce_cart_emptied', [ __CLASS__, 'clear_applied_codes' ] );
 	}
@@ -283,8 +286,39 @@ class CartHandler {
 	 */
 	public static function add_gift_card_to_session( $code ) {
 		$code = strtoupper( trim( $code ) );
-		if ( WC()->cart ) {
-			WC()->cart->apply_coupon( $code );
+		if ( ! WC()->cart ) {
+			return false;
+		}
+
+		return (bool) WC()->cart->apply_coupon( $code );
+	}
+
+	/**
+	 * Session key holding a product-locked code waiting for its product to be added.
+	 */
+	const PENDING_KEY = 'bgcw_pending_locked_code';
+
+	/**
+	 * Apply a pending product-locked code once its product lands in the cart.
+	 */
+	public static function apply_pending_locked_code() {
+		if ( ! WC()->session || ! WC()->cart ) {
+			return;
+		}
+		$code = (string) WC()->session->get( self::PENDING_KEY, '' );
+		if ( '' === $code ) {
+			return;
+		}
+		$gc = Repository::find_by_code( $code );
+		if ( ! $gc || ! ProductLock::product_in_cart( $gc ) ) {
+			return;
+		}
+		WC()->session->set( self::PENDING_KEY, '' );
+		if ( WC()->cart->has_discount( $gc->code ) ) {
+			return;
+		}
+		if ( self::add_gift_card_to_session( $gc->code ) ) {
+			wc_add_notice( __( 'Your gift card has been applied.', 'beltoft-gift-cards' ), 'success' );
 		}
 	}
 
@@ -393,19 +427,34 @@ class CartHandler {
 			}
 		} else {
 			self::maybe_add_locked_product( $gc );
-			self::add_gift_card_to_session( $code );
-			wc_add_notice(
-				sprintf(
-					/* translators: %s: formatted gift card balance */
-					__( 'Gift card applied! Balance: %s', 'beltoft-gift-cards' ),
-					wp_strip_all_tags( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) )
-				),
-				'success'
-			);
+
+			if ( ProductLock::is_locked( $gc ) && ! ProductLock::product_in_cart( $gc ) ) {
+				// The product needs options (or could not be added): keep the code and apply it once the product is in the cart.
+				WC()->session->set( self::PENDING_KEY, $gc->code );
+				wc_add_notice(
+					sprintf(
+						/* translators: %s: product name */
+						__( 'Add %s to your cart and your gift card will be applied automatically.', 'beltoft-gift-cards' ),
+						ProductLock::product_name( $gc )
+					),
+					'notice'
+				);
+			} elseif ( self::add_gift_card_to_session( $code ) ) {
+				wc_add_notice(
+					sprintf(
+						/* translators: %s: formatted gift card balance */
+						__( 'Gift card applied! Balance: %s', 'beltoft-gift-cards' ),
+						wp_strip_all_tags( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) )
+					),
+					'success'
+				);
+			} else {
+				wc_add_notice( __( 'This gift card code is invalid or cannot be applied.', 'beltoft-gift-cards' ), 'error' );
+			}
 		}
 
 		// Redirect (strip the code from URL): shop page, or cart/product page for a product-locked card.
-		$redirect = ProductLock::is_locked( $gc ) && ! is_wp_error( $validation ) ? ProductLock::redeem_url( $gc ) : wc_get_page_permalink( 'shop' );
+		$redirect = ProductLock::is_locked( $gc ) ? ProductLock::redeem_url( $gc ) : wc_get_page_permalink( 'shop' );
 		wp_safe_redirect( $redirect );
 		exit;
 	}
@@ -421,12 +470,11 @@ class CartHandler {
 			return;
 		}
 
-		foreach ( WC()->cart->get_cart() as $item ) {
-			if ( (int) $item['product_id'] === $product->get_id() ) {
-				return;
-			}
+		if ( ProductLock::product_in_cart( $gc ) ) {
+			return;
 		}
 
+		// Failures (stock, other plugins' validation) fall through to the pending-code path.
 		WC()->cart->add_to_cart( $product->get_id(), 1 );
 	}
 
@@ -450,6 +498,9 @@ class CartHandler {
 	 * Hooked to woocommerce_cart_emptied.
 	 */
 	public static function clear_applied_codes() {
+		if ( WC()->session ) {
+			WC()->session->set( self::PENDING_KEY, '' );
+		}
 		if ( ! WC()->session ) {
 			return;
 		}

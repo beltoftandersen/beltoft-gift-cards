@@ -231,22 +231,18 @@ class GiftCardListTable extends \WP_List_Table {
 			}
 		}
 
-		if ( $count > 0 && 'unlock' === $action ) {
-			/* translators: %d: number of gift cards */
-			add_settings_error( 'bgcw_messages', 'bgcw_bulk', sprintf( _n( 'Product restriction removed from %d gift card.', 'Product restriction removed from %d gift cards.', $count, 'beltoft-gift-cards' ), $count ), 'success' );
-		} elseif ( $count > 0 ) {
-			$message = 'disable' === $action
-				? sprintf(
-					/* translators: %d: number of gift cards disabled */
-					_n( '%d gift card disabled.', '%d gift cards disabled.', $count, 'beltoft-gift-cards' ),
-					$count
-				)
-				: sprintf(
-					/* translators: %d: number of gift cards deleted */
-					_n( '%d gift card deleted.', '%d gift cards deleted.', $count, 'beltoft-gift-cards' ),
-					$count
-				);
-			add_settings_error( 'bgcw_messages', 'bgcw_bulk', $message, 'success' );
+		if ( $count > 0 ) {
+			$messages = [
+				/* translators: %d: number of gift cards disabled */
+				'disable' => _n( '%d gift card disabled.', '%d gift cards disabled.', $count, 'beltoft-gift-cards' ),
+				/* translators: %d: number of gift cards */
+				'unlock'  => _n( 'Product restriction removed from %d gift card.', 'Product restriction removed from %d gift cards.', $count, 'beltoft-gift-cards' ),
+				/* translators: %d: number of gift cards deleted */
+				'delete'  => _n( '%d gift card deleted.', '%d gift cards deleted.', $count, 'beltoft-gift-cards' ),
+			];
+			if ( isset( $messages[ $action ] ) ) {
+				add_settings_error( 'bgcw_messages', 'bgcw_bulk', sprintf( $messages[ $action ], $count ), 'success' );
+			}
 		}
 	}
 
@@ -320,6 +316,7 @@ class GiftCardListTable extends \WP_List_Table {
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		$this->items = Repository::get_all_paginated( $args );
+		\Bgcw\GiftCard\ProductLock::prime_names( array_map( function ( $row ) { return (int) ( $row->product_id ?? 0 ); }, (array) $this->items ) );
 		$total       = Repository::count_all( $args );
 
 		$this->set_pagination_args( [

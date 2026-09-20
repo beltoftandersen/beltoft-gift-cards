@@ -2,7 +2,7 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.6.0
+- Stable version: 1.6.1
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+ (tested up to WordPress 7.1)
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
@@ -136,6 +136,12 @@ add_filter( 'bgcw_show_recipient_email_field', '__return_false' );
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.6.1
+
+- Fixed: A product-locked code from the email link now waits until the product is in the cart (variable products) and is applied automatically, instead of reporting success on a failed apply.
+- Fixed: The dedicated gift card field reports when a code could not be applied, and explains when a card is locked to a product not yet in the cart.
+- Fixed: Bulk "Remove product restriction" counts only cards that were locked; admin list loads product names in one query.
 
 ### 1.6.0
 

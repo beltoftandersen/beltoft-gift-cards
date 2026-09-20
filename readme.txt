@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.0
+Stable tag: 1.6.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,11 @@ Yes. Use the REST API (`wc-bgcw/v1`) with WooCommerce REST API keys to list, cre
 8. Settings page.
 
 == Changelog ==
+
+= 1.6.1 =
+* Fixed: A product-locked code from the email link now waits until the product is in the cart (variable products) and is applied automatically, instead of reporting success on a failed apply.
+* Fixed: The dedicated gift card field reports when a code could not be applied, and explains when a card is locked to a product not yet in the cart.
+* Fixed: Bulk "Remove product restriction" counts only cards that were locked; admin list loads product names in one query.
 
 = 1.6.0 =
 * Added: Gift cards can be locked to a specific product. A locked card only discounts that product, the email link adds the product to the cart with the code applied, and admins can remove the restriction from the gift card list.

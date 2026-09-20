@@ -471,7 +471,8 @@ class Repository {
 	 *
 	 * @param int   $id     Gift card ID.
 	 * @param array $fields Whitelisted keys: status, source, sender_name, sender_email,
-	 *                      recipient_name, recipient_email, message, expires_at (null allowed).
+	 *                      recipient_name, recipient_email, message, expires_at (null allowed),
+	 *                      product_id (null removes the product restriction).
 	 * @return bool
 	 */
 	public static function update( $id, $fields ) {

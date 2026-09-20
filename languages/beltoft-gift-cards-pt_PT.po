@@ -896,3 +896,15 @@ msgstr "Para"
 
 msgid "product_id must be an existing product ID or null."
 msgstr "product_id tem de ser o ID de um produto existente ou null."
+
+msgid "Your gift card has been applied."
+msgstr "O seu cartão presente foi aplicado."
+
+msgid "Add %s to your cart and your gift card will be applied automatically."
+msgstr "Adicione %s ao carrinho e o seu cartão presente será aplicado automaticamente."
+
+msgid "This gift card is for %s. Add it to your cart first."
+msgstr "Este cartão presente é para %s. Adicione-o primeiro ao carrinho."
+
+msgid "This gift card could not be applied to your cart."
+msgstr "Não foi possível aplicar este cartão presente ao seu carrinho."

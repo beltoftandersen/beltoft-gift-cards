@@ -63,8 +63,21 @@ class AjaxHandler {
 			wp_send_json_error( [ 'message' => $valid->get_error_message() ] );
 		}
 
+		// A product-locked card needs its product in the cart first.
+		if ( \Bgcw\GiftCard\ProductLock::is_locked( $gc ) && ! \Bgcw\GiftCard\ProductLock::product_in_cart( $gc ) ) {
+			wp_send_json_error( [
+				'message' => sprintf(
+					/* translators: %s: product name */
+					__( 'This gift card is for %s. Add it to your cart first.', 'beltoft-gift-cards' ),
+					\Bgcw\GiftCard\ProductLock::product_name( $gc )
+				),
+			] );
+		}
+
 		// Apply via WC coupon system.
-		CartHandler::add_gift_card_to_session( $code );
+		if ( ! CartHandler::add_gift_card_to_session( $code ) ) {
+			wp_send_json_error( [ 'message' => __( 'This gift card could not be applied to your cart.', 'beltoft-gift-cards' ) ] );
+		}
 
 		wp_send_json_success( [
 			'message' => __( 'Gift card applied successfully!', 'beltoft-gift-cards' ),

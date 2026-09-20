@@ -98,3 +98,21 @@ $ctrl = new \Bgcw\Rest\GiftCardsController();
 $prepared = $ctrl->prepare_gift_card( Repository::find( $cards[0]->id ) );
 bgcw_assert_eq( $workshop_id, $prepared['product_id'], 'REST exposes product_id' );
 bgcw_assert_eq( 'TMP Workshop', $prepared['product_name'], 'REST exposes product_name' );
+
+// Pending code: applied automatically once the locked product is added to the cart.
+$id3 = GiftCardCreator::create_manual( [ 'amount' => 80, 'source' => 'paid_offline', 'product_id' => $workshop_id, 'send_email' => false ] );
+bgcw_test_register_cleanup( function () use ( $id3 ) { Repository::delete( $id3 ); } );
+$gc3 = Repository::find( $id3 );
+WC()->cart->empty_cart();
+bgcw_assert_eq( false, ProductLock::product_in_cart( $gc3 ), 'product not in cart yet' );
+WC()->session->set( CartHandler::PENDING_KEY, $gc3->code );
+WC()->cart->add_to_cart( $other_id, 1 );
+bgcw_assert_eq( false, WC()->cart->has_discount( $gc3->code ), 'adding another product does not apply the pending code' );
+WC()->cart->add_to_cart( $workshop_id, 1 );
+bgcw_assert_eq( true, ProductLock::product_in_cart( $gc3 ), 'product in cart detected' );
+bgcw_assert_eq( true, WC()->cart->has_discount( $gc3->code ), 'pending code applied when the locked product is added' );
+bgcw_assert_eq( '', (string) WC()->session->get( CartHandler::PENDING_KEY, '' ), 'pending code cleared' );
+wc_clear_notices();
+WC()->cart->empty_cart();
+bgcw_assert_eq( false, ProductLock::unlock( $id ), 'unlock returns false for an already unlocked card' );
+bgcw_assert_eq( false, CartHandler::add_gift_card_to_session( 'NOPE-NOPE' ), 'apply of invalid code reports false' );
