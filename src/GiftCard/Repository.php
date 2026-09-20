@@ -40,6 +40,7 @@ class Repository {
 			'customer_id'     => null,
 			'status'          => 'active',
 			'source'          => Source::PROMOTION,
+			'product_id'      => null,
 			'expires_at'      => null,
 			// Always write in UTC regardless of MySQL's configured timezone, so
 			// created_at is directly comparable to the UTC expires_at values.
@@ -66,6 +67,7 @@ class Repository {
 				'%d', // customer_id.
 				'%s', // status.
 				'%s', // source.
+				'%d', // product_id.
 				'%s', // expires_at.
 				'%s', // created_at.
 			]
@@ -482,6 +484,7 @@ class Repository {
 			'recipient_email' => '%s',
 			'message'         => '%s',
 			'expires_at'      => '%s',
+			'product_id'      => '%d',
 		];
 
 		$data    = [];
@@ -492,7 +495,7 @@ class Repository {
 			}
 			$data[ $key ] = $fields[ $key ];
 			$formats[]    = $format;
-			if ( null === $fields[ $key ] && 'expires_at' !== $key ) {
+			if ( null === $fields[ $key ] && ! in_array( $key, [ 'expires_at', 'product_id' ], true ) ) {
 				return false;
 			}
 		}

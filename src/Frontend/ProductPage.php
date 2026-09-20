@@ -258,7 +258,16 @@ class ProductPage {
 			}
 		}
 
-		if ( ! $is_predefined ) {
+		/**
+		 * Filter whether the custom-amount limits apply to this add-to-cart.
+		 *
+		 * Programmatic adds (e.g. a card locked to a product's price) return false.
+		 *
+		 * @param bool  $check      Whether to enforce predefined/min/max amount rules.
+		 * @param int   $product_id Product ID.
+		 * @param float $amount     Amount being added.
+		 */
+		if ( ! $is_predefined && apply_filters( 'bgcw_validate_amount_limits', true, $product_id, $amount ) ) {
 			// Must be a valid custom amount.
 			if ( ! $allow_custom ) {
 				wc_add_notice( __( 'Please select a valid gift card amount.', 'beltoft-gift-cards' ), 'error' );
@@ -359,6 +368,16 @@ class ProductPage {
 			'value' => wc_price( $cart_item['bgcw_amount'] ),
 		];
 
+		if ( ! empty( $cart_item['bgcw_product_id'] ) ) {
+			$locked = wc_get_product( (int) $cart_item['bgcw_product_id'] );
+			if ( $locked ) {
+				$item_data[] = [
+					'key'   => __( 'For', 'beltoft-gift-cards' ),
+					'value' => esc_html( $locked->get_name() ),
+				];
+			}
+		}
+
 		if ( ! empty( $cart_item['bgcw_recipient_email'] ) ) {
 			$item_data[] = [
 				'key'   => __( 'Recipient', 'beltoft-gift-cards' ),
@@ -412,6 +431,9 @@ class ProductPage {
 			$item->add_meta_data( '_bgcw_message', $values['bgcw_message'] ?? '' );
 			$item->add_meta_data( '_bgcw_sender_name', $order->get_billing_first_name() );
 			$item->add_meta_data( '_bgcw_sender_email', $order->get_billing_email() );
+			if ( ! empty( $values['bgcw_product_id'] ) ) {
+				$item->add_meta_data( '_bgcw_product_id', (int) $values['bgcw_product_id'] );
+			}
 		}
 	}
 }

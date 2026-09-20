@@ -4,6 +4,7 @@ namespace Bgcw\Rest;
 
 use Bgcw\GiftCard\GiftCardCreator;
 use Bgcw\GiftCard\Repository;
+use Bgcw\GiftCard\ProductLock;
 use Bgcw\GiftCard\Source;
 use Bgcw\GiftCard\TransactionNote;
 use Bgcw\GiftCard\TransactionRepository;
@@ -228,6 +229,11 @@ class GiftCardsController extends \WP_REST_Controller {
 				'type'              => [ 'string', 'null' ],
 				'validate_callback' => [ $this, 'validate_expires_at' ],
 			],
+			'product_id'      => [
+				'type'              => [ 'integer', 'null' ],
+				'description'       => 'Lock the card to this product (null to remove the restriction).',
+				'validate_callback' => [ $this, 'validate_product_id' ],
+			],
 		];
 
 		if ( $create ) {
@@ -247,6 +253,16 @@ class GiftCardsController extends \WP_REST_Controller {
 	 * @param mixed $value Value to validate.
 	 * @return true|WP_Error
 	 */
+	public function validate_product_id( $value ) {
+		if ( null === $value ) {
+			return true;
+		}
+		if ( is_numeric( $value ) && (int) $value > 0 && wc_get_product( (int) $value ) ) {
+			return true;
+		}
+		return new WP_Error( 'rest_invalid_param', __( 'product_id must be an existing product ID or null.', 'beltoft-gift-cards' ), [ 'status' => 400 ] );
+	}
+
 	public function validate_expires_at( $value ) {
 		if ( null === $value ) {
 			return true;
@@ -287,6 +303,9 @@ class GiftCardsController extends \WP_REST_Controller {
 		if ( $request->has_param( 'expires_at' ) ) {
 			$data['expires_at'] = $this->to_mysql_datetime( $request['expires_at'] );
 		}
+		if ( $request->has_param( 'product_id' ) && null !== $request['product_id'] ) {
+			$data['product_id'] = (int) $request['product_id'];
+		}
 
 		$id = GiftCardCreator::create_manual( $data );
 		if ( ! $id ) {
@@ -319,6 +338,9 @@ class GiftCardsController extends \WP_REST_Controller {
 		}
 		if ( $request->has_param( 'expires_at' ) ) {
 			$fields['expires_at'] = $this->to_mysql_datetime( $request['expires_at'] );
+		}
+		if ( $request->has_param( 'product_id' ) ) {
+			$fields['product_id'] = null === $request['product_id'] ? null : (int) $request['product_id'];
 		}
 
 		if ( empty( $fields ) ) {
@@ -444,6 +466,8 @@ class GiftCardsController extends \WP_REST_Controller {
 			'message'         => (string) $gc->message,
 			'order_id'        => $gc->order_id ? (int) $gc->order_id : null,
 			'customer_id'     => $gc->customer_id ? (int) $gc->customer_id : null,
+			'product_id'      => ! empty( $gc->product_id ) ? (int) $gc->product_id : null,
+			'product_name'    => ProductLock::product_name( $gc ),
 			'expires_at'      => $this->format_datetime( $gc->expires_at ),
 			'created_at'      => $this->format_datetime( $gc->created_at ),
 		];

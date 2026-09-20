@@ -67,7 +67,15 @@ class GiftCardListTable extends \WP_List_Table {
 	 * @return string
 	 */
 	public function column_code( $item ) {
-		return '<code>' . esc_html( $item->code ) . '</code>';
+		$html = '<code>' . esc_html( $item->code ) . '</code>';
+		if ( \Bgcw\GiftCard\ProductLock::is_locked( $item ) ) {
+			$html .= '<br><small class="bgcw-locked">' . sprintf(
+				/* translators: %s: product name */
+				esc_html__( 'For: %s', 'beltoft-gift-cards' ),
+				esc_html( \Bgcw\GiftCard\ProductLock::product_name( $item ) )
+			) . '</small>';
+		}
+		return $html;
 	}
 
 	/**
@@ -176,6 +184,7 @@ class GiftCardListTable extends \WP_List_Table {
 	public function get_bulk_actions() {
 		return [
 			'disable' => __( 'Disable', 'beltoft-gift-cards' ),
+			'unlock'  => __( 'Remove product restriction', 'beltoft-gift-cards' ),
 			'delete'  => __( 'Delete', 'beltoft-gift-cards' ),
 		];
 	}
@@ -210,6 +219,10 @@ class GiftCardListTable extends \WP_List_Table {
 				if ( Repository::update_status( $id, 'disabled' ) ) {
 					$count++;
 				}
+			} elseif ( 'unlock' === $action ) {
+				if ( \Bgcw\GiftCard\ProductLock::unlock( (int) $id ) ) {
+					$count++;
+				}
 			} elseif ( 'delete' === $action ) {
 				\Bgcw\GiftCard\TransactionRepository::delete_by_gift_card( $id );
 				if ( Repository::delete( $id ) ) {
@@ -218,7 +231,10 @@ class GiftCardListTable extends \WP_List_Table {
 			}
 		}
 
-		if ( $count > 0 ) {
+		if ( $count > 0 && 'unlock' === $action ) {
+			/* translators: %d: number of gift cards */
+			add_settings_error( 'bgcw_messages', 'bgcw_bulk', sprintf( _n( 'Product restriction removed from %d gift card.', 'Product restriction removed from %d gift cards.', $count, 'beltoft-gift-cards' ), $count ), 'success' );
+		} elseif ( $count > 0 ) {
 			$message = 'disable' === $action
 				? sprintf(
 					/* translators: %d: number of gift cards disabled */

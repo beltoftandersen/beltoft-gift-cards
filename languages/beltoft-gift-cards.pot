@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Beltoft Gift Cards for WooCommerce 1.5.0\n"
+"Project-Id-Version: Beltoft Gift Cards for WooCommerce 1.6.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/beltoft-gift-cards\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-09-18T08:41:54+00:00\n"
+"POT-Creation-Date: 2026-09-20T17:06:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: beltoft-gift-cards\n"
@@ -59,7 +59,7 @@ msgstr ""
 #: src/Admin/GiftCardListTable.php:30
 #: src/Admin/OrderMetaBox.php:52
 #: src/Admin/SettingsPage.php:261
-#: src/Frontend/MyAccount.php:163
+#: src/Frontend/MyAccount.php:177
 #: src/Frontend/ProductPage.php:104
 msgid "Amount"
 msgstr ""
@@ -67,7 +67,7 @@ msgstr ""
 #: src/Admin/GiftCardListTable.php:31
 #: src/Admin/OrderMetaBox.php:53
 #: src/Frontend/MyAccount.php:103
-#: src/Frontend/MyAccount.php:164
+#: src/Frontend/MyAccount.php:178
 msgid "Balance"
 msgstr ""
 
@@ -79,7 +79,7 @@ msgstr ""
 
 #: src/Admin/GiftCardListTable.php:33
 #: src/Admin/OrderMetaBox.php:54
-#: src/Frontend/ProductPage.php:364
+#: src/Frontend/ProductPage.php:383
 msgid "Recipient"
 msgstr ""
 
@@ -96,54 +96,75 @@ msgstr ""
 msgid "Expires"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:101
-#: src/Admin/GiftCardListTable.php:247
+#. translators: %s: product name
+#: src/Admin/GiftCardListTable.php:74
+#: src/Frontend/MyAccount.php:119
+#: templates/emails/gift-card-delivery.php:57
+#: templates/emails/plain/gift-card-delivery.php:45
+#, php-format
+msgid "For: %s"
+msgstr ""
+
+#: src/Admin/GiftCardListTable.php:109
+#: src/Admin/GiftCardListTable.php:263
 #: src/Admin/OrderMetaBox.php:34
-#: src/Frontend/MyAccount.php:131
+#: src/Frontend/MyAccount.php:145
 msgid "Active"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:102
-#: src/Admin/GiftCardListTable.php:249
+#: src/Admin/GiftCardListTable.php:110
+#: src/Admin/GiftCardListTable.php:265
 #: src/Admin/OrderMetaBox.php:35
-#: src/Frontend/MyAccount.php:132
+#: src/Frontend/MyAccount.php:146
 msgid "Disabled"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:103
-#: src/Admin/GiftCardListTable.php:250
+#: src/Admin/GiftCardListTable.php:111
+#: src/Admin/GiftCardListTable.php:266
 #: src/Admin/OrderMetaBox.php:36
 #: src/Admin/SettingsPage.php:220
-#: src/Frontend/MyAccount.php:133
+#: src/Frontend/MyAccount.php:147
 msgid "Expired"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:104
-#: src/Admin/GiftCardListTable.php:248
+#: src/Admin/GiftCardListTable.php:112
+#: src/Admin/GiftCardListTable.php:264
 #: src/Admin/OrderMetaBox.php:37
-#: src/Frontend/MyAccount.php:134
+#: src/Frontend/MyAccount.php:148
 msgid "Redeemed"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:137
+#: src/Admin/GiftCardListTable.php:145
 msgid "Manual"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:166
-#: src/Frontend/MyAccount.php:145
+#: src/Admin/GiftCardListTable.php:174
+#: src/Frontend/MyAccount.php:159
 msgid "Never"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:178
+#: src/Admin/GiftCardListTable.php:186
 msgid "Disable"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:179
+#: src/Admin/GiftCardListTable.php:187
+msgid "Remove product restriction"
+msgstr ""
+
+#: src/Admin/GiftCardListTable.php:188
 msgid "Delete"
 msgstr ""
 
+#. translators: %d: number of gift cards
+#: src/Admin/GiftCardListTable.php:236
+#, php-format
+msgid "Product restriction removed from %d gift card."
+msgid_plural "Product restriction removed from %d gift cards."
+msgstr[0] ""
+msgstr[1] ""
+
 #. translators: %d: number of gift cards disabled
-#: src/Admin/GiftCardListTable.php:225
+#: src/Admin/GiftCardListTable.php:241
 #, php-format
 msgid "%d gift card disabled."
 msgid_plural "%d gift cards disabled."
@@ -151,18 +172,18 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. translators: %d: number of gift cards deleted
-#: src/Admin/GiftCardListTable.php:230
+#: src/Admin/GiftCardListTable.php:246
 #, php-format
 msgid "%d gift card deleted."
 msgid_plural "%d gift cards deleted."
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Admin/GiftCardListTable.php:246
+#: src/Admin/GiftCardListTable.php:262
 msgid "All"
 msgstr ""
 
-#: src/Admin/GiftCardListTable.php:322
+#: src/Admin/GiftCardListTable.php:338
 msgid "No gift cards found."
 msgstr ""
 
@@ -395,7 +416,7 @@ msgstr ""
 
 #: src/Admin/SettingsPage.php:276
 #: src/Frontend/ProductPage.php:187
-#: src/Frontend/ProductPage.php:371
+#: src/Frontend/ProductPage.php:390
 msgid "Recipient Name"
 msgstr ""
 
@@ -448,7 +469,7 @@ msgid "Too many attempts. Please wait a moment."
 msgstr ""
 
 #: src/Cart/AjaxHandler.php:70
-#: src/Cart/CartHandler.php:181
+#: src/Cart/CartHandler.php:192
 msgid "Gift card applied successfully!"
 msgstr ""
 
@@ -457,31 +478,37 @@ msgid "Invalid gift card."
 msgstr ""
 
 #: src/Cart/AjaxHandler.php:96
-#: src/Cart/CartHandler.php:341
+#: src/Cart/CartHandler.php:352
 msgid "Gift card removed."
 msgstr ""
 
+#. translators: 1: masked gift card code, 2: product name
+#: src/Cart/CartHandler.php:100
+#, php-format
+msgid "Gift Card (%1$s) for %2$s"
+msgstr ""
+
 #. translators: %s: masked gift card code
-#: src/Cart/CartHandler.php:96
+#: src/Cart/CartHandler.php:107
 #, php-format
 msgid "Gift Card (%s)"
 msgstr ""
 
-#: src/Cart/CartHandler.php:225
-#: src/Cart/CartHandler.php:377
+#: src/Cart/CartHandler.php:236
+#: src/Cart/CartHandler.php:388
 msgid "This gift card code is invalid or cannot be applied."
 msgstr ""
 
-#: src/Cart/CartHandler.php:258
+#: src/Cart/CartHandler.php:269
 msgid "This gift card is already applied."
 msgstr ""
 
-#: src/Cart/CartHandler.php:375
+#: src/Cart/CartHandler.php:386
 msgid "This gift card is already applied to your cart."
 msgstr ""
 
 #. translators: %s: formatted gift card balance
-#: src/Cart/CartHandler.php:384
+#: src/Cart/CartHandler.php:396
 #, php-format
 msgid "Gift card applied! Balance: %s"
 msgstr ""
@@ -571,49 +598,49 @@ msgstr ""
 msgid "Initial Amount"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:120
-#: src/Frontend/MyAccount.php:122
-#: src/Frontend/MyAccount.php:123
+#: src/Frontend/MyAccount.php:126
+#: src/Frontend/MyAccount.php:128
+#: src/Frontend/MyAccount.php:129
 msgid "Show code"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:121
+#: src/Frontend/MyAccount.php:127
 msgid "Hide code"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:124
+#: src/Frontend/MyAccount.php:130
 msgid "Show transactions"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:161
+#: src/Frontend/MyAccount.php:175
 msgid "Date"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:162
+#: src/Frontend/MyAccount.php:176
 msgid "Type"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:165
+#: src/Frontend/MyAccount.php:179
 msgid "Note"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:174
+#: src/Frontend/MyAccount.php:188
 msgid "Debit"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:175
+#: src/Frontend/MyAccount.php:189
 msgid "Credit"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:176
+#: src/Frontend/MyAccount.php:190
 msgid "Refund"
 msgstr ""
 
-#: src/Frontend/MyAccount.php:194
+#: src/Frontend/MyAccount.php:208
 msgid "No transactions yet."
 msgstr ""
 
-#: src/Frontend/MyAccount.php:219
+#: src/Frontend/MyAccount.php:233
 msgid "You don't have any gift cards yet."
 msgstr ""
 
@@ -648,26 +675,34 @@ msgstr ""
 msgid "Please select a gift card amount."
 msgstr ""
 
-#: src/Frontend/ProductPage.php:264
+#: src/Frontend/ProductPage.php:273
 msgid "Please select a valid gift card amount."
 msgstr ""
 
 #. translators: 1: minimum amount, 2: maximum amount
-#: src/Frontend/ProductPage.php:274
+#: src/Frontend/ProductPage.php:283
 #, php-format
 msgid "Gift card amount must be between %1$s and %2$s."
 msgstr ""
 
-#: src/Frontend/ProductPage.php:289
+#: src/Frontend/ProductPage.php:298
 msgid "Please enter a valid recipient email address."
 msgstr ""
 
-#: src/Frontend/ProductPage.php:358
+#: src/Frontend/ProductPage.php:367
 msgid "Gift Card Amount"
 msgstr ""
 
-#: src/Frontend/ProductPage.php:378
+#: src/Frontend/ProductPage.php:375
+msgid "For"
+msgstr ""
+
+#: src/Frontend/ProductPage.php:397
 msgid "Personal Message"
+msgstr ""
+
+#: src/GiftCard/ProductLock.php:47
+msgid "a product that is no longer available"
 msgstr ""
 
 #: src/GiftCard/Source.php:57
@@ -750,52 +785,56 @@ msgstr ""
 msgid "Gift cards are always virtual and non-taxable. Custom amount and expiry settings are controlled from the Gift Cards settings page."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:145
+#: src/Rest/GiftCardsController.php:146
 msgid "Sorry, you are not allowed to manage gift cards."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:257
+#: src/Rest/GiftCardsController.php:263
+msgid "product_id must be an existing product ID or null."
+msgstr ""
+
+#: src/Rest/GiftCardsController.php:273
 msgid "expires_at must be an ISO 8601 date or null."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:293
+#: src/Rest/GiftCardsController.php:312
 msgid "Gift card could not be created."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:325
+#: src/Rest/GiftCardsController.php:347
 msgid "No updatable fields were provided."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:329
-#: src/Rest/GiftCardsController.php:362
+#: src/Rest/GiftCardsController.php:351
+#: src/Rest/GiftCardsController.php:384
 msgid "Gift card could not be updated."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:352
+#: src/Rest/GiftCardsController.php:374
 msgid "Amount must be non-zero."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:357
+#: src/Rest/GiftCardsController.php:379
 msgid "Insufficient balance for this debit."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:382
+#: src/Rest/GiftCardsController.php:404
 msgid "Balance was changed but the transaction could not be recorded."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:410
+#: src/Rest/GiftCardsController.php:432
 msgid "Gift cards cannot be trashed. Pass force=true to delete permanently."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:416
+#: src/Rest/GiftCardsController.php:438
 msgid "Gift card could not be deleted."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:494
+#: src/Rest/GiftCardsController.php:518
 msgid "Must be a valid email address or empty."
 msgstr ""
 
-#: src/Rest/GiftCardsController.php:502
+#: src/Rest/GiftCardsController.php:526
 msgid "Gift card not found."
 msgstr ""
 
@@ -807,17 +846,21 @@ msgid "From: %s"
 msgstr ""
 
 #. translators: %s: expiry date
-#: templates/emails/gift-card-delivery.php:62
-#: templates/emails/plain/gift-card-delivery.php:52
+#: templates/emails/gift-card-delivery.php:73
+#: templates/emails/plain/gift-card-delivery.php:61
 #, php-format
 msgid "Expires: %s"
 msgstr ""
 
-#: templates/emails/gift-card-delivery.php:87
+#: templates/emails/gift-card-delivery.php:98
+msgid "Redeem your gift"
+msgstr ""
+
+#: templates/emails/gift-card-delivery.php:98
 msgid "Shop Now"
 msgstr ""
 
-#: templates/emails/gift-card-delivery.php:92
+#: templates/emails/gift-card-delivery.php:103
 msgid "Click \"Shop Now\" to apply your gift card automatically, or enter the code at checkout in the coupon/gift card field."
 msgstr ""
 
@@ -828,17 +871,17 @@ msgid "Amount: %s"
 msgstr ""
 
 #. translators: %s: gift card code
-#: templates/emails/plain/gift-card-delivery.php:44
+#: templates/emails/plain/gift-card-delivery.php:53
 #, php-format
 msgid "Code: %s"
 msgstr ""
 
 #. translators: %s: shop URL
-#: templates/emails/plain/gift-card-delivery.php:61
+#: templates/emails/plain/gift-card-delivery.php:70
 #, php-format
 msgid "Shop now: %s"
 msgstr ""
 
-#: templates/emails/plain/gift-card-delivery.php:66
+#: templates/emails/plain/gift-card-delivery.php:75
 msgid "Click the link above to apply your gift card automatically, or enter the code at checkout in the coupon/gift card field."
 msgstr ""

@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.5.1
+Stable tag: 1.6.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,11 @@ Yes. Use the REST API (`wc-bgcw/v1`) with WooCommerce REST API keys to list, cre
 8. Settings page.
 
 == Changelog ==
+
+= 1.6.0 =
+* Added: Gift cards can be locked to a specific product. A locked card only discounts that product, the email link adds the product to the cart with the code applied, and admins can remove the restriction from the gift card list.
+* Added: `product_id` on the REST API (read, create, update) and `bgcw_validate_amount_limits` filter.
+* Added: "For: product" shown in cart, My Account, admin list and emails for locked cards.
 
 = 1.5.1 =
 * Added: `bgcw_gift_card_deleted` and `bgcw_my_account_card_actions` hooks for extensions.

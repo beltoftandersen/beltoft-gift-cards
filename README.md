@@ -2,7 +2,7 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.5.1
+- Stable version: 1.6.0
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+ (tested up to WordPress 7.1)
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
@@ -117,6 +117,7 @@ Developers can extend the plugin:
 - `bgcw_gift_card_created` — fires after a gift card is created (used by the email system)
 - `bgcw_gift_card_deleted` — fires after a gift card is deleted from the admin list
 - `bgcw_my_account_card_actions` — fires inside each card row on the My Account → Gift Cards page, for adding buttons
+- `bgcw_validate_amount_limits` — return false to skip the predefined/min/max amount checks for a programmatic add-to-cart
 - `bgcw_show_recipient_name_field` — return false to hide the Recipient Name field on the product page
 - `bgcw_show_recipient_email_field` — return false to hide the Recipient Email field on the product page. The buyer's billing email is used as the recipient and the email validation is skipped
 - `bgcw_show_personal_message_field` — return false to hide the Personal Message field on the product page
@@ -135,6 +136,12 @@ add_filter( 'bgcw_show_recipient_email_field', '__return_false' );
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.6.0
+
+- Added: Gift cards can be locked to a specific product. A locked card only discounts that product, the email link adds the product to the cart with the code applied, and admins can remove the restriction from the gift card list.
+- Added: `product_id` on the REST API (read, create, update) and `bgcw_validate_amount_limits` filter.
+- Added: "For: product" shown in cart, My Account, admin list and emails for locked cards.
 
 ### 1.5.1
 

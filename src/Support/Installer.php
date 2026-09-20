@@ -54,6 +54,7 @@ class Installer {
 			customer_id bigint(20) unsigned DEFAULT NULL,
 			status varchar(20) NOT NULL DEFAULT 'active',
 			source varchar(20) NOT NULL DEFAULT '',
+			product_id bigint(20) unsigned DEFAULT NULL,
 			expires_at datetime DEFAULT NULL,
 			created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
 			PRIMARY KEY  (id),
@@ -61,6 +62,7 @@ class Installer {
 			KEY recipient_email (recipient_email),
 			KEY order_id (order_id),
 			KEY customer_id (customer_id),
+			KEY product_id (product_id),
 			KEY status (status),
 			KEY status_expires (status, expires_at),
 			KEY source (source)

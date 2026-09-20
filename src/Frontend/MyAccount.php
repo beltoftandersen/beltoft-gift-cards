@@ -113,6 +113,12 @@ class MyAccount {
 										<span class="bgcw-code-masked"><?php echo esc_html( CartHandler::mask_code( $gc->code ) ); ?></span>
 										<span class="bgcw-code-full" hidden><?php echo esc_html( $gc->code ); ?></span>
 									</code>
+									<?php if ( \Bgcw\GiftCard\ProductLock::is_locked( $gc ) ) : ?>
+										<br><small class="bgcw-locked"><?php
+										/* translators: %s: product name */
+										printf( esc_html__( 'For: %s', 'beltoft-gift-cards' ), esc_html( \Bgcw\GiftCard\ProductLock::product_name( $gc ) ) );
+										?></small>
+									<?php endif; ?>
 									<button
 										type="button"
 										class="bgcw-toggle-code"

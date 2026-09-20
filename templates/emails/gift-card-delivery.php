@@ -49,6 +49,17 @@ do_action( 'bgcw_email_before_card_design', $gift_card, $order );
 	<p style="font-size: 32px; font-weight: bold; margin: 0 0 10px;">
 		<?php echo wp_kses_post( wc_price( $gift_card->initial_amount, [ 'currency' => $gift_card->currency ] ) ); ?>
 	</p>
+	<?php if ( \Bgcw\GiftCard\ProductLock::is_locked( $gift_card ) ) : ?>
+		<p style="font-size: 15px; margin: 0 0 10px;">
+			<?php
+			printf(
+				/* translators: %s: product name */
+				esc_html__( 'For: %s', 'beltoft-gift-cards' ),
+				'<strong>' . esc_html( \Bgcw\GiftCard\ProductLock::product_name( $gift_card ) ) . '</strong>'
+			);
+			?>
+		</p>
+	<?php endif; ?>
 	<div style="background: #f5f5f5; padding: 15px 25px; display: inline-block; border-radius: 6px; margin: 10px 0;">
 		<span style="font-family: monospace; font-size: 20px; letter-spacing: 3px; font-weight: bold;">
 			<?php echo esc_html( $gift_card->code ); ?>
@@ -84,7 +95,7 @@ $base_color = get_option( 'woocommerce_email_base_color', '#7f54b3' );
 <p style="text-align: center; margin: 25px 0;">
 	<a href="<?php echo esc_url( add_query_arg( 'bgcw_apply', rawurlencode( $gift_card->code ), wc_get_page_permalink( 'shop' ) ) ); ?>"
 	   style="display: inline-block; background: <?php echo esc_attr( $base_color ); ?>; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 4px; font-weight: bold;">
-		<?php esc_html_e( 'Shop Now', 'beltoft-gift-cards' ); ?>
+		<?php echo \Bgcw\GiftCard\ProductLock::is_locked( $gift_card ) ? esc_html__( 'Redeem your gift', 'beltoft-gift-cards' ) : esc_html__( 'Shop Now', 'beltoft-gift-cards' ); ?>
 	</a>
 </p>
 

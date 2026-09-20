@@ -124,6 +124,7 @@ class GiftCardCreator {
 			'customer_id'     => $order->get_customer_id(),
 			'status'          => 'active',
 			'source'          => Source::ORDER,
+			'product_id'      => (int) $item->get_meta( '_bgcw_product_id' ) ?: null,
 			'expires_at'      => $expires_at,
 		];
 
@@ -209,6 +210,7 @@ class GiftCardCreator {
 			'customer_id'     => null,
 			'status'          => 'active',
 			'source'          => $source,
+			'product_id'      => ! empty( $data['product_id'] ) ? (int) $data['product_id'] : null,
 			'expires_at'      => $expires_at,
 		] );
 

@@ -17,7 +17,7 @@ bgcw_assert( '' !== Source::label( 'compensation' ), 'label is non-empty' );
 // Column exists.
 $col = $wpdb->get_var( $wpdb->prepare( "SHOW COLUMNS FROM {$wpdb->prefix}bgcw_gift_cards LIKE %s", 'source' ) );
 bgcw_assert_eq( 'source', $col, 'source column exists' );
-bgcw_assert_eq( '1.3', get_option( 'bgcw_db_version' ), 'db version is 1.3' );
+bgcw_assert_eq( '1.4', get_option( 'bgcw_db_version' ), 'db version is 1.4' );
 
 // Insert stores source; default is promotion.
 $id1 = Repository::insert( [ 'code' => 'TEST-SRC-' . wp_rand( 1000, 9999 ), 'initial_amount' => 5, 'balance' => 5, 'source' => 'paid_offline' ] );
@@ -45,7 +45,7 @@ $inserted = $wpdb->insert(
 $legacy_id = (int) $wpdb->insert_id;
 bgcw_assert( false !== $inserted && $legacy_id > 0, 'legacy row inserted' );
 Bgcw\Support\Installer::activate();
-bgcw_assert_eq( '1.3', get_option( 'bgcw_db_version' ), 'activation updates db version to 1.3' );
+bgcw_assert_eq( '1.4', get_option( 'bgcw_db_version' ), 'activation updates db version to 1.4' );
 $legacy_row = $wpdb->get_row( $wpdb->prepare( "SELECT source FROM {$wpdb->prefix}bgcw_gift_cards WHERE id = %d", $legacy_id ) );
 bgcw_assert_eq( 'promotion', $legacy_row->source, 'legacy row backfilled to promotion' );
 Repository::delete( $legacy_id );

@@ -3,6 +3,7 @@
 namespace Bgcw\Cart;
 
 use Bgcw\GiftCard\Repository;
+use Bgcw\GiftCard\ProductLock;
 use Bgcw\Support\Options;
 
 defined( 'ABSPATH' ) || exit;
@@ -59,10 +60,16 @@ class CartHandler {
 			return $data;
 		}
 
+		// A product-locked card is a fixed_product coupon limited to one unit of that product: WooCommerce
+		// then discounts only that item (a fixed_cart coupon with product_ids would still spread over the cart).
+		$locked = ProductLock::is_locked( $gc );
+
 		return [
 			'id'                          => 0,
 			'amount'                      => (float) $gc->balance,
-			'discount_type'               => 'fixed_cart',
+			'product_ids'                 => $locked ? [ (int) $gc->product_id ] : [],
+			'discount_type'               => $locked ? 'fixed_product' : 'fixed_cart',
+			'limit_usage_to_x_items'      => $locked ? 1 : null,
 			'individual_use'              => false,
 			'usage_limit'                 => 0,
 			'usage_count'                 => 0,
@@ -70,7 +77,6 @@ class CartHandler {
 			'date_modified'               => '',
 			'date_expires'                => null,
 			'free_shipping'               => false,
-			'product_ids'                 => [],
 			'excluded_product_ids'        => [],
 			'product_categories'          => [],
 			'excluded_product_categories' => [],
@@ -91,6 +97,15 @@ class CartHandler {
 	 */
 	public static function coupon_label( $label, $coupon ) {
 		if ( self::is_gift_card_coupon( $coupon->get_code() ) ) {
+			$gc = Repository::find_by_code( $coupon->get_code() );
+			if ( ProductLock::is_locked( $gc ) ) {
+				return sprintf(
+					/* translators: 1: masked gift card code, 2: product name */
+					__( 'Gift Card (%1$s) for %2$s', 'beltoft-gift-cards' ),
+					self::mask_code( $coupon->get_code() ),
+					ProductLock::product_name( $gc )
+				);
+			}
 			return sprintf(
 				/* translators: %s: masked gift card code */
 				__( 'Gift Card (%s)', 'beltoft-gift-cards' ),
@@ -377,6 +392,7 @@ class CartHandler {
 				wc_add_notice( __( 'This gift card code is invalid or cannot be applied.', 'beltoft-gift-cards' ), 'error' );
 			}
 		} else {
+			self::maybe_add_locked_product( $gc );
 			self::add_gift_card_to_session( $code );
 			wc_add_notice(
 				sprintf(
@@ -388,9 +404,30 @@ class CartHandler {
 			);
 		}
 
-		// Redirect to shop page (strip the code from URL).
-		wp_safe_redirect( wc_get_page_permalink( 'shop' ) );
+		// Redirect (strip the code from URL): shop page, or cart/product page for a product-locked card.
+		$redirect = ProductLock::is_locked( $gc ) && ! is_wp_error( $validation ) ? ProductLock::redeem_url( $gc ) : wc_get_page_permalink( 'shop' );
+		wp_safe_redirect( $redirect );
 		exit;
+	}
+
+	/**
+	 * For a product-locked card, put the product in the cart (once) so the code applies immediately.
+	 *
+	 * @param object $gc Gift card row.
+	 */
+	private static function maybe_add_locked_product( $gc ) {
+		$product = ProductLock::product( $gc );
+		if ( ! $product || ! WC()->cart || ! ProductLock::can_add_directly( $product ) ) {
+			return;
+		}
+
+		foreach ( WC()->cart->get_cart() as $item ) {
+			if ( (int) $item['product_id'] === $product->get_id() ) {
+				return;
+			}
+		}
+
+		WC()->cart->add_to_cart( $product->get_id(), 1 );
 	}
 
 	/**

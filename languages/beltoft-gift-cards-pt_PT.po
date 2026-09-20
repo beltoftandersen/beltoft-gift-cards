@@ -875,3 +875,24 @@ msgstr ""
 
 #~ msgid "https://chimkins.com/"
 #~ msgstr "https://chimkins.com/"
+
+msgid "For: %s"
+msgstr "Para: %s"
+
+msgid "Redeem your gift"
+msgstr "Resgatar o seu presente"
+
+msgid "Remove product restriction"
+msgstr "Remover restrição de produto"
+
+msgid "a product that is no longer available"
+msgstr "um produto que já não está disponível"
+
+msgid "Gift Card (%1$s) for %2$s"
+msgstr "Cartão presente (%1$s) para %2$s"
+
+msgid "For"
+msgstr "Para"
+
+msgid "product_id must be an existing product ID or null."
+msgstr "product_id tem de ser o ID de um produto existente ou null."

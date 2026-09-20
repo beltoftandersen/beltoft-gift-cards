@@ -39,6 +39,15 @@ printf(
 );
 echo "\n";
 
+if ( \Bgcw\GiftCard\ProductLock::is_locked( $gift_card ) ) {
+	printf(
+		/* translators: %s: product name */
+		esc_html__( 'For: %s', 'beltoft-gift-cards' ),
+		esc_html( \Bgcw\GiftCard\ProductLock::product_name( $gift_card ) )
+	);
+	echo "\n";
+}
+
 printf(
 	/* translators: %s: gift card code */
 	esc_html__( 'Code: %s', 'beltoft-gift-cards' ),
