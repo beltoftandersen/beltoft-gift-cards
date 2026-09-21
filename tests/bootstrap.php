@@ -9,6 +9,16 @@ if ( ! defined( 'WP_CLI' ) ) {
 	exit( 1 );
 }
 
+// Never send real email from tests. This site delivers through SES, so every WooCommerce
+// order email or gift card email triggered by a test would reach a real mailbox.
+$GLOBALS['bgcw_test_mail_blocked'] = 0;
+add_filter( 'pre_wp_mail', function ( $null, $atts ) {
+	$GLOBALS['bgcw_test_mail_blocked']++;
+	$GLOBALS['bgcw_test_last_mail'] = $atts;
+	return true;
+}, 0, 2 );
+add_filter( 'woocommerce_defer_transactional_emails', '__return_false', 999 );
+
 $GLOBALS['bgcw_test_failures'] = 0;
 $GLOBALS['bgcw_test_passes']   = 0;
 $GLOBALS['bgcw_test_cleanups'] = [];
