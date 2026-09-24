@@ -12,6 +12,9 @@ if ( ! defined( 'WP_CLI' ) ) {
 // Never send real email from tests. This site delivers through SES, so every WooCommerce
 // order email or gift card email triggered by a test would reach a real mailbox.
 $GLOBALS['bgcw_test_mail_blocked'] = 0;
+// Mailer plugins (e.g. the SES mailer) hook pre_wp_mail themselves and may ignore an earlier
+// short-circuit, so detach every existing handler before installing the block.
+remove_all_filters( 'pre_wp_mail' );
 add_filter( 'pre_wp_mail', function ( $null, $atts ) {
 	$GLOBALS['bgcw_test_mail_blocked']++;
 	$GLOBALS['bgcw_test_last_mail'] = $atts;
