@@ -338,3 +338,140 @@
 	font-size: 0.875em;
 	background-color: #fafafa;
 }
+
+/* My Account — small screens: each gift card becomes a stacked card */
+@media (max-width: 768px) {
+	.bgcw-myaccount .bgcw-cards-table,
+	.bgcw-myaccount .bgcw-cards-table tbody,
+	.bgcw-myaccount .bgcw-cards-table tr,
+	.bgcw-myaccount .bgcw-cards-table td {
+		display: block;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.bgcw-myaccount .bgcw-cards-table thead {
+		display: none;
+	}
+
+	.bgcw-myaccount .bgcw-card-row {
+		border: 1px solid #e0e0e0;
+		border-radius: 6px;
+		padding: 4px 12px;
+		margin: 0 0 12px;
+	}
+
+	.bgcw-myaccount .bgcw-card-row td {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 12px;
+		padding: 8px 0;
+		border: 0;
+		border-bottom: 1px solid #f0f0f0;
+		text-align: right;
+	}
+
+	.bgcw-myaccount .bgcw-card-row td:last-child {
+		border-bottom: 0;
+	}
+
+	.bgcw-myaccount .bgcw-card-row td[data-title]::before {
+		content: attr(data-title);
+		font-weight: 600;
+		color: #555;
+		text-align: left;
+		flex: 0 0 auto;
+	}
+
+	.bgcw-myaccount .bgcw-card-row td.bgcw-col-code {
+		display: block;
+		text-align: left;
+		padding-bottom: 10px;
+	}
+
+	.bgcw-myaccount .bgcw-card-row td.bgcw-col-code::before {
+		display: block;
+		margin-bottom: 6px;
+	}
+
+	.bgcw-myaccount .bgcw-col-code .bgcw-code {
+		display: block;
+		font-size: 15px;
+		margin-bottom: 8px;
+		word-break: break-all;
+	}
+
+	.bgcw-myaccount .bgcw-col-code .bgcw-locked {
+		display: block;
+		margin: -4px 0 8px;
+	}
+
+	.bgcw-myaccount .bgcw-col-code br {
+		display: none;
+	}
+
+	.bgcw-myaccount .bgcw-col-code .bgcw-toggle-code,
+	.bgcw-myaccount .bgcw-col-code .bgcw-toggle-transactions,
+	.bgcw-myaccount .bgcw-col-code .button {
+		display: inline-block;
+		margin: 0 8px 6px 0;
+		padding: 6px 12px;
+		font-size: 13px;
+		line-height: 1.3;
+		border: 1px solid #ccc;
+		border-radius: 4px;
+		background: #fff;
+		color: #333;
+	}
+
+	.bgcw-myaccount .bgcw-transactions-row {
+		margin: -12px 0 12px;
+		padding: 0 12px 4px;
+		border: 1px solid #e0e0e0;
+		border-top: 0;
+		border-radius: 0 0 6px 6px;
+	}
+
+	.bgcw-myaccount .bgcw-transactions-row > td {
+		padding: 0;
+	}
+
+	.bgcw-myaccount .bgcw-transactions-table,
+	.bgcw-myaccount .bgcw-transactions-table tbody,
+	.bgcw-myaccount .bgcw-transactions-table tr,
+	.bgcw-myaccount .bgcw-transactions-table td {
+		display: block;
+		width: 100%;
+		box-sizing: border-box;
+	}
+
+	.bgcw-myaccount .bgcw-transactions-table thead {
+		display: none;
+	}
+
+	.bgcw-myaccount .bgcw-transactions-table tr {
+		padding: 6px 0;
+		border-bottom: 1px solid #eee;
+	}
+
+	.bgcw-myaccount .bgcw-transactions-table tr:last-child {
+		border-bottom: 0;
+	}
+
+	.bgcw-myaccount .bgcw-transactions-table td {
+		display: flex;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 3px 0;
+		border: 0;
+		text-align: right;
+	}
+
+	.bgcw-myaccount .bgcw-transactions-table td[data-title]::before {
+		content: attr(data-title);
+		font-weight: 600;
+		color: #555;
+		text-align: left;
+	}
+}

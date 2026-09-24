@@ -108,7 +108,7 @@ class MyAccount {
 					<tbody>
 						<?php foreach ( $all_cards as $gc ) : ?>
 							<tr class="bgcw-card-row" data-card-id="<?php echo esc_attr( $gc->id ); ?>">
-								<td>
+								<td class="bgcw-col-code" data-title="<?php esc_attr_e( 'Code', 'beltoft-gift-cards' ); ?>">
 									<code class="bgcw-code">
 										<span class="bgcw-code-masked"><?php echo esc_html( CartHandler::mask_code( $gc->code ) ); ?></span>
 										<span class="bgcw-code-full" hidden><?php echo esc_html( $gc->code ); ?></span>
@@ -137,9 +137,9 @@ class MyAccount {
 									do_action( 'bgcw_my_account_card_actions', $gc );
 									?>
 								</td>
-								<td><?php echo wp_kses_post( wc_price( $gc->initial_amount, [ 'currency' => $gc->currency ] ) ); ?></td>
-								<td><strong><?php echo wp_kses_post( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) ); ?></strong></td>
-								<td>
+								<td data-title="<?php esc_attr_e( 'Initial Amount', 'beltoft-gift-cards' ); ?>"><?php echo wp_kses_post( wc_price( $gc->initial_amount, [ 'currency' => $gc->currency ] ) ); ?></td>
+								<td data-title="<?php esc_attr_e( 'Balance', 'beltoft-gift-cards' ); ?>"><strong><?php echo wp_kses_post( wc_price( $gc->balance, [ 'currency' => $gc->currency ] ) ); ?></strong></td>
+								<td data-title="<?php esc_attr_e( 'Status', 'beltoft-gift-cards' ); ?>">
 									<?php
 									$status_labels = [
 										'active'   => __( 'Active', 'beltoft-gift-cards' ),
@@ -153,7 +153,7 @@ class MyAccount {
 										<?php echo esc_html( $status_label ); ?>
 									</span>
 								</td>
-								<td>
+								<td data-title="<?php esc_attr_e( 'Expires', 'beltoft-gift-cards' ); ?>">
 									<?php
 									if ( empty( $gc->expires_at ) ) {
 										esc_html_e( 'Never', 'beltoft-gift-cards' );
@@ -182,7 +182,7 @@ class MyAccount {
 											<tbody>
 												<?php foreach ( $transactions as $tx ) : ?>
 													<tr>
-														<td><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $tx->created_at ) ) ); ?></td>
+														<td data-title="<?php esc_attr_e( 'Date', 'beltoft-gift-cards' ); ?>"><?php echo esc_html( wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $tx->created_at ) ) ); ?></td>
 														<?php
 $tx_labels = [
 	'debit'  => __( 'Debit', 'beltoft-gift-cards' ),
@@ -191,15 +191,15 @@ $tx_labels = [
 ];
 $tx_label = $tx_labels[ $tx->type ] ?? ucfirst( $tx->type );
 ?>
-														<td><span class="bgcw-tx-type bgcw-tx-type--<?php echo esc_attr( $tx->type ); ?>"><?php echo esc_html( $tx_label ); ?></span></td>
-														<td>
+														<td data-title="<?php esc_attr_e( 'Type', 'beltoft-gift-cards' ); ?>"><span class="bgcw-tx-type bgcw-tx-type--<?php echo esc_attr( $tx->type ); ?>"><?php echo esc_html( $tx_label ); ?></span></td>
+														<td data-title="<?php esc_attr_e( 'Amount', 'beltoft-gift-cards' ); ?>">
 															<?php
 															$prefix = $tx->type === 'debit' ? '-' : '+';
 															echo esc_html( $prefix ) . wp_kses_post( wc_price( $tx->amount, [ 'currency' => $gc->currency ] ) );
 															?>
 														</td>
-														<td><?php echo wp_kses_post( wc_price( $tx->balance_after, [ 'currency' => $gc->currency ] ) ); ?></td>
-														<td><?php echo esc_html( TransactionNote::format( $tx ) ); ?></td>
+														<td data-title="<?php esc_attr_e( 'Balance', 'beltoft-gift-cards' ); ?>"><?php echo wp_kses_post( wc_price( $tx->balance_after, [ 'currency' => $gc->currency ] ) ); ?></td>
+														<td data-title="<?php esc_attr_e( 'Note', 'beltoft-gift-cards' ); ?>"><?php echo esc_html( TransactionNote::format( $tx ) ); ?></td>
 													</tr>
 												<?php endforeach; ?>
 											</tbody>
