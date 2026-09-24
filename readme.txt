@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -152,6 +152,9 @@ Yes. Use the REST API (`wc-bgcw/v1`) with WooCommerce REST API keys to list, cre
 8. Settings page.
 
 == Changelog ==
+
+= 1.6.2 =
+* Improved: Complete European Portuguese (pt_PT) translation.
 
 = 1.6.1 =
 * Fixed: A product-locked code from the email link now waits until the product is in the cart (variable products) and is applied automatically, instead of reporting success on a failed apply.
