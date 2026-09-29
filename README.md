@@ -2,140 +2,154 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.6.3
+- Stable version: 1.6.4
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+ (tested up to WordPress 7.1)
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
 
 ## Overview
 
-This plugin adds a gift card product type to your WooCommerce store. Customers purchase a gift card, choose an amount, and enter the recipient's email. When the order is processed, the recipient gets a branded email with their unique gift card code. Codes are redeemed at checkout through the standard WooCommerce coupon field — no extra steps for the customer.
+Beltoft Gift Cards for WooCommerce lets you sell gift cards in your store. A customer picks an amount, writes who the card is for and adds a personal message. When the order is paid, the recipient gets an email with a unique gift card code. They type the code in the normal coupon field at checkout, and the amount is taken off their order. Anything left on the card can be used next time.
 
 ## Features
 
-- Gift card product type with predefined amounts (e.g., $25, $50, $100) or custom amounts
-- Email delivery using WooCommerce email templates — same look as your order emails
-- Coupon field redemption — codes work in the standard WooCommerce coupon field, no setup required
-- Optional dedicated "Apply Gift Card" field on cart/checkout via settings or shortcode
-- Block regular coupons from discounting gift card products (on by default) so a discounted card can't be redeemed at full value
-- Auto-apply from email — the "Shop Now" button in the delivery email automatically applies the gift card to the recipient's cart
-- Virtual coupon integration — gift card discounts display natively between subtotal and total with WooCommerce [Remove] link
-- Balance tracking with partial redemption — remaining balance carries over
-- Personal message displayed in cart and order details
-- Price range display in shop catalog (e.g., "$25 – $100")
-- My Account tab for customers to view gift cards, balances, and transaction history
-- Admin dashboard with stats: total issued, outstanding balance, redeemed, expired
-- Gift card management list with search, status filters, pagination, and bulk actions
-- Manual gift card creation from the admin panel — no order required
-- Order meta box showing gift cards created by and used on each order
-- Automatic balance restore on cancel/refund, including proportional partial refunds
-- Loyalty Rewards integration — optionally block or allow customers from using loyalty points to purchase gift cards
-- Shortcode `[bgcw_product_form]` for page builders (Bricks, Elementor, etc.)
-- Email settings (subject, heading, on/off) under WooCommerce > Settings > Emails
-- Atomic balance deduction to prevent race conditions on concurrent redemptions
-- Rate limiting on gift card code lookups
-- HPOS compatible — works with WooCommerce High-Performance Order Storage
-- Clean uninstall with opt-in data removal
-- Portuguese (pt_PT) translation included
-- PSR-4 codebase, no Composer dependency
-- Gift card source tracking (shop order, paid offline, promotion, compensation) — the redeeming order records whether the card was paid or free, for accounting
-- REST API (`wc-bgcw/v1`) to list, create, update, adjust, and delete gift cards from external systems; works with WooCommerce REST API keys
+### Selling gift cards
+
+- A "Gift card" product type with fixed amounts (for example $25, $50, $100), a custom amount within limits you set, or both.
+- The customer adds the recipient's name, email and a personal message.
+- Shop pages show the price range, such as "From $25".
+- Works with page builders like Bricks and Elementor through the `[bgcw_product_form]` shortcode.
+
+### Delivery
+
+- The gift card is emailed to the recipient in your store's normal email design.
+- A "Shop Now" button in the email opens your store with the gift card already applied.
+- You decide whether cards are sent when an order is "Processing", "Completed", or both.
+
+### Using a gift card
+
+- Codes work in the standard WooCommerce coupon field. No setup needed.
+- Optionally show a separate "Apply Gift Card" field on the cart and checkout (or place it with the `[bgcw_apply_field]` shortcode).
+- Works with both the classic checkout and the newer block checkout.
+- Part of a card can be used now and the rest later.
+- A card can be locked to one product, so it can only be used for that product.
+- Regular coupons can't be used to buy gift cards at a discount (you can turn this off).
+
+### For your customers
+
+- A "Gift Cards" page in My Account with each card, its balance and its history.
+
+### Managing gift cards
+
+- A dashboard showing how much has been issued, how much is still unused, and how much has been redeemed or expired.
+- A searchable list of all gift cards where you can disable, delete or unlock cards.
+- Create gift cards by hand, for example for a customer paying in the store, a promotion or a compensation.
+- Every card records where it came from, so your accounting can tell paid cards from free ones.
+- Cards expire after a number of days you choose (365 by default), or never.
+- See on each order which gift cards it created and which it used.
+- If an order is cancelled or refunded, the money goes back onto the gift card, including for partial refunds.
+
+### And also
+
+- A REST API so other systems (accounting, POS, CRM) can read and manage gift cards.
+- Optional integration with Loyalty Rewards for WooCommerce.
+- Compatible with WooCommerce High-Performance Order Storage (HPOS).
+- Translation-ready, with Portuguese (pt_PT) included.
+
+Need more? The [Pro add-on](https://beltoft.net/beltoft-gift-cards-pro) adds PDF gift cards, scheduled delivery, gifting any product, bulk generation, CSV import/export, BOGO promotions and reports.
 
 ## How It Works
 
-1. Create a "Gift Card" product in WooCommerce and set the predefined amounts.
-2. Customer purchases the gift card, picks an amount, and enters recipient details and an optional message.
-3. When the order is processed, a unique code is generated and emailed to the recipient.
-4. Recipient enters the code at checkout in the coupon field — the gift card balance is applied as a discount.
-5. Partial use is tracked. The remaining balance stays on the gift card for future orders.
+1. Create a product and choose "Gift card" as the product type.
+2. A customer buys it, picks an amount and enters who it is for.
+3. When the order is paid, the recipient gets an email with their code.
+4. The recipient enters the code at checkout and the amount is deducted.
+5. Any remaining balance stays on the card for next time.
 
 ## Installation
 
-1. Upload the plugin to `wp-content/plugins/` or install from a ZIP.
+1. Install the plugin from the Plugins screen, or upload the `beltoft-gift-cards` folder to `/wp-content/plugins/`.
 2. Activate the plugin.
-3. Go to **WooCommerce > Gift Cards > Settings** to configure.
-4. Create a new product and select **"Gift card"** as the product type.
-5. Optionally adjust the delivery email under **WooCommerce > Settings > Emails > Gift Card Delivery**.
+3. Go to **WooCommerce > Gift Cards > Settings** to set amounts, expiry and other options.
+4. Create a new product and choose **Gift card** as the product type.
+5. Optionally change the email under **WooCommerce > Settings > Emails > Gift Card Delivery**.
 
-## Configuration
+## FAQ
 
-### Gift Card Product
+**How do customers use a gift card?**
+They type the code in the normal coupon field at checkout, or click "Shop Now" in the gift card email to have it applied automatically.
 
-Create a product, select "Gift card" as the product type. Set predefined amounts in the Gift Card data panel (e.g., 25,50,75,100). Custom amounts and their min/max are controlled from the global settings page.
+**Can I show a separate gift card field?**
+Yes. Turn on "Dedicated Gift Card Field" under WooCommerce > Gift Cards > Settings. It can be placed automatically on the cart and checkout, or wherever you put the `[bgcw_apply_field]` shortcode.
 
-### Redemption
+**Can a gift card be used more than once?**
+Yes, until the balance runs out. If the card is worth more than the order, only what's needed is used and the rest stays on the card.
 
-Gift card codes always work in the standard WooCommerce coupon field — this is automatic. To also show a dedicated "Apply Gift Card" field, enable it in settings. You can choose automatic placement or shortcode-only:
+**What happens when an order is refunded?**
+If the order was paid with a gift card, the money goes back onto the card. Partial refunds put back a matching share.
 
-```
-[bgcw_apply_field]
-```
+**Can I create gift cards by hand?**
+Yes. Go to WooCommerce > Gift Cards and click "Add Gift Card". Choose the amount, the recipient and why the card is issued (paid offline, promotion or compensation).
 
-### Email Template
+**Do gift cards expire?**
+By default after 365 days. You can change the number of days, or set it to 0 so cards never expire.
 
-Uses WooCommerce's email system — same header, footer, and colours as your other store emails. Customise the subject and heading under WooCommerce > Settings > Emails > Gift Card Delivery.
+**Are gift cards taxed?**
+No, the gift card product itself is not taxed. When a gift card is used, its value is deducted from the order the same way a coupon is.
 
-Override the template by copying `templates/emails/gift-card-delivery.php` to your theme's `woocommerce/emails/` folder.
+**Does it work with the block checkout?**
+Yes. Gift cards work on both the classic and the block cart and checkout.
 
-### Page Builders
+**Can I connect it to my accounting system?**
+Yes, through the REST API. See the developer notes below.
 
-For Bricks, Elementor, or other page builders that replace WooCommerce templates, use the WooCommerce Add to Cart element or the shortcode:
+## For Developers
 
-```
-[bgcw_product_form]
-```
+### REST API
 
-## REST API
-
-Base: `https://your-store.example/wp-json/wc-bgcw/v1/`. Authenticate with WooCommerce REST API keys (Basic auth over HTTPS) or a WordPress application password. Requires the `manage_woocommerce` capability.
+Base: `https://your-store.example/wp-json/wc-bgcw/v1/`. Authenticate with WooCommerce REST API keys or a WordPress application password. Requires the `manage_woocommerce` capability.
 
 | Method | Route | Purpose |
 |---|---|---|
-| GET | `/gift-cards` | List. Params: `page`, `per_page` (≤100), `search`, `status`, `source`, `orderby`, `order`. |
-| POST | `/gift-cards` | Create. Body: `amount`*, `source`* (`paid_offline`, `promotion`, `compensation`), `recipient_name`, `recipient_email`, `sender_name`, `sender_email`, `message`, `expires_at` (ISO 8601 or `null`), `send_email` (default true). |
+| GET | `/gift-cards` | List. Params: `page`, `per_page` (up to 100), `search`, `status`, `source`, `orderby`, `order`. |
+| POST | `/gift-cards` | Create. Body: `amount`*, `source`* (`paid_offline`, `promotion`, `compensation`), `recipient_name`, `recipient_email`, `sender_name`, `sender_email`, `message`, `expires_at`, `product_id`, `send_email` (default true). |
 | GET | `/gift-cards/{id}` | Single card. |
 | GET | `/gift-cards/code/{code}` | Single card by code. |
-| PATCH | `/gift-cards/{id}` | Update `status` (`active`/`disabled`), `source`, recipient/sender fields, `message`, `expires_at`. |
-| POST | `/gift-cards/{id}/adjust` | Change balance. Body: `amount` (positive credit, negative debit), `note`. |
-| GET | `/gift-cards/{id}/transactions` | Ledger. |
-| DELETE | `/gift-cards/{id}?force=true` | Permanently delete card and ledger. |
+| PATCH | `/gift-cards/{id}` | Update `status` (`active`/`disabled`), `source`, recipient/sender fields, `message`, `expires_at`, `product_id`. |
+| POST | `/gift-cards/{id}/adjust` | Change balance. Body: `amount` (positive adds, negative deducts), `note`. |
+| GET | `/gift-cards/{id}/transactions` | Transaction history. |
+| DELETE | `/gift-cards/{id}?force=true` | Permanently delete a card. |
 
-All datetimes in responses (`created_at`, `expires_at`, transaction `created_at`) are ISO 8601 in UTC with a trailing `Z` (e.g. `2032-01-31T00:00:00Z`). On input, `expires_at` accepts an ISO 8601 datetime (interpreted as UTC when no offset is given), a MySQL datetime string, or `null` to clear it. `recipient_email` and `sender_email` accept a valid email address or an empty string to clear the field.
-
-Every card includes `source` and `is_paid`. On redeemed orders, each gift card coupon line carries `bgcw_gift_card_id`, `bgcw_source`, `bgcw_is_paid`, `bgcw_source_order_id`, and the order carries `_bgcw_paid_redeemed_total` / `_bgcw_free_redeemed_total`. Those two order totals reflect amounts actually deducted and are not reduced by later refunds; refunds appear as separate `refund` transactions in the ledger.
-
-Validation failures return HTTP 400; failures while creating, updating, deleting a card, or recording a ledger entry return HTTP 500 (`bgcw_rest_create_failed`, `bgcw_rest_update_failed`, `bgcw_rest_delete_failed`, `bgcw_rest_ledger_failed`). The `/adjust` `amount` is bounded to ±1,000,000.
+Dates are ISO 8601 in UTC (for example `2032-01-31T00:00:00Z`). Every card includes `source` and `is_paid`, and orders that used a gift card record the paid and free amounts redeemed.
 
 ```bash
 curl -u ck_xxx:cs_xxx "https://your-store.example/wp-json/wc-bgcw/v1/gift-cards?source=promotion"
 ```
 
-## Hooks & Filters
+### Hooks
 
-Developers can extend the plugin:
+Actions: `bgcw_gift_card_created`, `bgcw_gift_card_deleted`, `bgcw_after_deduct_balance`, `bgcw_after_restore_balance`, `bgcw_my_account_card_actions`, `bgcw_product_form_after_recipient_fields`.
 
-- `bgcw_gift_card_created` — fires after a gift card is created (used by the email system)
-- `bgcw_gift_card_deleted` — fires after a gift card is deleted from the admin list
-- `bgcw_my_account_card_actions` — fires inside each card row on the My Account → Gift Cards page, for adding buttons
-- `bgcw_validate_amount_limits` — return false to skip the predefined/min/max amount checks for a programmatic add-to-cart
-- `bgcw_show_recipient_name_field` — return false to hide the Recipient Name field on the product page
-- `bgcw_show_recipient_email_field` — return false to hide the Recipient Email field on the product page. The buyer's billing email is used as the recipient and the email validation is skipped
-- `bgcw_show_personal_message_field` — return false to hide the Personal Message field on the product page
-- `bgcw_coupon_valid_for_gift_card` — return true to let a specific coupon discount gift card products when coupon blocking is enabled
-- `bgcw_rest_permission` — filter REST access (default: `manage_woocommerce`)
+Filters: `bgcw_gift_card_creation_args`, `bgcw_add_to_cart_validation`, `bgcw_add_to_cart_data`, `bgcw_validate_amount_limits`, `bgcw_should_send_email_now`, `bgcw_email_template_html`, `bgcw_coupon_valid_for_gift_card`, `bgcw_refund_as_store_credit`, `bgcw_show_recipient_name_field`, `bgcw_show_recipient_email_field`, `bgcw_show_personal_message_field`, `bgcw_rest_permission`.
 
-Example — hide the Recipient Email field on every gift card product:
+Example: hide the Recipient Email field (the buyer's email is used instead):
 
 ```php
 add_filter( 'bgcw_show_recipient_email_field', '__return_false' );
 ```
 
-## Translations
+The email template can be overridden by copying `templates/emails/gift-card-delivery.php` to your theme's `woocommerce/emails/` folder.
+
+### Translations
 
 - Text domain: `beltoft-gift-cards`
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.6.4
+
+- Improved: Readme rewritten in plain language. It now covers product-locked gift cards, expiry, block checkout support and all developer hooks, and the tax answer in the FAQ is corrected.
 
 ### 1.6.3
 
