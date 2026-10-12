@@ -10,8 +10,9 @@
 
 		var $amounts = $('.bgcw-amounts');
 		if ($amounts.length) {
-			// Select first predefined button on load.
+			// Select first predefined button on load, or the one named in ?valor= (links from the front page).
 			$amounts.find('.bgcw-amount-btn:not(.bgcw-custom-btn)').first().addClass('active');
+			var wanted = parseFloat(new URLSearchParams(window.location.search).get('valor'));
 
 			$amounts.on('click', '.bgcw-amount-btn', function(e) {
 				e.preventDefault();
@@ -29,6 +30,14 @@
 					$('#bgcw_custom_amount').val('');
 				}
 			});
+
+			// Preselect through the click handler so the hidden amount field matches.
+			// Only predefined buttons qualify; an unmatched value keeps the first button.
+			if (wanted > 0) {
+				$amounts.find('.bgcw-amount-btn:not(.bgcw-custom-btn)').filter(function() {
+					return parseFloat($(this).data('amount')) === wanted;
+				}).first().trigger('click');
+			}
 
 			// Sync custom amount input to hidden field as whole numbers only.
 			$('#bgcw_custom_amount').on('input change', function() {
