@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.4
+Stable tag: 1.6.5
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,6 +154,10 @@ The email template can be overridden by copying `templates/emails/gift-card-deli
 8. Settings page.
 
 == Changelog ==
+
+= 1.6.5 =
+* Fixed: The remove button in the gift card field no longer fails with "Invalid gift card." when a WooCommerce Subscriptions product is in the cart.
+* Improved: The gift card field's remove button now looks up the card in the cart's applied coupons, so it always removes the card shown next to it.
 
 = 1.6.4 =
 * Improved: Readme rewritten in plain language. It now covers product-locked gift cards, expiry, block checkout support and all developer hooks, and the tax answer in the FAQ is corrected.

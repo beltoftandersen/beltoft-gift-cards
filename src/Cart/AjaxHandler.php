@@ -85,7 +85,7 @@ class AjaxHandler {
 	}
 
 	/**
-	 * AJAX: Remove a gift card by session index.
+	 * AJAX: Remove a gift card by its index in the gift card field's list.
 	 */
 	public static function remove_card() {
 		self::verify_nonce();
@@ -96,7 +96,9 @@ class AjaxHandler {
 
 		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Verified in self::verify_nonce().
 		$index   = isset( $_POST['index'] ) ? absint( wp_unslash( $_POST['index'] ) ) : -1;
-		$applied = CartHandler::get_applied_codes();
+		// Resolve the index against the list the field rendered (cart coupons), not
+		// the session mirror, which can fall out of step with the cart.
+		$applied = CartHandler::get_cart_gift_card_codes();
 
 		if ( ! isset( $applied[ $index ] ) ) {
 			wp_send_json_error( [ 'message' => __( 'Invalid gift card.', 'beltoft-gift-cards' ) ] );

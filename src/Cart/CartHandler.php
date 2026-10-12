@@ -218,6 +218,13 @@ class CartHandler {
 	 * @param string $code Coupon code.
 	 */
 	public static function on_coupon_removed( $code ) {
+		// WooCommerce Subscriptions strips non-recurring coupons from its cloned
+		// recurring carts while totalling them; the gift card is still applied
+		// to the real cart, so its session tracking must stay.
+		if ( class_exists( 'WC_Subscriptions_Cart' ) && 'recurring_total' === \WC_Subscriptions_Cart::get_calculation_type() ) {
+			return;
+		}
+
 		if ( self::is_gift_card_coupon( $code ) ) {
 			self::remove_code_from_session( $code );
 		}
@@ -345,6 +352,35 @@ class CartHandler {
 			return [];
 		}
 		return WC()->session->get( 'bgcw_applied_codes', [] );
+	}
+
+	/**
+	 * Get the gift card codes applied as coupons to the cart, in cart order.
+	 *
+	 * The gift card field lists these and its remove buttons refer to them by
+	 * index, so both must read this list rather than the session mirror.
+	 *
+	 * @return string[]
+	 */
+	public static function get_cart_gift_card_codes() {
+		if ( ! WC()->cart ) {
+			return [];
+		}
+
+		$coupons = WC()->cart->get_applied_coupons();
+		if ( empty( $coupons ) ) {
+			return [];
+		}
+
+		$lookup = Repository::find_by_codes( $coupons );
+		$codes  = [];
+		foreach ( $coupons as $code ) {
+			if ( isset( $lookup[ strtoupper( trim( $code ) ) ] ) ) {
+				$codes[] = $code;
+			}
+		}
+
+		return $codes;
 	}
 
 	/**

@@ -59,21 +59,9 @@ class GiftCardField {
 		}
 		self::$rendered = true;
 
-		// Get applied gift card codes from WC cart coupons via bulk lookup.
-		$applied   = [];
-		$gc_lookup = [];
-		if ( WC()->cart ) {
-			$coupons = WC()->cart->get_applied_coupons();
-			if ( ! empty( $coupons ) ) {
-				$gc_lookup = Repository::find_by_codes( $coupons );
-				foreach ( $coupons as $code ) {
-					$key = strtoupper( trim( $code ) );
-					if ( isset( $gc_lookup[ $key ] ) ) {
-						$applied[] = $code;
-					}
-				}
-			}
-		}
+		// Applied gift card codes from WC cart coupons; the lookup is served from the repository cache.
+		$applied   = CartHandler::get_cart_gift_card_codes();
+		$gc_lookup = $applied ? Repository::find_by_codes( $applied ) : [];
 		?>
 		<div class="bgcw-apply-field">
 			<h3><?php esc_html_e( 'Have a gift card?', 'beltoft-gift-cards' ); ?></h3>

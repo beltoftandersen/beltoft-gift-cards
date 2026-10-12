@@ -2,7 +2,7 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.6.4
+- Stable version: 1.6.5
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+ (tested up to WordPress 7.1)
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
@@ -146,6 +146,11 @@ The email template can be overridden by copying `templates/emails/gift-card-deli
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.6.5
+
+- Fixed: The remove button in the gift card field no longer fails with "Invalid gift card." when a WooCommerce Subscriptions product is in the cart.
+- Improved: The gift card field's remove button now looks up the card in the cart's applied coupons, so it always removes the card shown next to it.
 
 ### 1.6.4
 
