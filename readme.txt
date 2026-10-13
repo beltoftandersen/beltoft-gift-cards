@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.6.6
+Stable tag: 1.7.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,6 +154,9 @@ The email template can be overridden by copying `templates/emails/gift-card-deli
 8. Settings page.
 
 == Changelog ==
+
+= 1.7.0 =
+* Added: the My Account endpoint URL can be changed under WooCommerce › Settings › Advanced › Account endpoints.
 
 = 1.6.6 =
 * Fixed: A link to the gift card product with ?valor=<amount> (e.g. ?valor=30) opens with that amount selected again.

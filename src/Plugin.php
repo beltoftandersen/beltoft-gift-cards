@@ -9,6 +9,7 @@ use Bgcw\Admin\OrderMetaBox;
 use Bgcw\Product\GiftCardProductType;
 use Bgcw\Frontend\ProductPage;
 use Bgcw\Frontend\MyAccount;
+use Bgcw\Frontend\AccountEndpoint;
 use Bgcw\GiftCard\GiftCardCreator;
 use Bgcw\Cart\CartHandler;
 use Bgcw\Cart\GiftCardField;
@@ -51,6 +52,10 @@ class Plugin {
 		// WC may defer transactional emails, so the email constructor (which
 		// registers the bgcw_gift_card_created listener) may not have run yet.
 		add_action( 'bgcw_gift_card_created', [ __CLASS__, 'ensure_mailer_loaded' ], 5, 0 );
+
+		// My Account endpoint: registered in every context so rewrite rules
+		// rebuilt on an admin request keep it, and its slug is configurable.
+		AccountEndpoint::init();
 
 		// Admin-only classes.
 		if ( is_admin() ) {

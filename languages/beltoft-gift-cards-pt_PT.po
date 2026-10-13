@@ -872,3 +872,7 @@ msgstr "Clique no link acima para aplicar o seu cartão-presente automaticamente
 
 #~ msgid "https://chimkins.com/"
 #~ msgstr "https://chimkins.com/"
+
+#: src/Frontend/AccountEndpoint.php
+msgid "Endpoint for the \"My account &rarr; Gift Cards\" page."
+msgstr "Endpoint para a página \"A minha conta &rarr; Cartões-presente\"."

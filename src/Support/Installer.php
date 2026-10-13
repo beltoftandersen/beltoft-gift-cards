@@ -23,9 +23,9 @@ class Installer {
 			add_option( Options::OPTION, Options::defaults(), '', false );
 		}
 
-		// Flush rewrite rules for My Account endpoint.
-		add_rewrite_endpoint( 'gift-cards', EP_ROOT | EP_PAGES );
-		flush_rewrite_rules();
+		// Rebuild rewrite rules for the My Account endpoint on the next request,
+		// when it is registered with its configured slug.
+		\Bgcw\Frontend\AccountEndpoint::queue_flush();
 	}
 
 	/**

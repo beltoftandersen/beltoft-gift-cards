@@ -26,6 +26,7 @@ $wpdb->query( "DROP TABLE IF EXISTS {$wpdb->prefix}bgcw_gift_cards" );
 // Delete plugin options.
 delete_option( 'bgcw_options' );
 delete_option( 'bgcw_db_version' );
+delete_option( 'woocommerce_myaccount_gift_cards_endpoint' );
 
 // Delete all order meta (HPOS-compatible).
 if ( class_exists( 'Automattic\WooCommerce\Utilities\OrderUtil' )

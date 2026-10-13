@@ -907,3 +907,7 @@ msgstr ""
 #: templates/emails/plain/gift-card-delivery.php:75
 msgid "Click the link above to apply your gift card automatically, or enter the code at checkout in the coupon/gift card field."
 msgstr ""
+
+#: src/Frontend/AccountEndpoint.php:58
+msgid "Endpoint for the \"My account &rarr; Gift Cards\" page."
+msgstr ""

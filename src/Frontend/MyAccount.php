@@ -15,17 +15,9 @@ class MyAccount {
 	 * Initialize hooks.
 	 */
 	public static function init() {
-		add_action( 'init', [ __CLASS__, 'add_endpoint' ] );
 		add_filter( 'woocommerce_account_menu_items', [ __CLASS__, 'menu_item' ] );
 		add_action( 'woocommerce_account_gift-cards_endpoint', [ __CLASS__, 'render' ] );
 		add_filter( 'the_title', [ __CLASS__, 'endpoint_title' ], 10, 2 );
-	}
-
-	/**
-	 * Register the rewrite endpoint.
-	 */
-	public static function add_endpoint() {
-		add_rewrite_endpoint( 'gift-cards', EP_ROOT | EP_PAGES );
 	}
 
 	/**

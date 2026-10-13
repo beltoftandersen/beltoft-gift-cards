@@ -2,7 +2,7 @@
 
 Sell digital gift cards, deliver them by email, and let customers redeem them at checkout.
 
-- Stable version: 1.6.6
+- Stable version: 1.7.0
 - Requires: WordPress 5.8+, PHP 7.4+, WooCommerce 6.0+ (tested up to WordPress 7.1)
 - Author: beltoft.net
 - Text domain: beltoft-gift-cards
@@ -146,6 +146,10 @@ The email template can be overridden by copying `templates/emails/gift-card-deli
 - Translation template: `languages/beltoft-gift-cards.pot`
 
 ## Changelog
+
+### 1.7.0
+
+- Added: the My Account endpoint URL can be changed under WooCommerce › Settings › Advanced › Account endpoints.
 
 ### 1.6.6
 
