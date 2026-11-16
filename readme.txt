@@ -4,7 +4,7 @@ Tags: woocommerce, gift cards, gift certificate, store credit, voucher
 Requires at least: 5.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.7.0
+Stable tag: 1.7.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,6 +154,9 @@ The email template can be overridden by copying `templates/emails/gift-card-deli
 8. Settings page.
 
 == Changelog ==
+
+= 1.7.1 =
+* Fixed: refunding or cancelling an order that created a gift card now reduces that card by the refunded amount and disables a card that is refunded in full. If part of the card was already spent, the shop manager gets an email. Repeated refund events change nothing.
 
 = 1.7.0 =
 * Added: the My Account endpoint URL can be changed under WooCommerce › Settings › Advanced › Account endpoints.
