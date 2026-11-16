@@ -21,6 +21,7 @@ class TransactionNote {
 	const KEY_ORDER_USED           = 'order_used';
 	const KEY_ORDER_REFUNDED       = 'order_refunded';
 	const KEY_ORDER_PARTIAL_REFUND = 'order_partial_refund';
+	const KEY_ORDER_VOIDED         = 'order_voided';
 	const KEY_ADJUSTMENT           = 'adjustment';
 
 	/**
@@ -76,6 +77,13 @@ class TransactionNote {
 				return sprintf(
 					/* translators: %s: order number */
 					__( 'Partial refund from order #%s', 'beltoft-gift-cards' ),
+					$order_number
+				);
+
+			case self::KEY_ORDER_VOIDED:
+				return sprintf(
+					/* translators: %s: order number */
+					__( 'Credit taken back: order #%s was refunded or cancelled', 'beltoft-gift-cards' ),
 					$order_number
 				);
 

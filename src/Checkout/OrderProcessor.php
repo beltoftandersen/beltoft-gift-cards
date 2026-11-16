@@ -37,6 +37,11 @@ class OrderProcessor {
 		// Handle partial refunds.
 		add_action( 'woocommerce_order_partially_refunded', [ __CLASS__, 'handle_partial_refund' ], 10, 2 );
 
+		// Void the credit an order created when it is refunded or cancelled.
+		add_action( 'woocommerce_order_status_cancelled', [ __CLASS__, 'void_created_cards' ], 20 );
+		add_action( 'woocommerce_order_status_refunded', [ __CLASS__, 'void_created_cards' ], 20 );
+		add_action( 'woocommerce_order_refunded', [ __CLASS__, 'void_created_cards' ], 20 );
+
 		// Clear session after order is placed (classic and block checkout).
 		add_action( 'woocommerce_checkout_order_created', [ __CLASS__, 'clear_session' ], 100 );
 		add_action( 'woocommerce_store_api_checkout_order_processed', [ __CLASS__, 'clear_session' ], 100 );
@@ -532,5 +537,116 @@ class OrderProcessor {
 		}
 
 		return $out;
+	}
+
+	/**
+	 * Void the credit a refunded or cancelled order created.
+	 *
+	 * The cards an order made (a top-up or a gift card line) lose what the customer got back: all of it when the order is cancelled or
+	 * refunded in full, the refunded share when it is refunded in part. A card is debited by the unspent part only, never below zero;
+	 * when part of the credit was already spent the admin is told. The amount already handled is kept per card in the order meta
+	 * `_bgcw_voided_targets`, so repeated refund events change nothing.
+	 *
+	 * @param int $order_id Order ID (or the order, for the refund action's first argument).
+	 */
+	public static function void_created_cards( $order_id ) {
+		global $wpdb;
+
+		$order = wc_get_order( $order_id );
+		if ( ! $order || ! $order->get_meta( '_bgcw_cards_created' ) ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Advisory lock, no table involved.
+		$acquired = (int) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', 'bgcw_void_' . (int) $order->get_id() ) );
+
+		try {
+			$order  = wc_get_order( $order->get_id() );
+			$share  = 1.0;
+			$total  = (float) $order->get_total();
+			$closed = $order->has_status( [ 'cancelled', 'refunded' ] );
+
+			if ( ! $closed ) {
+				$share = $total > 0 ? min( 1.0, (float) $order->get_total_refunded() / $total ) : 0.0;
+			}
+
+			if ( $share <= 0 ) {
+				return;
+			}
+
+			$done    = $order->get_meta( '_bgcw_voided_targets' );
+			$done    = is_array( $done ) ? $done : [];
+			$spent   = 0.0;
+			$changed = false;
+
+			foreach ( Repository::get_by_order( $order->get_id() ) as $card ) {
+				if ( Source::ORDER !== (string) $card->source ) {
+					continue;
+				}
+
+				$target = round( (float) $card->initial_amount * $share, 2 );
+				$delta  = round( $target - (float) ( $done[ $card->id ] ?? 0 ), 2 );
+				if ( $delta <= 0 ) {
+					continue;
+				}
+
+				$fresh  = Repository::find( $card->id );
+				$take   = $fresh ? min( $delta, round( (float) $fresh->balance, 2 ) ) : 0.0;
+				$spent += round( $delta - $take, 2 );
+
+				if ( $take > 0 && Repository::deduct_balance( $card->id, $take ) ) {
+					$after = Repository::find( $card->id );
+					$left  = $after ? (float) $after->balance : 0.0;
+
+					TransactionRepository::insert( [
+						'gift_card_id'  => $card->id,
+						'order_id'      => $order->get_id(),
+						'type'          => 'debit',
+						'amount'        => $take,
+						'balance_after' => $left,
+						'note_key'      => TransactionNote::KEY_ORDER_VOIDED,
+						'note_args'     => [ 'order_number' => (string) $order->get_order_number() ],
+					] );
+
+					if ( $closed && $left <= 0 ) {
+						Repository::update_status( $card->id, 'disabled' );
+					}
+				} elseif ( $take > 0 ) {
+					$spent += $take;
+				}
+
+				$done[ $card->id ] = $target;
+				$changed           = true;
+			}
+
+			if ( ! $changed ) {
+				return;
+			}
+
+			$order->update_meta_data( '_bgcw_voided_targets', $done );
+			$order->save();
+
+			if ( $spent > 0 ) {
+				$text = sprintf(
+					/* translators: 1: order number, 2: amount already spent */
+					__( 'Order %1$s was refunded or cancelled, but %2$s of the credit it created was already spent.', 'beltoft-gift-cards' ),
+					$order->get_order_number(),
+					wp_strip_all_tags( wc_price( $spent, [ 'currency' => $order->get_currency() ] ) )
+				);
+				$order->add_order_note( $text );
+				wc_get_logger()->error( $text, [ 'source' => 'beltoft-gift-cards' ] );
+				wp_mail(
+					(string) get_option( 'admin_email' ),
+					/* translators: %s: order number */
+					sprintf( __( 'Gift card credit already spent on refunded order %s', 'beltoft-gift-cards' ), $order->get_order_number() ),
+					$text . "\n\n" . $order->get_edit_order_url()
+				);
+			}
+		} finally {
+			if ( 1 === $acquired ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Advisory lock release.
+				$wpdb->query( $wpdb->prepare( 'SELECT RELEASE_LOCK(%s)', 'bgcw_void_' . (int) $order->get_id() ) );
+			}
+		}
 	}
 }
